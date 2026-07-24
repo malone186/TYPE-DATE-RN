@@ -14,6 +14,7 @@ export const episode6: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/ESTP.png',
     facePath: 'assets/images/ESTP_face.png',
+    backgroundPath: 'assets/images/ESTP_female_background.jpg',
   },
   turns: [
     {
@@ -376,7 +377,7 @@ export const episode6: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '긴장시키려고 마음을 숨긴다... 저는 마음 가지고 게임하는 게 세상에서 제일 별로거든요. 여기서 우리 좀 갈리네요',
+          npcReaction: '긴장시키려고 마음을 숨긴다... 저는 그런 게임엔 소질이 없어서요 ㅋㅋ 대신 정면돌파로 긴장시켜드릴게요. 오늘처럼요. 그건 자신 있거든요',
         },
         {
           label: 'D',
@@ -402,7 +403,7 @@ export const episode6: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '증명이라... 그거 하느라 3년 내내 제일 신나는 사람 역할을 했다는 얘기를 방금 한 건데 ㅋㅋ 아니에요, 마음은 고마워요',
+          npcReaction: '증명이라... 오, 그것도 방법이네요. 근데 방금은 해결책보다 그냥 들어줬으면 했나 봐요 ㅋㅋ 그래도 제 편에서 같이 궁리해주는 거, 진짜 고마워요',
         },
         {
           label: 'B',
@@ -467,7 +468,7 @@ export const episode6: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '칭찬 같으면서 은근히 선 긋는 말이네요 ㅋㅋ 아무나 못 사는 게 아니라 다들 안 해보는 거예요. 해보면 별거 아닌데',
+          npcReaction: '에이, 아무나 못 사는 게 아니라 다들 안 해보는 거예요 ㅋㅋ 불안하면 일단 제 옆에서 견학부터 해봐요. 보다 보면 별거 아니라는 거 알게 될걸요?',
         },
       ],
     },
@@ -500,7 +501,7 @@ export const episode6: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '스케줄 보고~는 서핑으로 치면 파도 다 지나가고 입수하는 건데 ㅋㅋ 알겠어요, 기다릴게요. 근데 저 기다리는 거 진짜 못하는 사람인 거 아셔야 해요',
+          npcReaction: '스케줄 보고~는 서핑으로 치면 파도 다 지나가고 입수하는 건데 ㅋㅋ 알겠어요, 기다릴게요. 저 기다리는 거 진짜 못하는데, {name}씨라서 한번 해보려고요',
         },
         {
           label: 'D',
@@ -516,7 +517,7 @@ export const episode6: BlindDate = {
       turnNumber: 13,
       isPlayerInitiated: false,
       npcMessage:
-        '마지막으로 하나만요. 오늘 저 어땠어요? 아, 미리 경고하는데 저 눈치 하나로 서핑샵 3년 버틴 사람이라 빈말은 3초 만에 알아채요 ㅋㅋ 진짜 느낀 것만 말해줘요',
+        '마지막으로 하나만요. 오늘 저 어땠어요? 저 눈치 하나로 서핑샵 3년 버틴 사람이라 빈말은 3초 만에 알아채요 ㅋㅋ 근데 그것보다, {name}씨가 오늘 뭘 느꼈는지 진짜로 궁금해서 그래요. 편하게 말해줘요',
       monologue: '빈말 탐지 3초. 어차피 오늘은 빈말이 나오지도 않는다.',
       choices: [
         {
@@ -549,7 +550,7 @@ export const episode6: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '빈말 경보 발령 ㅋㅋ 최고, 진짜, 처음. 세 개 연속이면 수상하다니까요? 뭐가 어떻게 좋았는지 딱 하나만 구체적으로 말해봐요. 자, 3초 드립니다',
+          npcReaction: '빈말 경보 발령 ㅋㅋ 최고, 진짜, 처음. 세 개 연속이면 수상하다니까요? 근데 좋았다는 말 자체는 기분 좋네요. 뭐가 제일 좋았는지 딱 하나만 더 들려줘요, 천천히요',
         },
       ],
     },

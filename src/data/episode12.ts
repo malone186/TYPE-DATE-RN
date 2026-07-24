@@ -45,7 +45,7 @@ export const episode12: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '대화가 본질인 건 맞는데요, 저는 공간도 대화의 일부라고 믿는 사람이라 ㅎㅎ 오늘 노을 보고도 그 말 유지되나 봐요',
+          npcReaction: '대화가 본질인 건 맞는데요, 저는 공간도 대화의 일부라고 믿는 사람이라 ㅎㅎ 오늘 노을 다 보고 나서도 그 말 그대로인지, 이따 다시 물어볼게요. 살짝 기대되네요',
         },
         {
           label: 'D',
@@ -244,7 +244,7 @@ export const episode12: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '맞아요, 능력이죠... 근데 그 능력 덕분에 즐거워지는 건 항상 상대방이더라고요. 아니에요, 제가 괜히 무거운 얘길 했네요 ㅎㅎ',
+          npcReaction: '맞아요, 능력이죠... 근데 그 능력 덕분에 즐거워지는 건 항상 상대방이더라고요. 아, 그래도 이 얘기 꺼낸 거 오늘이 처음이에요. {name}씨라서 나온 것 같아요 ㅎㅎ',
         },
         {
           label: 'C',
@@ -376,7 +376,7 @@ export const episode12: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '좋아해주시는 건 좋은데 ㅋㅋ 뭔가 제 도시락 예약이 벌써 찬 기분이네요. 어, 근데 왜 살짝 피곤한 상상이 됐지. 농담이에요 ㅎㅎ',
+          npcReaction: '도시락 좋아한다는 거 접수했어요 ㅋㅋ 예약 1번으로 올려드릴게요. 대신 조건 하나, 가끔은 저도 얻어먹기로 해요. 공평하게요 ㅎㅎ',
         },
         {
           label: 'D',
@@ -549,7 +549,7 @@ export const episode12: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '신중하시네요 ㅎㅎ 근데 오늘 같은 얘기를 하고도 모르겠다면, 세 번째에도 아마 모르실 거예요. 그래도 그 세 번, 채워는 보고 싶네요',
+          npcReaction: '신중하시네요 ㅎㅎ 좋아요, 그럼 그 세 번 제가 같이 채울게요. 오늘이 첫 번째였으니까 두 번 더 만나야 한다는 얘기잖아요. 그렇게 접수할게요',
         },
       ],
     },

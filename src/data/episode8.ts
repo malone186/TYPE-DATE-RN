@@ -20,7 +20,7 @@ export const episode8: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '자, 정석 질문 금지니까 제 방식대로 시작할게요. {name}씨, 내일부터 평생 버거만 먹기 vs 평생 버거 못 먹기, 어느 쪽이에요? 참고로 저는 이 질문 하나로 사람 파악하는 편이에요 ㅋㅋ',
+        '자, 정석 질문 금지니까 제 방식대로 시작할게요. {name}씨, 내일부터 평생 버거만 먹기 vs 평생 버거 못 먹기, 어느 쪽이에요? 참고로 이거 진짜 궁금해서 묻는 거예요. 오면서 {name}씨는 뭐라고 답할까 계속 상상했거든요 ㅋㅋ',
       monologue: '소개팅 첫 질문이 밸런스 게임이라니. 정신 차려야겠다.',
       choices: [
         {
@@ -53,7 +53,7 @@ export const episode8: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '질문 되돌려주기는 반칙이에요 ㅋㅋ 소개팅에서 제일 아쉬운 답이 "모르겠어요"거든요. 틀린 답이 무답보다 백배 재밌는데',
+          npcReaction: '질문 되돌려주기는 반칙이에요 ㅋㅋ 참고로 저는 평생 버거 못 먹기요. 세상에 아직 안 먹어본 게 너무 많거든요. 자, 이제 {name}씨 차례예요. 틀린 답도 대환영이에요',
         },
       ],
     },
@@ -128,7 +128,7 @@ export const episode8: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: 'ㅋㅋ 팩트는 맞는데 낭만이 없다... 배가 흔들리는 건 맞아요. 근데 저는 그 배의 항해사인 게 재밌는 거라서요. 안전한 항구 얘기는 저한텐 좀 심심해요',
+          npcReaction: 'ㅋㅋ 팩트는 맞아요, 걱정해주는 마음도 알겠고요. 근데 저는 그 흔들리는 배의 항해사인 게 재밌는 거라서요. 다음에 배 흔들렸던 얘기 풀어드릴게요, 은근 재밌어요',
         },
         {
           label: 'D',
@@ -219,7 +219,7 @@ export const episode8: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '배만 부르면 된다니... 잠시 애도의 시간을 갖겠습니다 ㅋㅋ 인생 즐거움의 3할을 자발적으로 반납하고 계신 거예요, 지금',
+          npcReaction: '배만 부르면 된다니... 잠시 애도의 시간을 갖겠습니다 ㅋㅋ 대신 오늘 이 버거로 그 즐거움 1할은 제가 돌려드릴게요. 어때요, 벌써 좀 궁금해지죠?',
         },
       ],
     },
@@ -376,7 +376,7 @@ export const episode8: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '아까 스포했잖아요 ㅋㅋ 다 맞춰주는 사람이 제일 힘들다고. 맞춰주는 사람 마음속엔 적금 계좌가 하나 생기거든요. 그 계좌, 언젠가 만기 터져요',
+          npcReaction: '아까 스포했잖아요 ㅋㅋ 다 맞춰주는 사람이 제일 힘들다고. 맞춰주다 보면 마음속에 서운함 적금이 쌓이거든요. 그러니까 저한테는 그냥 다 말해줘요. 저 듣는 거 진짜 좋아해요',
         },
         {
           label: 'D',
@@ -500,7 +500,7 @@ export const episode8: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '조용한 카페로 회귀 ㅋㅋ 아쉽다. 그리고 미리 말해두는데, 저 "나중에"라는 단어랑 별로 안 친해요. 나중은 대부분 안 오더라고요',
+          npcReaction: '조용한 카페로 회귀 ㅋㅋ 좋아요, 그럼 절충안. 조용한 카페인데 메뉴가 이상한 데로 가요. 대신 날짜는 지금 정해요. {name}씨랑의 다음은 확실하게 잡아두고 싶거든요',
         },
         {
           label: 'D',
@@ -563,7 +563,7 @@ export const episode8: BlindDate = {
     { sender: '나래', text: '그게 포인트죠. 아는 맛은 언제든 먹을 수 있잖아요. 모르는 맛은 오늘뿐이고요' },
     { sender: 'me', text: '소개팅 시작 1분 만에 메뉴 결정권을 뺏겼는데, 기분이 나쁘지 않다.', isMonologue: true },
     { sender: 'system', text: '창가 자리에 마주 앉는다. 나래가 테이블에 팔을 얹고 몸을 기울인다', isSystemNote: true },
-    { sender: '나래', text: '아 그리고 제안 하나 할게요. 우리 정석 질문 금지해요. 형제 있어요? 주말에 뭐 해요? 이런 거요. 어차피 서로 안 궁금하잖아요 ㅋㅋ' },
+    { sender: '나래', text: '아 그리고 제안 하나 할게요. 우리 정석 질문 금지해요. 형제 있어요? 주말에 뭐 해요? 이런 거요. 그런 건 나중에 저절로 알게 되잖아요. 저는 오늘 {name}씨한테 더 궁금한 게 많거든요 ㅋㅋ' },
     { sender: 'me', text: 'ㅋㅋ 좋아요. 근데 그럼 무슨 얘길 하죠?' },
     { sender: '나래', text: '그걸 찾는 게 오늘의 게임이죠. 벌써 재밌지 않아요?' },
     { sender: 'me', text: '이 사람과의 두 시간은 절대 심심하지 않겠구나. 직감이 왔다.', isMonologue: true },

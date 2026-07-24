@@ -32,7 +32,7 @@ export const maleEpisodeIsfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '세 시간이요. 감사한데, 그러다 제 얘기는 하나도 못 듣고 가실까 봐요. 사진은 이따 한 장만 보여드릴게요.',
+          npcReaction: '세 시간이요. 진짜 그러고 싶은데, 그럼 저는 {name}씨 얘기를 하나도 못 듣잖아요. 오늘은 그게 더 궁금해서요. 사진은 이따 제일 잘 나온 걸로 한 장 보여드릴게요.',
         },
         {
           label: 'B',
@@ -198,7 +198,7 @@ export const maleEpisodeIsfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '환기는 초코 산책으로 충분해서요. 사람 많은 데 갔다 오면 오히려 환기가 아니라 방전이 되더라고요. 저는요.',
+          npcReaction: '환기는 초코 산책으로 충분해서요. 사람 많은 데 갔다 오면 오히려 환기가 아니라 방전이 되더라고요. 아, 근데 오늘은 신기하게 하나도 안 방전됐어요.',
         },
         {
           label: 'B',
@@ -322,7 +322,7 @@ export const maleEpisodeIsfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '감사한데, 그분도 처음엔 그렇게 말씀하셨어서요. 아, 이건 제 불안이네요. 죄송해요.',
+          npcReaction: '환영이라는 말이 이렇게 반가운데, 마음 한쪽이 살짝 겁을 내네요. 아, 이건 그냥 제 불안이에요. 오늘은 그 말, 그대로 믿어볼게요.',
         },
         {
           label: 'B',
@@ -371,7 +371,7 @@ export const maleEpisodeIsfj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '좋았다, 힐링, 처음. 세 개 붙으면 빈말 확률이 높더라고요. 하나만 구체적으로 부탁해도 될까요.',
+          npcReaction: '좋았다, 힐링, 처음. 다 감사해서 오래 기억하고 싶은데, 욕심내서 하나만 더요. 어떤 순간이 좋았는지 들으면, 그건 평생 저장이거든요.',
         },
         {
           label: 'C',

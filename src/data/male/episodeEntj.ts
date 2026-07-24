@@ -89,7 +89,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '많아요. 그 질문 투자 미팅에서 백 번쯤 받았는데, 소개팅에서 들으니 기분이 새롭네요. 반박 자료는 준비돼 있는데 참을게요.',
+          npcReaction: '많아요. 그 질문 투자 미팅에서 백 번쯤 받았어요. 좋은 질문이라는 뜻이에요. 반박 자료 삼십 장 있는데, 궁금하면 다음에 요약본으로 보여드릴게요.',
         },
         {
           label: 'D',
@@ -131,7 +131,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '안쓰러움까진 안 가도 돼요. 그 국밥이 맛있어서 가는 것도 있어요. 짠한 건 아까 저 혼자 한 걸로 충분해요.',
+          npcReaction: '안쓰러움까진 안 가도 돼요. 그 국밥이 맛있어서 가는 것도 있어요. 근데 그렇게 걱정해주는 얼굴은 오랜만이라, 솔직히 나쁘지 않네요.',
         },
         {
           label: 'D',
@@ -156,7 +156,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '그건 저한텐 즉흥이 아니라 재난이에요. 그 캘린더 안에 서른 명 월급날이 들어 있거든요.',
+          npcReaction: '그건 저한텐 즉흥이 아니라 재난이에요. 그 캘린더 안에 서른 명 월급날이 들어 있거든요. 대신 오늘 오후는 지웠으니까, 절반은 즉흥인 셈 쳐줘요.',
         },
         {
           label: 'B',
@@ -206,7 +206,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '주말까지 네트워킹이면 평일과 주말의 차이가 없어져요. 그건 제가 이 년 걸려서 도망쳐 나온 삶이라서요.',
+          npcReaction: '주말까지 네트워킹이면 평일과 주말의 차이가 없어져요. 저는 이 년 걸려서 겨우 주말을 되찾은 사람이라서요. 대신 그 에너지는 진심으로 인정합니다.',
         },
         {
           label: 'C',
@@ -222,7 +222,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '그게 되는 사람이 부러워요. 저는 침대에 십 분 누워 있으면 침대의 문제점을 개선하고 싶어져요. 여긴 서로 이해가 좀 필요하겠네요.',
+          npcReaction: '그게 되는 사람이 부러워요. 저는 침대에 십 분 누워 있으면 침대의 문제점을 개선하고 싶어져요. 그 쉬는 법, 언젠가 과외 좀 받아야겠네요.',
         },
       ],
     },
@@ -239,7 +239,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '나가봤어요. 거기서도 다들 명함 주고받고 지표 얘기해요. 저녁이 아니라 서서 하는 회의더라고요.',
+          npcReaction: '나가봤어요. 거기서도 다들 명함 주고받고 지표 얘기해요. 저녁이 아니라 서서 하는 회의더라고요. 그래도 같이 방법 찾아봐주는 건 고맙네요.',
         },
         {
           label: 'B',
@@ -330,7 +330,7 @@ export const maleEpisodeEntj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '올릴 만하죠. 근데 그 문서 쓰는 데 두 시간 걸렸다는 건 아무도 안 궁금해하더라고요.',
+          npcReaction: '올릴 만하죠. 그 문서 쓰는 데 두 시간 걸렸거든요. 근데 그 얘기를 이렇게 웃으면서 하는 건 오늘이 처음이네요.',
         },
         {
           label: 'C',
@@ -394,7 +394,7 @@ export const maleEpisodeEntj: BlindDate = {
   ],
   openingScript: [
     { sender: 'system', text: '도산공원 안쪽 프렌치 비스트로. 예약 십 분 전인데, 창가 안쪽 테이블에 정장 차림의 남자가 이미 서서 기다리고 있다', isSystemNote: true },
-    { sender: '도현', text: '{name}씨죠. 도현입니다. 제가 일찍 온 건 습관이니까 신경 쓰지 마세요. {name}씨는 정확히 제시간에 왔어요' },
+    { sender: '도현', text: '{name}씨죠. 도현입니다. 결론부터 말하면, 오늘 기대하고 나왔어요. 제가 일찍 온 건 습관이니까 신경 쓰지 마세요. {name}씨는 정확히 제시간에 왔어요' },
     { sender: 'me', text: '네, 안녕하세요. 근데 시간 체크를 되게 정확하게 하시네요' },
     { sender: '도현', text: '직업병이에요. 대신 오늘 세 시간 비워놨어요. 늦게 끝나는 건 환영이라는 뜻이에요' },
     { sender: 'me', text: '지각엔 엄격하고 연장엔 관대하다. 규칙이 이상한 방향으로 다정하다.', isMonologue: true },

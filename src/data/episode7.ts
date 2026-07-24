@@ -14,6 +14,7 @@ export const episode7: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/ISFJ.png',
     facePath: 'assets/images/ISFJ_face.png',
+    backgroundPath: 'assets/images/ISFJ_female_background.jpg',
   },
   turns: [
     {
@@ -29,7 +30,7 @@ export const episode7: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '요령이요...? 많이 해보셨구나 ㅎㅎ 저는 오늘이 되게 큰일이었는데, 갑자기 조금 머쓱해지네요',
+          npcReaction: '요령이요...? 많이 해보셨구나 ㅎㅎ 저는 오늘이 되게 큰일이었는데... 그럼 그 요령으로 저 덜 떨리게 좀 도와주세요. 부탁드릴게요',
         },
         {
           label: 'B',
@@ -45,7 +46,7 @@ export const episode7: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '저까지 더 떨리게요 ㅎㅎ 괜찮아요, 천천히 해요. 근데 저도 이끄는 걸 잘하는 편은 아니라... 우리 둘 다 조용하면 어쩌죠',
+          npcReaction: '저까지 더 떨리게요 ㅎㅎ 괜찮아요, 천천히 해요. 솔직하게 말해주시니까 오히려 마음이 놓여요. 둘 다 조용하면, 케이크 먹으면서 천천히 하면 되죠',
         },
         {
           label: 'D',
@@ -195,7 +196,7 @@ export const episode7: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '아... 단 거를 안 좋아하시는구나. 그럼 오늘 이 카페 좀 곤욕이셨겠어요 ㅎㅎ 미리 여쭤볼 걸 그랬네요',
+          npcReaction: '아, 단 거를 잘 안 드시는구나. 그런데도 여기 와주신 거네요 ㅎㅎ 다음엔 제가 안 단 메뉴 맛있는 데로 찾아볼게요. 그런 데도 잘 알거든요',
         },
         {
           label: 'B',
@@ -252,7 +253,7 @@ export const episode7: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '그렇게 간단하면 좋을 텐데요 ㅎㅎ 너무 깊게 생각한다는 말, 저 되게 자주 듣거든요. 들을 때마다 조금씩 외로워져요',
+          npcReaction: '그렇게 간단하면 좋을 텐데요 ㅎㅎ 너무 깊게 생각한다는 말, 저 되게 자주 듣거든요. 그래도 {name}씨한테는 언젠가 이 마음, 제대로 설명해보고 싶네요',
         },
         {
           label: 'D',
@@ -484,7 +485,7 @@ export const episode7: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '언제 한번... 네, 그럼 기다릴게요 ㅎㅎ 아, 괜히 먼저 물어봤나. 손이 더 차가워졌어요',
+          npcReaction: '언제 한번... 네, 그럼 기다릴게요 ㅎㅎ 그래도 먼저 물어본 거 후회는 안 해요. 연락 주시면 저 진짜 빨리 답할 자신 있어요',
         },
         {
           label: 'B',

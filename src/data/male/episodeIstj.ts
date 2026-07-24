@@ -32,7 +32,7 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '스윗이라기보다는 불안 관리에 가깝습니다. 근데 처음 본다는 말은 칭찬인지 아직 판단이 안 서네요.',
+          npcReaction: '스윗이라기보다는 불안 관리에 가깝습니다. 근데 처음 본다는 말은 칭찬으로 접수해두겠습니다. 그렇게 분류하는 쪽이 오늘 기분에 좋아서요.',
         },
         {
           label: 'B',
@@ -115,7 +115,7 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '장사로 치면 전화비만 나가는 적자입니다. 그 규칙은 매출 항목이 아니라서요.',
+          npcReaction: '장사로 치면 전화비만 나가는 적자입니다. 그 규칙은 매출 항목이 아니라서요. 아, 좋게 봐주신 건 접수했습니다. 말이 좀 딱딱했네요.',
         },
         {
           label: 'B',
@@ -123,7 +123,7 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '울컥까지 하실 일은 아니고요. 저는 그냥 전화 한 통 한 겁니다. 과대평가는 복약지도 대상이에요.',
+          npcReaction: '울컥까지 하실 일은 아니고, 저는 그냥 전화 한 통 한 겁니다. 근데 그렇게 들어주시는 마음이 나쁘지 않아서, 오늘은 과대평가 정정을 보류하겠습니다.',
         },
         {
           label: 'C',
@@ -322,7 +322,7 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '결국 그쪽 판정도 일정 관리군요. 반박은 못 하겠는데, 오늘 두 번째 패소라 항소는 포기하겠습니다.',
+          npcReaction: '그 판정도 결국 일정 관리군요. 반박은 못 하겠는데, 오늘 두 번째 패소라 항소는 포기하겠습니다. 대신 계획에 없는 것, 하나쯤 연구해보겠습니다.',
         },
         {
           label: 'B',
@@ -330,7 +330,7 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '편들어주시는 건 감사한데, 그 사람이 나쁜 건 아니었어요. 저랑 쓰는 언어가 달랐던 거지. 험담으로 넘어가면 제가 좀 불편해서요.',
+          npcReaction: '편들어주시는 마음은 잘 받았습니다. 근데 그 사람이 나쁜 건 아니었어요. 저랑 쓰는 언어가 달랐던 거지. 그래도 제 삼 년을 대신 억울해해 주는 건, 생각보다 힘이 되네요.',
         },
         {
           label: 'C',
@@ -387,14 +387,14 @@ export const maleEpisodeIstj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '백 점이면 채점 기준이 있을 텐데, 항목을 하나만 말해줄래요. 약사는 성분 없는 효능을 잘 안 믿어서요.',
+          npcReaction: '백 점은 살면서 처음 받아봅니다. 감사한데, 욕심내서 채점 항목 하나만 들어도 될까요. 오래 보관하려면 성분표가 필요해서요.',
         },
       ],
     },
   ],
   openingScript: [
     { sender: 'system', text: '안국역 골목 안 전통찻집. 낮은 나무 문을 열자 마른 찻잎 냄새가 먼저 온다. 창가 자리에 남자가 등을 곧게 펴고 앉아 있다', isSystemNote: true },
-    { sender: '태윤', text: '{name}씨 맞으시죠. 태윤입니다. 약속 시간 칠 분 전인데, 일찍 오셨네요' },
+    { sender: '태윤', text: '{name}씨 맞으시죠. 태윤입니다. 약속 시간 칠 분 전인데, 일찍 오셨네요. 시작부터 좋은 데이터입니다' },
     { sender: 'me', text: '태윤씨는 더 일찍 오셨잖아요. 언제 오신 거예요?' },
     { sender: '태윤', text: '이십 분 전에요. 첫 만남에 상대를 기다리게 하는 건 제 수칙에 어긋나서요. 아, 수칙 얘기는 천천히 하겠습니다' },
     { sender: 'me', text: '수칙이 있는 사람이구나. 소개팅에 수칙이라니, 벌써 궁금해진다.', isMonologue: true },

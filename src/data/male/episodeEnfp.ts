@@ -40,7 +40,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '첫 항목부터 지적이라니. 근데 부정을 못 하겠어서 더 아프네요. 다음 장면으로 넘어가도 될까요.',
+          npcReaction: '첫 항목부터 팩트라니. 부정을 못 하겠어서 더 아픈데, 걱정해주는 걸로 알고 오늘은 기분 좋게 버텨볼게요.',
         },
         {
           label: 'C',
@@ -97,7 +97,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '됩니다. 아슬아슬하게요. 근데 그 질문은 보통 저희 아버지가 3분 안에 하시는 건데, 오늘 신기록이네요.',
+          npcReaction: '됩니다. 아슬아슬하게요. 그 질문 보통 저희 아버지가 하시는 건데, 이렇게 빨리 물어봐주니까 오히려 시원하네요. 숨길 것도 없고요.',
         },
       ],
     },
@@ -123,7 +123,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '맞아요, 그래서 하는 거긴 해요. 근데 낭만이라는 말은 저희 댓글창에 팔백 개쯤 있어서, 방금 건 좀 아는 맛이었어요.',
+          npcReaction: '맞아요, 그래서 하는 거긴 해요. 낭만이라는 말은 댓글창에 팔백 개쯤 있는데, 눈앞에서 직접 들으니까 확실히 무게가 다르긴 하네요.',
         },
         {
           label: 'C',
@@ -263,7 +263,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '싫증의 주기라. 틀린 말은 아닌데, 방금 제가 데이터가 된 기분이에요. 오늘 밤 편집하다 이 말 생각나면 좀 슬플 것 같아요.',
+          npcReaction: '싫증의 주기라. 틀린 말은 아닌데, 방금 제가 데이터가 된 기분이에요. 근데 그만큼 진지하게 들어줬다는 거니까, 절반은 고맙게 받을게요.',
         },
       ],
     },
@@ -297,7 +297,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '아, 여섯 시가 벽이구나. 근데 그 두부는 일곱 시면 다 팔려요. 인생 두부랑 늦잠이 붙으면 보통 늦잠이 이기긴 하더라고요.',
+          npcReaction: '아, 여섯 시가 벽이구나. 그 두부는 일곱 시면 다 팔리긴 하는데, 알겠어요. 늦잠 자도 되는 코스로 하나 다시 짜둘게요. 추천은 원래 맞춤이니까요.',
         },
         {
           label: 'D',
@@ -322,7 +322,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '리액션이라면 자신 있는데, 그 얘기가 아니었구나. 맞는 말인데 방금 저 좀 혼난 기분이에요.',
+          npcReaction: '리액션이라면 자신 있는데, 그 얘기가 아니었구나. 맞는 말이라 새겨들을게요. 좋은 지적은 자막으로 박아두는 편이에요.',
         },
         {
           label: 'B',
@@ -363,7 +363,7 @@ export const maleEpisodeEnfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '표본이라. 데이터 기반 연애관이시구나. 근데 저 같은 사람은 표본 수집 기간에 제일 먼저 지치는 타입이라, 그건 미리 말해둘게요.',
+          npcReaction: '표본이라. 솔직히 조금 아쉽긴 한데, 신중한 것도 좋아요. 그럼 다음 표본은 제가 더 재밌게 준비할게요. 마침 코스가 세 개나 있으니까요.',
         },
         {
           label: 'B',

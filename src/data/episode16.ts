@@ -70,7 +70,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '유머로는 인정 ㅋㅋ 근데 하루의 삼분의 일을 꺼진 채로 보낸다는 얘기라 조금 아깝게 들리긴 해요. 저는 켜져 있는 시간 얘기가 듣고 싶었는데',
+          npcReaction: '유머로는 인정 ㅋㅋ 근데 퇴근할 때 제일 생기가 돈다면, 그 퇴근 후 얘기를 들어야겠는데요? 어떤 저녁을 보내길래 그렇게 켜지는지 궁금해졌어요',
         },
         {
           label: 'B',
@@ -78,7 +78,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '아이디어의 짜릿함은 알죠. 근데 저는 흐지부지라는 단어에 알레르기가 있어요 ㅋㅋ 아이디어는 완성됐을 때만 이력이 되거든요',
+          npcReaction: '아이디어의 짜릿함은 알죠. 흐지부지라는 단어에 알레르기가 있긴 한데 ㅋㅋ 그 흐지부지된 것 중에 아까운 게 분명 있을 것 같은데요. 완성은 제 전문이니까, 언제 하나 들려줘요',
         },
         {
           label: 'C',
@@ -128,7 +128,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '그런 감탄은 매일 들어서요 ㅋㅋ 미안한데 별로 안 반가운 말이에요. 그릇 얘기 나오는 순간 대화가 인터뷰가 되거든요. 우리 인터뷰 말고 대화해요',
+          npcReaction: '감탄 고마워요. 근데 그릇 얘기가 나오는 순간 대화가 인터뷰가 되더라고요 ㅋㅋ 저 오늘은 대표 말고 그냥 태린이고 싶어서 나왔거든요. 우리 인터뷰 말고 대화해요',
         },
         {
           label: 'D',
@@ -211,7 +211,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '새벽 2시 유튜브 ㅋㅋ 그건 자기 시간이라기보다 알고리즘의 시간 아니에요? 저랑 시차가 다섯 시간쯤 나네요, 우리. 서울 안에서',
+          npcReaction: '새벽 2시 유튜브 ㅋㅋ 저랑 시차가 다섯 시간쯤 나네요, 서울 안에서. 근데 시차 있는 도시끼리도 잘만 통화하잖아요? 접점 찾는 건 제 특기니까, 그건 걱정 안 해요',
         },
         {
           label: 'D',
@@ -236,7 +236,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '채용은... 진행 중이에요. 근데 웃기네요. 그 질문은 이사회에서도 받거든요. 여기서까지 그 답을 하게 될 줄은 몰랐는데',
+          npcReaction: '채용은... 진행 중이에요. 근데 그 질문은 이사회에서도 받아서요 ㅋㅋ 오늘만큼은 대표 말고 그냥 태린으로 답하고 싶었나 봐요. 조금만 더, 사람 얘기 해도 돼요?',
         },
         {
           label: 'B',
@@ -244,7 +244,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '다들 겪는 일이라는 말은 신기하게 하나도 위로가 안 돼요. 제가 잃은 건 통계가 아니라 걔 하나거든요. ...미안해요, 말이 좀 셌다',
+          npcReaction: '위로해주려는 거, 알아요. 근데 제가 잃은 건 통계가 아니라 걔 하나라서... 다들 겪는 일이라는 말이 잘 안 닿네요. 그래도 들어줘서 고마워요. 이 얘기 꺼낸 거, 후회는 안 해요',
         },
         {
           label: 'C',
@@ -525,7 +525,7 @@ export const episode16: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '거짓말 ㅋㅋ 저 첫 30분은 완전 대표 모드였어요. 면접 통과 드립까지 쳤잖아요. 정확하지 않은 칭찬은 저한테는 안 닿아요. 아쉽다, 마지막 안건이었는데',
+          npcReaction: '거짓말 ㅋㅋ 저 첫 30분은 완전 대표 모드였어요. 면접 통과 드립까지 쳤잖아요. 그래도 좋게 봐준 그 마음은 접수할게요. 다음에 만나면, 정확한 버전으로 다시 들려줘요',
         },
         {
           label: 'B',

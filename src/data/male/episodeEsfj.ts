@@ -89,7 +89,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '면접 때 많이 받은 질문인데, 소개팅에서 받으니 새롭네요. 총지배인까지 가는 그림은 있어요. 오늘은 접어둘게요.',
+          npcReaction: '면접 때 많이 받은 질문인데, 소개팅에서 받으니 새롭네요. 총지배인까지 가는 그림은 있어요. 근데 오늘은 그 그림보다 이 자리가 더 재밌어서, 잠깐 접어둘게요.',
         },
         {
           label: 'D',
@@ -115,7 +115,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '그렇게 넘어가주면 저는 편하죠. 편한 대신 오늘도 물잔 각도만 남기고 가겠지만요.',
+          npcReaction: '그렇게 넘어가주면 저는 편하죠. 근데 오늘은 물잔 각도 말고 다른 것도 남기고 싶은 날이라, 조금만 더 물어봐줘도 돼요.',
         },
         {
           label: 'B',
@@ -172,7 +172,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'J',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '아까웠으면 안 왔겠죠. 저한테는 준비가 비용이 아니라 마음이라서요. 회계 기준이 좀 다른 것 같네요, 우리.',
+          npcReaction: '아까웠으면 안 왔겠죠. 저한테는 준비가 비용이 아니라 마음이라서요. 회계 기준이 좀 다르긴 한데, 그것도 맞춰보는 재미가 있을 것 같은데요.',
         },
         {
           label: 'D',
@@ -255,7 +255,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '맞는 말이에요. 근데 누구나 겪는 일이라고 하면, 제 건 또 아무것도 아닌 게 되네요. 그게 제일 익숙한 결말이고요.',
+          npcReaction: '맞는 말이에요. 근데 누구나 겪는 일이 되면 제 것도 좀 작아지는 기분이라서요. 그래도 이 얘기 꺼낸 게 오늘이 처음인데, 꺼내길 잘한 것 같아요.',
         },
         {
           label: 'D',
@@ -305,7 +305,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '그 찌개는 그냥 맛있는 찌개예요. 방금 건 좀 멀리 가셨어요. 쓸쓸은 아까 6번 테이블에 두고 왔습니다.',
+          npcReaction: '그 찌개는 그냥 맛있는 찌개예요. 해석이 좀 멀리 가긴 했는데, 그렇게까지 들여다봐주는 건 싫지 않네요. 쓸쓸은 아까 6번 테이블에 두고 왔습니다.',
         },
       ],
     },
@@ -354,7 +354,7 @@ export const maleEpisodeEsfj: BlindDate = {
       turnNumber: 9,
       isPlayerInitiated: false,
       npcMessage:
-        '마지막 주문 받기 전에 저도 하나 물을게요. 오늘 저 어땠어요? 참고로 저는 고객 만족도 조사를 팔 년 돌린 사람이라, 전반적으로 만족했습니다는 무효 처리예요. 구체적으로 부탁해요.',
+        '마지막 주문 받기 전에 저도 하나 물을게요. 오늘 저 어땠어요? 참고로 저는 고객 만족도 조사를 팔 년 돌린 사람이라, 전반적으로 만족했습니다는 무효 처리예요. 구체적으로 부탁해요. 아, 제 쪽 답은 이미 정해져 있어요. 좋은 쪽으로요.',
       monologue: '만족도 조사 전문가 앞에서 형식적인 답은 통하지 않는다.',
       choices: [
         {
@@ -371,7 +371,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '완벽했다는 말은 손님들이 체크아웃하면서 하는 말이라서요. 오늘 제가 듣고 싶었던 건 후기 말고 다른 거였는데요.',
+          npcReaction: '완벽했다는 말은 손님들이 체크아웃하면서 하는 말이라서요. 기분은 좋은데 욕심이 나네요. 후기 말고, 좋았던 순간 하나만 더 듣고 싶어요.',
         },
         {
           label: 'C',
@@ -387,7 +387,7 @@ export const maleEpisodeEsfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '표본을 늘리자는 제안으로 듣고 싶은데, 그거 제가 손님한테 쓰는 화법이라 잘 알거든요. 방금 건 보류였어요.',
+          npcReaction: '표본을 늘리자는 제안으로 들을게요. 그거 제가 손님한테 쓰는 화법이라 잘 알긴 하는데, 오늘은 그냥 좋은 쪽으로 믿어볼래요. 다음 조사 일정, 기다리고 있을게요.',
         },
       ],
     },

@@ -14,13 +14,14 @@ export const episode2: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/INTJ_female.png',
     facePath: 'assets/images/INTJ_female_face.png',
+    backgroundPath: 'assets/images/INTJ_female_background.jpg',
   },
   turns: [
     {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '솔직히 말하면 저는 처음 보는 사람이랑 얘기하는 게 편하진 않아요. 그렇다고 불편한 것도 아니고요. {name}씨는 이런 자리 익숙한 편이에요?',
+        '솔직히 말하면 저는 처음 보는 사람이랑 얘기하는 게 편하진 않아요. 근데 오늘은 궁금한 마음이 더 커요. {name}씨는 이런 자리 익숙한 편이에요?',
       monologue: '첫 질문부터 돌려 말하는 게 없다. 나도 솔직하게 가자.',
       choices: [
         {
@@ -37,7 +38,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '아... 대단하시네요. 저는 그런 에너지가 조금 부럽기도 하고, 조금 무섭기도 해요',
+          npcReaction: '대단하시네요. 저한테는 없는 에너지라 부러워요. 오늘은 그 에너지 덕을 좀 볼게요',
         },
         {
           label: 'C',
@@ -45,7 +46,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '그렇게까지 힘드셨다니, 오늘 자리가 서로에게 숙제가 되지는 않았으면 좋겠네요',
+          npcReaction: '고민 끝에 나와주신 거네요. 그럼 그 고민이 아깝지 않은 시간으로 만들어야겠어요. 저도 노력할게요',
         },
         {
           label: 'D',
@@ -79,7 +80,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '해결책이 필요했던 건 아니에요. 그냥... 아니에요. 이 얘기는 여기까지 할게요',
+          npcReaction: '해결책이 필요했던 건 아니에요. 그냥 들어주면 충분했어요. 그래도 도우려던 마음인 건 알아요',
         },
         {
           label: 'C',
@@ -120,7 +121,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'J',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '제 편을 들어주시는 건 알겠는데, 걔는 십 년 된 친구라서요. 이상한 애는 아니에요',
+          npcReaction: '제 편 들어주는 건 고마워요. 근데 걔는 십 년 된 친구라서요. 이상한 애는 아니에요',
         },
         {
           label: 'C',
@@ -128,7 +129,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '발 닿는 대로... 저한테는 그게 제일 어려운 여행이에요. 서로 고생하는 조합이 되겠네요',
+          npcReaction: '발 닿는 대로... 저한테는 제일 어려운 여행이네요. 그래도 그런 여행 얘기는 듣는 재미가 있어요',
         },
         {
           label: 'D',
@@ -154,7 +155,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '좋은 사람이랑 있어도 지치는 사람이 있어요. 그게 저고요. 안 만나봐서 그런 건 아니에요',
+          npcReaction: '좋은 사람이랑 있어도 지치는 사람이 있어요. 그게 저고요. 근데 오늘은 이상하게 덜 지치네요',
         },
         {
           label: 'B',
@@ -170,7 +171,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '대부분 소모적... 그럼 오늘도 소모 중이신 건가요? 농담이에요. 반쯤은요',
+          npcReaction: '대부분 소모적이라... 그럼 오늘은 예외가 되면 좋겠네요. 저는 지금까지 꽤 괜찮거든요',
         },
         {
           label: 'D',
@@ -212,7 +213,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '빨리 잊는 것도 능력이긴 해요. 저한테는 없는 능력이라 잘 모르겠지만요',
+          npcReaction: '빨리 잊는 것도 능력이죠. 저한테는 없는 능력이라 조금 부럽네요',
         },
         {
           label: 'D',
@@ -220,7 +221,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '규칙은 하루면 외워요. 뭐, 안 맞는 취미는 있는 거니까요',
+          npcReaction: '규칙은 하루면 외워요. 관심 생기면 말해요. 가르치는 건 자신 있거든요',
         },
       ],
     },
@@ -245,7 +246,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'J',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '저도 두 번째 후보까지는 있었어요. 여기가 그거고요. 훈수는... 오늘은 사양할게요',
+          npcReaction: '저도 두 번째 후보까지는 있었어요. 여기가 그거고요. 비슷한 사람을 만났네요, 오늘',
         },
         {
           label: 'C',
@@ -261,7 +262,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '신경 쓸 일이 아니라고 하면, 신경 쓰인 제가 이상한 사람이 되잖아요. 그런 뜻은 아니셨겠지만요',
+          npcReaction: '위로해주려는 말인 건 알아요. 저는 그래도 신경이 쓰이는 사람이라서요. 덕분에 조금 가벼워지긴 했네요',
         },
       ],
     },
@@ -302,7 +303,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '한 시간이요... 미리 말해두길 잘했네요. 저는 그 약속은 못 지킬 것 같아서요',
+          npcReaction: '한 시간이요... 미리 말해두길 잘했네요. 대신 늦어도 답은 꼭 해요. 그건 약속할 수 있어요',
         },
       ],
     },
@@ -361,7 +362,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '자연스럽게, 흘러가는 대로... 그 말은 보통 아무 일도 안 일어난다는 뜻이더라고요. 경험상요',
+          npcReaction: '자연스럽게, 흘러가는 대로... 그 말은 보통 아무 일도 안 일어난다는 뜻이더라고요. 그러니까 우리는 조금 다르게 해봐요',
         },
         {
           label: 'B',
@@ -385,7 +386,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '정하는 게 부담스러운 쪽이시구나. 저는 반대로 안 정해두는 게 부담이라서요. 벌써 어렵네요, 우리',
+          npcReaction: '정하는 게 부담스러운 쪽이시구나. 저는 반대로 안 정해두는 게 부담이라서요. 그 정도 차이는 맞춰볼 만하죠',
         },
       ],
     },
@@ -418,7 +419,7 @@ export const episode2: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '포장하지 말라고 했는데 제일 큰 리본을 달아주시네요. 감사한데, 안 믿을게요',
+          npcReaction: '포장하지 말라고 했는데 제일 큰 리본을 달아주시네요. 반만 믿을게요. 그래도 기분은 좋네요',
         },
         {
           label: 'D',
@@ -433,14 +434,14 @@ export const episode2: BlindDate = {
   ],
   openingScript: [
     { sender: 'system', text: '서촌의 조용한 북카페. 창가 자리에서 책을 읽고 있는 서윤이 보인다', isSystemNote: true },
-    { sender: '서윤', text: '{name}씨죠? 앉으세요' },
+    { sender: '서윤', text: '{name}씨죠? 기다리고 있었어요. 앉으세요' },
     { sender: 'me', text: '안녕하세요! 일찍 오셨네요' },
     { sender: '서윤', text: '약속보다 20분 일찍 오는 습관이 있어요. 그동안 책도 읽고요' },
     { sender: 'me', text: '사진보다 눈빛이 훨씬 또렷하다. 괜히 자세를 고쳐 앉게 되네.', isMonologue: true },
     { sender: 'system', text: '서윤이 읽던 책을 덮고 메뉴판을 건넨다', isSystemNote: true },
     { sender: '서윤', text: '여기 핸드드립이 괜찮아요. 저는 늘 마시던 걸로 할 거예요' },
     { sender: 'me', text: '그럼 저는 추천해주시는 걸로 마셔볼게요' },
-    { sender: '서윤', text: '무난한 선택이네요. 나쁘지 않아요' },
+    { sender: '서윤', text: '좋은 선택이네요. 취향이 잘 통할 것 같은 예감이에요' },
     { sender: 'me', text: '칭찬인가, 아닌가. 묘하게 긴장되는데 이상하게 싫지 않다.', isMonologue: true },
     { sender: 'system', text: '커피가 나오고, 서윤이 컵을 컵받침 정중앙에 내려놓는다', isSystemNote: true },
     { sender: '서윤', text: '미리 말해두는데, 저 말수가 많은 편은 아니에요. 대신 오늘은 질문을 좀 준비해왔어요' },
@@ -460,7 +461,7 @@ export const episode2: BlindDate = {
       { sender: 'me', text: '설렘인지 존경인지 아직 모르겠다. 다만 이 사람을 더 알고 싶다는 건 분명하다.', isMonologue: true },
     ],
     fail: [
-      { sender: 'system', text: '짧은 정적. 서윤이 손목시계를 확인한다', isSystemNote: true },
+      { sender: 'system', text: '짧은 정적. 서윤이 조용히 책과 가방을 정리한다', isSystemNote: true },
       { sender: '서윤', text: '오늘 나와주셔서 감사했어요. 조심히 들어가세요' },
       { sender: 'me', text: '끝까지 정중했지만, 조용히 문이 닫히는 소리를 들은 것 같았다.', isMonologue: true },
     ],

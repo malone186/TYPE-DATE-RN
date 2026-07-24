@@ -23,7 +23,7 @@ export const maleEpisodeInfj: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '먼저 꺼내는 게 낫겠죠. 주선자한테 들었어요. 제가 열여섯 번째고, 마지막 순서라고. 솔직히 부담스럽네요. 다큐도 마지막 회가 제일 욕먹거든요. 앞에 열다섯 편이 쌓아놓은 기대를 마지막 회 혼자 받아내야 하니까요.',
+        '먼저 꺼내는 게 낫겠죠. 주선자한테 들었어요. 제가 열여섯 번째고, 마지막 순서라고. 솔직히 부담스럽네요. 다큐도 마지막 회가 제일 욕먹거든요. 앞에 열다섯 편이 쌓아놓은 기대를 마지막 회 혼자 받아내야 하니까요. 근데 이상하죠. 부담되면서도, 오늘은 이상하게 기다려졌어요.',
       monologue: '내가 숨기고 싶던 걸 먼저 테이블에 올려놓는다. 이 사람, 초장부터 편집을 안 한다.',
       choices: [
         {
@@ -115,7 +115,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '길죠. 근데 방금 제 얘기는 분량 얘기가 아니었어요. 십 분짜리로 만들면 잘려나가는 게 더 많아질 뿐이고요.',
+          npcReaction: '길죠. 아, 분량 얘기처럼 들렸다면 제 설명이 짧았네요. 십 분짜리로 만들면 잘려나가는 게 더 많아질 뿐이라는 얘기였어요.',
         },
         {
           label: 'B',
@@ -198,7 +198,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '관객이 둘이 되면 그건 이제 회식이 아니라 시사회인데요. 뭐, 시사회도 일 년에 한 번쯤은 합니다.',
+          npcReaction: '관객이 둘이 되면 그건 이제 회식이 아니라 시사회인데요. 뭐, 상대가 {name}씨라면 시사회 개최도 검토해볼 만하네요.',
         },
         {
           label: 'B',
@@ -206,7 +206,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '저한텐 혼자가 저축이고 모임이 지출이라, 아깝다는 계산이 반대로 나와요. 환율이 다른 거죠, 우리.',
+          npcReaction: '저한텐 혼자가 저축이고 모임이 지출이라, 아깝다는 계산이 반대로 나와요. 환율이 다른 거죠. 근데 다른 환율끼리도 환전은 되더라고요.',
         },
         {
           label: 'C',
@@ -255,7 +255,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '정확한 분석인데, 분석을 들으니까 다시 카메라 뒤로 돌아간 기분이네요. 저 방금 잠깐 앞에 나와 있었거든요.',
+          npcReaction: '정확한 분석인데, 분석을 들으니까 잠깐 카메라 뒤로 돌아간 기분이네요. 그래도 다시 나올게요. 오늘은 앞에 서보고 싶은 날이라서요.',
         },
         {
           label: 'D',
@@ -363,7 +363,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '편집 기간이 필요하다는 거군요. 존중해요. 근데 일주일 뒤엔 답이 미화되거나 흐려지거나, 둘 중 하나더라고요.',
+          npcReaction: '편집 기간이 필요하다는 거군요. 존중해요. 일주일, 기다릴게요. 한 마디를 한 달도 기다려본 사람이라 그 정도는 짧아요.',
         },
         {
           label: 'B',
@@ -379,7 +379,7 @@ export const maleEpisodeInfj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '다 좋았다는 답은 인터뷰에서 제일 쓸 데가 없는 답이에요. 어디가 좋았어요? 한 군데만 다시 물을게요.',
+          npcReaction: '다 좋았다는 답, 고마워요. 근데 욕심이 나네요. 어디가 좋았어요? 한 군데만 다시 물을게요. 오래 기억하고 싶어서요.',
         },
         {
           label: 'D',

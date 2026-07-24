@@ -32,7 +32,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '아, 인생샷이요. 그건 폰이 더 잘 찍어요. 저는 잘 나온 사진 말고 그 사람 같은 사진을 찍는 편이라.',
+          npcReaction: '아, 인생샷이요. 그건 폰이 더 잘 찍긴 해요. 저는 잘 나온 사진보다 그 사람 같은 사진을 찍는 편이라서요. 오늘 그런 순간이 오면, 그때 한 장 찍어드리고 싶네요.',
         },
         {
           label: 'B',
@@ -139,7 +139,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '노을은 매일 뜨는데, 그날 노을은 그날만 떠요. 위로해주려는 건 알아서, 반만 서운할게요.',
+          npcReaction: '노을은 매일 뜨는데, 그날 노을은 그날만 떠요. 근데 위로해주려는 마음은 다 전해져서, 서운한 건 반의 반만 할게요.',
         },
       ],
     },
@@ -172,7 +172,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '모르셔도 돼요. 근데 방금 그 말, 사진 다 똑같지 않냐는 말 다음으로 저를 조용하게 만드는 말이긴 해요.',
+          npcReaction: '모르셔도 돼요. 오히려 좋아요. 오늘 이 잔으로 처음 차이를 느끼게 되면, 그 순간을 제가 옆에서 보는 거잖아요. 그건 내리는 사람만 아는 욕심이에요.',
         },
         {
           label: 'D',
@@ -255,7 +255,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '고마워요. 근데 무조건이라는 말은 저를 잘 몰라도 할 수 있는 말이라서, 오늘은 반만 받을게요.',
+          npcReaction: '고마워요. 꽃다발 들고 일등으로 온다는 말은 다 받을게요. 무조건이라는 말만, 개인전 보고 나서 다시 들려줘요. 그땐 진짜일 테니까요.',
         },
         {
           label: 'D',
@@ -263,7 +263,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '다 그렇다는 말은 위로 같으면서도, 제 삼 년을 흔한 사례로 만드는 말이기도 해요. 그렇게 들려서요.',
+          npcReaction: '다 그런 거라는 말이 위로인 건 아는데, 오늘은 제 삼 년이 조금 특별하다고 우기고 싶은 밤이라서요. 개인전 앞이라 제가 좀 예민해요. 이해해줘요.',
         },
       ],
     },
@@ -281,7 +281,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '몇 명 더요. 그 골목, 발자국 세 개면 눈이 다 밟혀서요. 미안한데 그 새벽은 좀 좁아요.',
+          npcReaction: '그 골목, 발자국 세 개면 눈이 다 밟혀서 여럿은 어려워요. 대신 두 사람 자리는 있어요. 하나는 원래 제 거고, 하나는 방금 생겼네요.',
         },
         {
           label: 'B',
@@ -330,7 +330,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '맞는 말이라 더 할 말이 없네요. 근데 결국이라는 말엔 저 같은 사람 자리가 좀 없는 것 같기도 해요.',
+          npcReaction: '맞는 말이라 반박은 못 해요. 결국이라는 말이 살짝 아프긴 한데, 그래서 오늘 말로 하는 연습 중이에요. 생각보다 잘 되고 있고요.',
         },
         {
           label: 'C',
@@ -379,7 +379,7 @@ export const maleEpisodeIsfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '잘 받는 사진은 폰으로도 찍혀요. 제가 찍고 싶은 건 잘 받는 쪽이 아니라서, 오늘은 아껴둘게요.',
+          npcReaction: '그렇게 말해주는 것만으로 반은 찍힌 거예요. 근데 제가 찍고 싶은 순간은 따로 있어서, 오늘은 아껴둘게요. 다음이 있다는 쪽으로 듣고요.',
         },
         {
           label: 'D',

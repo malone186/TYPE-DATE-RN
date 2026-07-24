@@ -23,7 +23,7 @@ export const maleEpisodeEnfj: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '직업 말하면 반응이 딱 두 갈래예요. 지금 저 분석하고 계신 거죠, 하고 경계하거나, 앉은 자리에서 고민 상담을 시작하거나. 지난 소개팅에선 상대분이 이직 고민을 두 시간 하셨어요. 끝나고 상담료를 청구해야 하나 잠깐 고민했고요. 그래서 미리 말해둘게요. 분석 안 하고 있어요. 하려고 해도 {name}씨 데이터가 아직 없어요.',
+        '직업 말하면 반응이 딱 두 갈래예요. 지금 저 분석하고 계신 거죠, 하고 경계하거나, 앉은 자리에서 고민 상담을 시작하거나. 지난 소개팅에선 상대분이 이직 고민을 두 시간 하셨어요. 끝나고 상담료를 청구해야 하나 잠깐 고민했고요. 그래서 미리 말해둘게요. 분석 안 하고 있어요. 하려고 해도 {name}씨 데이터가 아직 없어요. 대신 궁금한 건 오는 길부터 많았어요.',
       monologue: '데이터가 없다는 말이 이상하게 안심된다. 백지에서 시작하는 기분.',
       choices: [
         {
@@ -32,7 +32,7 @@ export const maleEpisodeEnfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '분석 안 한다고 선언한 지 일 분 만에 의뢰가 들어왔네요. 오늘은 영업 안 해요. 저 지금 퇴근한 사람이에요.',
+          npcReaction: '분석 안 한다고 선언한 지 일 분 만에 의뢰가 들어왔네요. 근데 오늘은 분석 말고 그냥 알아가고 싶어요. 그게 더 정확하고, 솔직히 더 재밌거든요.',
         },
         {
           label: 'B',
@@ -81,7 +81,7 @@ export const maleEpisodeEnfj: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '정확해요. 그 계산은 저희 아버지가 이미 엑셀로 뽑아오셨어요. 틀린 말은 아닌데, 소개팅에서 듣기는 처음이네요.',
+          npcReaction: '정확해요. 그 계산은 저희 아버지가 이미 엑셀로 뽑아오셨어요. 걱정해주는 걸로 들을게요. 다행히 요즘은 회수 구간에 들어왔어요.',
         },
         {
           label: 'C',
@@ -198,7 +198,7 @@ export const maleEpisodeEnfj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '부럽기도 해요. 근데 저랑 주말을 보내면 좀 심심할 수도 있겠네요. 저 반나절쯤은 말 없는 사람이라.',
+          npcReaction: '부럽기도 해요. 저는 반나절쯤은 말 없는 사람이라서요. 근데 그런 에너지가 옆에 있으면 저도 말수가 늘 것 같긴 해요.',
         },
         {
           label: 'B',
@@ -379,7 +379,7 @@ export const maleEpisodeEnfj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '상담받은 것 같았다는 말은, 오늘의 저한테는 제일 아픈 칭찬이에요. 저는 오늘 상담사 말고 이안이고 싶었거든요.',
+          npcReaction: '상담받은 것 같았다는 말은, 오늘의 저한테는 조금 아쉬운 칭찬이에요. 저는 오늘 상담사 말고 이안이고 싶었거든요. 다음엔 그렇게 봐줄 때까지 더 얘기할게요.',
         },
         {
           label: 'D',
@@ -394,7 +394,7 @@ export const maleEpisodeEnfj: BlindDate = {
   ],
   openingScript: [
     { sender: 'system', text: "성북동 골목 안쪽, 한옥을 개조한 티하우스 '소보'. 마당 돌확에서 물소리가 난다. 안쪽 방에서 이안이 일어나 목례한다", isSystemNote: true },
-    { sender: '이안', text: '{name}씨죠? 길 안 헤맸어요? 지도 앱이 이 마당까지는 안 데려다줘서, 다들 골목에서 한 번씩 전화하더라고요' },
+    { sender: '이안', text: '{name}씨죠? 반가워요, 기다리고 있었어요. 길 안 헤맸어요? 지도 앱이 이 마당까지는 안 데려다줘서, 다들 골목에서 한 번씩 전화하더라고요' },
     { sender: 'me', text: '딱 한 번 헤맸어요. 근데 헤맨 골목이 예뻐서 괜찮았어요' },
     { sender: '이안', text: '다행이에요. 시끄러운 데서는 서로 목소리 듣느라 힘을 빼잖아요. 여기는 물소리밖에 안 나서 골랐어요' },
     { sender: 'me', text: '첫 마디부터 상대가 편할 자리를 계산해둔 사람. 직업 때문일까, 성격일까.', isMonologue: true },

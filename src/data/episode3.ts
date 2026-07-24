@@ -14,6 +14,7 @@ export const episode3: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/harin.png',
     facePath: 'assets/images/harin_face.png',
+    backgroundPath: 'assets/images/ISFP_female_background.jpg',
   },
   turns: [
     {
@@ -45,7 +46,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '아... 힘드셨구나. 저 때문에 억지로 나오신 게 아니면 좋겠는데... (표정이 조금 어두워진다)',
+          npcReaction: '아... 많이 고민하셨겠다. 그래도 나와주셔서 저는 좋아요 ㅎㅎ 오늘 편한 시간이 되면 좋겠어요',
         },
         {
           label: 'D',
@@ -78,7 +79,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '아... 네, 뭐 힘들 때도 있죠. (컵만 만지작거린다)',
+          npcReaction: '아... 네, 힘들 때도 있죠 ㅎㅎ 그래도 좋아하는 일이라 버텨지는 것 같아요',
         },
         {
           label: 'C',
@@ -128,7 +129,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '...그렇긴 하죠. 맞는 말이에요. (조금 조용해진다)',
+          npcReaction: '...맞아요, 검진은 꼬박꼬박 다니고 있어요 ㅎㅎ 걱정 덜어주려고 하신 말인 거 알아요',
         },
         {
           label: 'D',
@@ -169,7 +170,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '아... 그렇구나. (잠깐 말을 고르다가) 뭐, 그게 편하긴 하죠',
+          npcReaction: '아 그렇구나 ㅎㅎ 그럼 다음에 제가 좋아하는 노래 몇 개 알려드릴게요. 취향이 바뀔지도 몰라요',
         },
         {
           label: 'D',
@@ -211,7 +212,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '아... 심심하진 않은데. 사람마다 다르니까요 ㅎㅎ (시선이 잠깐 창밖으로 간다)',
+          npcReaction: '(살짝 웃으며) 심심하진 않아요 ㅎㅎ 사람마다 충전 방식이 다른 거니까요. 언젠가 걷는 재미도 알려드리고 싶네요',
         },
         {
           label: 'D',
@@ -286,7 +287,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '아... 그럼 좀 피곤하시겠다. 저랑 같이 다니면 답답하실 수도 있겠네요 ㅎㅎ',
+          npcReaction: '아... 그럼 좀 피곤하시겠다 ㅎㅎ 저랑 다니면 오히려 쉬어질지도 몰라요. 저 진짜 느리게 다니거든요',
         },
         {
           label: 'C',
@@ -500,7 +501,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '인연이면... 네 ㅎㅎ (컵을 내려놓는 소리가 조금 크다) 그렇겠죠',
+          npcReaction: '(조금 아쉬운 얼굴로) 인연이면... 네 ㅎㅎ 그래도 저는, 연락 기다리고 있을게요',
         },
         {
           label: 'D',
@@ -525,7 +526,7 @@ export const episode3: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '그럭저럭... (웃으려다 만다) 네, 솔직하게 말해줘서 고마워요',
+          npcReaction: '(작게 웃으며) 그럭저럭이면 다행이에요. 다음엔 더 재밌는 얘기 준비해볼게요 ㅎㅎ',
         },
         {
           label: 'B',

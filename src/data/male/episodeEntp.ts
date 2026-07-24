@@ -11,7 +11,7 @@ export const maleEpisodeEntp: BlindDate = {
     job: '광고대행사 카피라이터',
     location: '익선동',
     mbti: 'ENTP',
-    intro: '말 긴 사람 싫어해요. 근데 오늘은 제가 길어질 예정이라 미리 사과할게요',
+    intro: '말 긴 사람 싫어하는데, 오늘은 제가 길어질 예정이에요. 그만큼 기대 중이라는 뜻이에요',
     tags: ['#카피라이터', '#티키타카', '#한줄요약병', '#간판수집가', '#반박은애정'],
     isUnlocked: true,
     imagePath: 'assets/images/ENTP_male.png',
@@ -23,7 +23,7 @@ export const maleEpisodeEntp: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '고백부터 할게요. 오는 길에 {name}씨 소개 카피를 미리 써봤어요. 주선자가 준 정보가 스물일곱, 일 잘함, 웃음 많음. 이게 다였거든요. 카피라이터 입장에서 이건 정보가 아니라 숙제예요. 그래서 오늘 안에 직접 취재해서 다시 쓰기로 했어요.',
+        '고백부터 할게요. 오는 길에 {name}씨 소개 카피를 미리 써봤어요. 주선자가 준 정보가 스물일곱, 일 잘함, 웃음 많음. 이게 다였거든요. 카피라이터 입장에서 이건 정보가 아니라 숙제예요. 그래서 오늘 안에 직접 취재해서 다시 쓰기로 했어요. 참고로 방금 첫인상만으로 초안이 두 줄 늘었어요.',
       monologue: '초면에 취재 대상이 됐다. 숙제 취급인데 기분이 나쁘지 않은 게 문제다.',
       choices: [
         {
@@ -32,7 +32,7 @@ export const maleEpisodeEntp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '특별하다는 말은 좀 의심해요. 그 단어, 안 특별한 데에 제일 많이 붙거든요. 끝날 때 다시 들어볼게요.',
+          npcReaction: '특별하다는 단어는 직업병으로 일단 의심하는데, 기분은 좋네요. 끝날 때쯤 진짜인지 다시 들어볼게요. 그땐 믿을 준비 하고요.',
         },
         {
           label: 'B',
@@ -180,7 +180,7 @@ export const maleEpisodeEntp: BlindDate = {
           primaryAxis: 'J',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '걱정은 감사한데, 이게 꺼지는 스위치였으면 저는 이미 다른 직업을 하고 있었을 거예요. 그냥 켜진 채로 사는 거죠.',
+          npcReaction: '걱정은 감사해요, 진짜로요. 이게 꺼지는 스위치는 아닌데, 꺼주려는 사람이 있다는 건 오늘 처음 알았네요. 수첩에 적어둘게요.',
         },
       ],
     },
@@ -255,7 +255,7 @@ export const maleEpisodeEntp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '진단은 정확한데, 진단서 받으려고 꺼낸 얘기는 아니었어요. 뭐, 제가 애매하게 던진 탓이겠죠.',
+          npcReaction: '진단은 정확해요. 진단서 받으려던 건 아니었는데, 이렇게 진지하게 들어준 것만으로 꺼낸 보람은 있네요.',
         },
         {
           label: 'D',
@@ -371,7 +371,7 @@ export const maleEpisodeEntp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '형용사가 세 개네요. 아까 그 얘기 듣고도요. 반려하고 싶은데 다음 일정 언급은 살리고 싶고, 지금 몹시 갈등 중이에요.',
+          npcReaction: '형용사가 세 개나 나왔네요. 반려하고 싶은데 다음 일정 언급은 꼭 살리고 싶고, 지금 몹시 행복한 갈등 중이에요.',
         },
         {
           label: 'C',
@@ -394,7 +394,7 @@ export const maleEpisodeEntp: BlindDate = {
   ],
   openingScript: [
     { sender: 'system', text: "익선동 골목 안쪽, 한옥을 개조한 카페 '차와 계절'. 마당 감나무 아래 평상에 앉아 있던 남자가 수첩을 덮고 일어난다", isSystemNote: true },
-    { sender: '재이', text: '{name}씨죠? 앉기 전에 하나만요. 마당 자리랑 대청 자리가 있는데, 오늘의 콘셉트는 어느 쪽이에요?' },
+    { sender: '재이', text: '{name}씨죠? 반가워요, 오늘 기다렸어요. 앉기 전에 하나만요. 마당 자리랑 대청 자리가 있는데, 오늘의 콘셉트는 어느 쪽이에요?' },
     { sender: 'me', text: '콘셉트요? 그냥 시원한 쪽이요' },
     { sender: '재이', text: '명확해서 좋네요. 그럼 대청이요. 마당은 그림은 좋은데 오늘 습도가 대화를 눅눅하게 만들 거예요' },
     { sender: 'me', text: '자리 하나 고르는 데도 카피 평가가 들어간다. 시작부터 정신을 붙잡아야겠다.', isMonologue: true },

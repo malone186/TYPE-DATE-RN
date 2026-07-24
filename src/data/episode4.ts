@@ -14,6 +14,7 @@ export const episode4: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/ESTJ_female.png',
     facePath: 'assets/images/ESTJ_female_face.png',
+    backgroundPath: 'assets/images/ESTJ_female_background.jpg',
   },
   turns: [
     {
@@ -53,7 +54,7 @@ export const episode4: BlindDate = {
           primaryAxis: 'I',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '아이고 ㅋㅋ 괜찮아요. 근데 말수 줄어들면 저 혼자 두 시간 떠들다 갈 수도 있어요. 그건 좀 아쉬운데',
+          npcReaction: '아이고 ㅋㅋ 괜찮아요. 말수는 편해지면 자연스럽게 늘어나는 거니까요. 오늘 제가 편하게 만들어볼게요',
         },
       ],
     },
@@ -78,7 +79,7 @@ export const episode4: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '재미라... 틀린 말은 아닌데, 일은 재미없는 구간을 버티는 게 8할이라서요. 거기서 사람이 갈리더라고요',
+          npcReaction: '재미라... 좋은 관점이네요. 저는 재미없는 구간을 버티는 게 8할이라고 보는데, 그 구간까지 재밌게 만드는 사람이 진짜 고수긴 하죠',
         },
         {
           label: 'C',
@@ -136,7 +137,7 @@ export const episode4: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '안쓰럽다는 말은 좀 별론데요 ㅋㅋ 저 나름 재밌게 사는 거예요. 동정보다는 아이디어를 주세요',
+          npcReaction: '안쓰럽다니 ㅋㅋ 저 나름 재밌게 사는 거예요. 근데 그렇게 걱정해주는 마음은 잘 받을게요',
         },
       ],
     },
@@ -211,7 +212,7 @@ export const episode4: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '술이 리셋이면 다음 날 아침은 로딩 아니에요? ㅋㅋ 저는 몸 관리가 먼저인 편이라 이건 좀 갈리네요',
+          npcReaction: '술이 리셋이면 다음 날 아침은 로딩 아니에요? ㅋㅋ 저랑 다니다 보면 아침 운동의 맛을 알게 될지도 몰라요',
         },
         {
           label: 'D',
@@ -541,7 +542,7 @@ export const episode4: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '보류라... 신중한 건 알겠는데, 두 시간 동안 아무것도 못 느꼈다면 그것도 답이긴 하죠. 조금 서운하네요',
+          npcReaction: '보류라... 신중한 건 인정할게요. 그럼 다음에 만나서 마저 판단하게 해줘요. 저는 오늘 꽤 좋았거든요',
         },
         {
           label: 'D',
@@ -585,7 +586,7 @@ export const episode4: BlindDate = {
     ],
     fail: [
       { sender: 'system', text: '유진이 시계를 확인하고는 가방을 든다', isSystemNote: true },
-      { sender: '유진', text: '오늘 시간 내주셔서 감사했어요. 근데 저희는 여기까지가 맞는 것 같아요. 좋은 분 만나시길 바랄게요' },
+      { sender: '유진', text: '오늘 시간 내주셔서 감사했어요. 결이 조금 달랐던 것 같지만, 대화는 즐거웠어요. 좋은 분 만나시길 바랄게요' },
       { sender: 'me', text: '거절마저 군더더기가 없다. 아픈데, 이상하게 존중받은 기분이다.', isMonologue: true },
     ],
   },

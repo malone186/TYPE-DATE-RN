@@ -87,6 +87,13 @@ const registry: Record<string, ImageSourcePropType> = {
   'assets/images/ISFP_background.jpg': require('../../assets/images/ISFP_background.jpg'),
   'assets/images/ISTJ_background.jpg': require('../../assets/images/ISTJ_background.jpg'),
   'assets/images/ISTP_background.jpg': require('../../assets/images/ISTP_background.jpg'),
+  'assets/images/INTJ_female_background.jpg': require('../../assets/images/INTJ_female_background.jpg'),
+  'assets/images/ISFP_female_background.jpg': require('../../assets/images/ISFP_female_background.jpg'),
+  'assets/images/ESTJ_female_background.jpg': require('../../assets/images/ESTJ_female_background.jpg'),
+  'assets/images/INFP_female_background.jpg': require('../../assets/images/INFP_female_background.jpg'),
+  'assets/images/ESTP_female_background.jpg': require('../../assets/images/ESTP_female_background.jpg'),
+  'assets/images/ISFJ_female_background.jpg': require('../../assets/images/ISFJ_female_background.jpg'),
+  'assets/images/ISTP_female_background.jpg': require('../../assets/images/ISTP_female_background.jpg'),
 };
 
 export function imageSource(path?: string | null): ImageSourcePropType | undefined {

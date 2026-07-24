@@ -32,7 +32,7 @@ export const maleEpisodeEstj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '신경은 썼는데, 사실 아젠다는 제 불안 관리용에 가까워서요. 감동 포인트가 좀 잘못 전달된 것 같네요.',
+          npcReaction: '신경은 썼는데, 사실 아젠다는 제 불안 관리용에 가까워서요. 그래도 감동이라고 해주니 준비한 보람은 있네요. 과대평가는 살짝 정정하고 싶지만요.',
         },
         {
           label: 'B',
@@ -206,7 +206,7 @@ export const maleEpisodeEstj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '리뷰 4천 개짜리 집은 4천 명의 평균값이 나와요. 여기는 저한테 최적화된 집이고요. 뭐, 리스크 성향 차이죠.',
+          npcReaction: '리뷰 4천 개짜리 집은 4천 명의 평균값이 나와요. 여기는 저한테 최적화된 집이고요. 다음엔 그 깔끔한 예약 코스도 따라가볼게요. 상호 검증이 공정하니까요.',
         },
         {
           label: 'C',
@@ -247,7 +247,7 @@ export const maleEpisodeEstj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '맞는 말이에요. 다 맞는데, 오늘 들은 말 중에 제일 회사 같네요. 위로가 분석으로 나오면 좀 춥더라고요.',
+          npcReaction: '맞는 말이에요. 다 맞는데, 이상하게 회의실에서 듣던 말 같긴 하네요. 그래도 제 얘기를 진지하게 받아준 건 알아요. 그건 고맙습니다.',
         },
         {
           label: 'C',
@@ -255,7 +255,7 @@ export const maleEpisodeEstj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '그 말, 주선자분들이 지금까지 여섯 번 했어요. 일곱 번째라고 효과가 생기진 않네요. 마음만 받을게요.',
+          npcReaction: '그 말, 주선자분들한테 여섯 번 들었는데, 지금 들은 일곱 번째가 제일 진심처럼 들리긴 하네요. 마음 잘 받았습니다.',
         },
         {
           label: 'D',
@@ -354,7 +354,7 @@ export const maleEpisodeEstj: BlindDate = {
       turnNumber: 9,
       isPlayerInitiated: false,
       npcMessage:
-        '마지막 안건입니다. 오늘 소개팅 피드백을 부탁드려요. 좋았던 점, 아쉬운 점, 종합 의견. 농담이에요. 그냥 오늘 어땠는지, 아젠다 내려놓고 물어볼게요. 참고로 저는 지금 답변에 따라 소면을 한 번 더 시킬지 말지 정할 겁니다.',
+        '마지막 안건입니다. 오늘 소개팅 피드백을 부탁드려요. 좋았던 점, 아쉬운 점, 종합 의견. 농담이에요. 그냥 오늘 어땠는지, 아젠다 내려놓고 물어볼게요. 참고로 저는 지금 답변에 따라 소면을 한 번 더 시킬지 말지 정할 겁니다. 제 마음은 이미 추가 주문 쪽으로 기울어 있고요.',
       monologue: '피드백을 요청하는 소개팅은 처음인데, 이상하게 성의껏 답하고 싶어진다.',
       choices: [
         {
@@ -371,7 +371,7 @@ export const maleEpisodeEstj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '표본 추가 수집이라. 데이터 관점에선 동의하는데, 이게 승인인지 보류인지 애매해서 소면 주문을 못 하고 있어요.',
+          npcReaction: '표본 추가 수집이라. 데이터 관점에선 동의합니다. 이게 승인인지 보류인지 애매하긴 한데, 저는 긍정 신호로 해석하고 소면 시키겠습니다.',
         },
         {
           label: 'C',

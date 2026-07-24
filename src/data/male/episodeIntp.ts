@@ -32,7 +32,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'F',
           likeScore: -1,
-          npcReaction: '시작 삼 분 만에 결론이 나오면 그건 예감이 아니라 희망이에요. 뭐, 희망도 변수로는 넣어둘게요.',
+          npcReaction: '시작 삼 분 만에 결론이 나오면 그건 예감이 아니라 희망이에요. 근데 고백하자면, 저도 같은 희망을 변수에 넣어두고 왔어요.',
         },
         {
           label: 'B',
@@ -123,7 +123,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '낭만이라는 단어는 보통 크런치 밖에 있는 분들이 쓰시더라고요. 비꼬는 건 아니고, 통계가 그래요.',
+          npcReaction: '낭만이라는 단어, 크런치 돌다 보면 잊어버리는데요. 밖에서 그렇게 말해주니까 그 단어가 오랜만에 좀 살아나네요.',
         },
         {
           label: 'C',
@@ -139,7 +139,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '맞는 말인데, 다 똑같다고 하면 얘기가 거기서 끝나버려서요. 저는 방금 그 차이를 얘기하고 싶었던 건데.',
+          npcReaction: '맞아요. 그럼 {name}씨는 뭘 순수하게 못 보게 됐는데요? 같은 증상 가진 사람 얘기는 언제나 궁금해서요.',
         },
       ],
     },
@@ -172,7 +172,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'J',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '정면 돌파가 되는 분은 그렇게 하시면 돼요. 저는 제 스펙에 맞춰서 빌드를 짠 거고요. 이게 제 정석이에요.',
+          npcReaction: '정면 돌파 되는 분들 존경해요. 저는 제 스펙에 맞춰서 빌드를 짠 건데, 지금 대화가 이만큼 굴러가는 거 보면 이 빌드도 나쁘지 않았죠.',
         },
         {
           label: 'D',
@@ -214,7 +214,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '소용으로 따지면 제 지식의 구할은 무용해요. 근데 무용해서 좋아하는 거라, 거기서부터는 취향 차이겠네요.',
+          npcReaction: '소용으로 따지면 제 지식의 구할은 무용해요. 근데 얘기해야 소용이 생기는 거라면, {name}씨한테는 그 무용한 지식들 한번 풀어보고 싶네요.',
         },
         {
           label: 'D',
@@ -363,7 +363,7 @@ export const maleEpisodeIntp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '논리적으로는 맞는 말이에요. 근데 그 문장을 방어용으로 쓰면 검증은 영원히 안 끝나요. 중간 결과라도 듣고 싶었는데요.',
+          npcReaction: '논리적으로는 맞는 말이라 반박을 못 하겠네요. 그럼 제 중간 결과부터 공개할게요. 제 쪽 데이터는 이미 유의미하게 좋아요.',
         },
         {
           label: 'B',

@@ -198,7 +198,7 @@ export const maleEpisodeInfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '대단하네요. 저는 그 스케줄표를 보는 것만으로 낮잠이 필요해질 것 같아요. 존중해요, 멀리서.',
+          npcReaction: '대단하네요. 저는 그 스케줄표를 보는 것만으로 낮잠이 필요해질 것 같아요. 근데 반대라서 더 궁금해져요. {name}씨의 꽉 찬 하루는 어떤 기분인지.',
         },
         {
           label: 'B',
@@ -255,7 +255,7 @@ export const maleEpisodeInfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '다 검토해봤어요. 안 한 게 아니라 못 하는 것도 있고요. 근데 지금 저는 대책 회의를 하고 싶었던 건 아니었어요. 마음은 알아요.',
+          npcReaction: '다 검토해봤어요. 안 한 게 아니라 못 하는 것도 있고요. 근데 그 고민을 같이 해주려는 마음은, 따뜻하게 받을게요. 그건 진짜예요.',
         },
         {
           label: 'D',
@@ -297,7 +297,7 @@ export const maleEpisodeInfp: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '저희 서점에 베스트셀러 매대가 없다는 얘기, 아까 한 것 같은데요. 대신 여기서만 잘 나가는 책은 있어요. 그건 근거가 제 눈이라 좀 약하지만요.',
+          npcReaction: '베스트셀러 매대는 없지만, 여기서만 잘 나가는 책은 있어요. 그걸로 골라볼게요. 근거가 제 눈이라 좀 약한데, 그래도 꽤 잘 맞는 눈이에요.',
         },
         {
           label: 'D',
@@ -354,7 +354,7 @@ export const maleEpisodeInfp: BlindDate = {
       turnNumber: 9,
       isPlayerInitiated: false,
       npcMessage:
-        '마지막으로요. 저는 오늘이 재밌었는지 아직 잘 몰라요. 나쁜 뜻이 아니라, 저는 감정이 하루 늦게 도착하는 사람이라서요. 오늘이 어땠는지는 내일 마감하고 불 끌 때쯤 알 것 같아요. 그래서 {name}씨한테는 지금 물어볼게요. 오늘 어땠어요.',
+        '마지막으로요. 저는 오늘이 재밌었는지 아직 잘 몰라요. 나쁜 뜻이 아니라, 저는 감정이 하루 늦게 도착하는 사람이라서요. 오늘이 어땠는지는 내일 마감하고 불 끌 때쯤 알 것 같아요. 근데 예감은 좋은 쪽이에요. 제 예감은 잘 안 틀리고요. 그래서 {name}씨한테는 지금 물어볼게요. 오늘 어땠어요.',
       monologue: '자기 감정은 내일 오는데 내 대답은 지금 받겠다는 사람. 불공평한데 거절이 안 된다.',
       choices: [
         {
@@ -371,7 +371,7 @@ export const maleEpisodeInfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '회의록 같은 마무리네요. 정확한데, 저는 만족스러웠다는 문장보다 어디가 어땠는지 한 줄이 더 궁금한 사람이라서요.',
+          npcReaction: '회의록 같은 마무리네요. 정확해서 좋아요. 근데 저는 어디가 어땠는지 한 줄이 더 궁금한 사람이라서요. 그 한 줄 들으면, 다음 약속은 제가 먼저 잡자고 할게요.',
         },
         {
           label: 'C',

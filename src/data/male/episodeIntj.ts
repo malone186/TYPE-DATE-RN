@@ -23,7 +23,7 @@ export const maleEpisodeIntj: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '미리 말해두는 게 맞을 것 같아서요. 저 오늘 준비를 좀 해왔습니다. 주선자한테 들은 정보는 수첩에 정리했고, 이 가게는 지난주에 답사를 다녀왔습니다. 이 자리가 조명이 제일 좋아서 예약해뒀고요. 이상하게 들리면, 이상한 게 맞습니다.',
+        '미리 말해두는 게 맞을 것 같아서요. 저 오늘 준비를 좀 해왔습니다. 주선자한테 들은 정보는 수첩에 정리했고, 이 가게는 지난주에 답사를 다녀왔습니다. 이 자리가 조명이 제일 좋아서 예약해뒀고요. 이상하게 들리면, 이상한 게 맞습니다. 정정하자면, 그만큼 기대하고 나온 자리라는 뜻입니다.',
       monologue: '소개팅에 답사를 오는 사람이라니. 부담스러워야 하는데 이상하게 웃기다.',
       choices: [
         {
@@ -40,7 +40,7 @@ export const maleEpisodeIntj: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '그 말 많이 듣습니다. 근데 과해서 손해 본 적은 없어서요. 아직은요.',
+          npcReaction: '그 말 많이 듣습니다. 근데 오늘은 과하고 싶었습니다. 그만큼 나오고 싶은 자리였다는 뜻입니다.',
         },
         {
           label: 'C',
@@ -115,7 +115,7 @@ export const maleEpisodeIntj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '아무것도 없어서 좋은 겁니다. 다 지어진 건 이제 제 게 아니거든요. 설명해도 잘 안 통하는 부분이긴 합니다.',
+          npcReaction: '아무것도 없어서 좋은 겁니다. 다 지어진 건 이제 제 게 아니거든요. 설명이 어려운 부분인데, {name}씨한테는 통할 때까지 설명해볼 생각입니다.',
         },
         {
           label: 'B',
@@ -363,7 +363,7 @@ export const maleEpisodeIntj: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '신중. 보류의 정중한 표현이죠. 알겠습니다. 다만 저는 검토에도 기한을 두는 편입니다.',
+          npcReaction: '신중. 알겠습니다. 기다리는 건 어렵지 않습니다. 참고로 제 쪽 검토는 오늘 이미 끝났다는 것만 기록해두겠습니다.',
         },
         {
           label: 'B',
@@ -387,7 +387,7 @@ export const maleEpisodeIntj: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '백 번이요. 백 명이랑 하시겠다는 건지 저랑 백 번을 하시겠다는 건지, 수치가 모호하면 저는 불안해집니다.',
+          npcReaction: '백 번이요. 백 명이랑인지 저랑 백 번인지 수치가 모호합니다만, 저랑 백 번 쪽으로 해석하겠습니다. 유리한 해석은 이럴 때 쓰는 거니까요.',
         },
       ],
     },

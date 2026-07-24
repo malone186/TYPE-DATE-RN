@@ -45,7 +45,7 @@ export const episode10: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '오, 여유가 넘치시네요... 근데 살짝 아쉽다? 저 혼자 지하철에서 목록 만든 게 좀 머쓱해지잖아요 ㅋㅋ',
+          npcReaction: '오, 여유가 넘치시네요! 부럽다 진짜 ㅋㅋ 저 혼자 지하철에서 목록 만든 게 살짝 머쓱하긴 한데, 덕분에 저도 긴장 풀리는 것 같아요',
         },
         {
           label: 'D',
@@ -112,7 +112,7 @@ export const episode10: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '그렇죠, 더 힘든 분들도 많죠... 근데 비교가 들어오면 제 힘듦이 반칙이 되는 것 같아서, 저는 그 말이 제일 어렵더라고요',
+          npcReaction: '그렇죠, 더 힘든 분들도 많죠... 근데 비교가 들어오면 제 힘듦이 반칙이 되는 것 같긴 해요 ㅎㅎ 그래도 끝까지 들어줬으니까, 이 얘기는 여기까지만 할게요',
         },
         {
           label: 'B',
@@ -500,7 +500,7 @@ export const episode10: BlindDate = {
           primaryAxis: 'P',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '아, 바쁘시구나... 알겠어요, 부담 갖지는 마세요. 저 눈치 빠른 편이라 괜찮아요 ㅎㅎ',
+          npcReaction: '아, 요즘 바쁜 시기구나... 그럼 저 기다릴게요. 저 기다리는 것도 은근 잘하거든요 ㅎㅎ 정신없는 거 지나가면 꼭 말해줘요. 티라미수 집은 안 없어지니까요',
         },
         {
           label: 'D',
@@ -525,7 +525,7 @@ export const episode10: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '누구랑 만나도 잘 어울릴 것 같다는 말... 칭찬인 거 아는데, 왠지 오늘의 저는 "아무나 중 하나"가 된 기분이네요 ㅎㅎ',
+          npcReaction: '누구랑 만나도 잘 어울릴 것 같다는 말... 칭찬 고마워요 ㅎㅎ 근데 저는 오늘 {name}씨한테 어땠는지가 제일 궁금했나 봐요. 다음에 만나면 그 답 들려줘요',
         },
         {
           label: 'B',
@@ -541,7 +541,7 @@ export const episode10: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '맞는 말인데... 오늘 반성회는 확정이네요 ㅋㅋ 오늘 밤 주제는 "내가 뭘 놓쳤나"가 되겠어요',
+          npcReaction: '맞는 말이에요, 겪어보는 시간 저는 환영이고요 ㅋㅋ 그럼 오늘 반성회 주제는 "다음엔 뭘 더 보여드릴까"로 바꿀게요',
         },
         {
           label: 'D',

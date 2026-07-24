@@ -23,7 +23,7 @@ export const maleEpisodeEstp: BlindDate = {
       turnNumber: 1,
       isPlayerInitiated: false,
       npcMessage:
-        '소개팅을 클라이밍장에서 하자니까 주선자가 저 말렸어요. 미쳤냐고. 근데 저는 파스타 앞에서 두 시간 떠드는 것보다 벽 앞에서 십 분 있는 게 그 사람이 훨씬 잘 보인다고 생각하거든요. 참고로 {name}씨 신발 사이즈 보고 암벽화 미리 빼놨어요. 이제 도망 못 갑니다.',
+        '소개팅을 클라이밍장에서 하자니까 주선자가 저 말렸어요. 미쳤냐고. 근데 저는 파스타 앞에서 두 시간 떠드는 것보다 벽 앞에서 십 분 있는 게 그 사람이 훨씬 잘 보인다고 생각하거든요. 참고로 {name}씨 신발 사이즈 보고 암벽화 미리 빼놨어요. 이제 도망 못 갑니다. 농담이고, 오늘 진짜 기대 많이 하고 왔어요.',
       monologue: '초면에 도망 못 간다는 말을 이렇게 당당하게 하는 사람은 처음 본다.',
       choices: [
         {
@@ -40,7 +40,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '유리한 판 맞아요. 근데 저는 제가 잘하는 걸 보여줘야 이 자리가 공정하다고 생각했는데, 그렇게 들렸다면 계산 미스네요.',
+          npcReaction: '유리한 판 맞아요. 근데 저는 제가 잘하는 걸 먼저 보여주는 게 예의라고 생각했거든요. 그렇게 들렸다면 계산 미스니까, 다음 판은 그쪽이 유리한 걸로 골라요.',
         },
         {
           label: 'C',
@@ -73,7 +73,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'N',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '그 가정은 발목 나갔을 때 천 번쯤 했어요. 답 안 나오는 문제라 접었고요. 저는 지나간 경기 복기 오래 하는 편이 아니에요.',
+          npcReaction: '그 가정은 발목 나갔을 때 천 번쯤 했어요. 답 안 나오는 문제라 접었고요. 대신 지금 얘기는 얼마든지 물어봐요. 궁금해해주는 건 좋으니까요.',
         },
         {
           label: 'B',
@@ -139,7 +139,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '보험 처리 규정까지 다 있어요. 근데 방금 저 혼자 신나서 떠들었는데 돌아온 게 책임 소재라, 벽에서 손 미끄러진 기분이네요.',
+          npcReaction: '보험 처리 규정까지 다 있어요. 걱정해주는 거로 들을게요. 근데 저 방금 좀 신나 있었으니까, 다음 질문은 재밌는 걸로 부탁해요.',
         },
       ],
     },
@@ -206,7 +206,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '예약 인생이시구나. 근데 여기 이모님은 예약을 안 받아요. 불안한 건 알겠는데, 오늘 이 자리가 즉흥의 좋은 예라는 것만 알아줘요.',
+          npcReaction: '예약 인생이시구나. 여기 이모님은 예약을 안 받는데, 그래도 오늘 이 자리는 나쁘지 않죠? 즉흥도 이 정도면 믿어볼 만하다는 것만 알아줘요.',
         },
         {
           label: 'C',
@@ -239,7 +239,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'E',
           likeScore: -1,
-          npcReaction: '처방 고마운데요, 방금 저는 상담이 필요하다는 얘기가 아니라 오늘 안 도망치고 있다는 얘기를 한 거였어요. 살짝 비껴갔네요.',
+          npcReaction: '처방 고마운데요, 방금 저는 오늘 안 도망치고 있다는 얘기를 하고 싶었던 거예요. 살짝 비껴갔지만, 걱정해주는 마음인 건 알아요.',
         },
         {
           label: 'B',
@@ -247,7 +247,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '맞는 말이에요. 근데 자연스러운 거라고 하면 고칠 이유도 없어지잖아요. 저는 오늘 그걸 고쳐보겠다고 말한 건데.',
+          npcReaction: '맞는 말이에요. 근데 자연스러운 거라고 하면 고칠 이유도 없어지잖아요. 저는 오늘 그걸 고쳐보고 싶었던 거라, 그 마음만 알아주면 돼요.',
         },
         {
           label: 'C',
@@ -379,7 +379,7 @@ export const maleEpisodeEstp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '좋았다가 세 번 나오면 저는 빈말로 판정해요. 완벽은 더 수상하고요. 뭐가 어떻게 좋았는지 딱 하나만요. 재심 기회 드릴게요.',
+          npcReaction: '좋았다는 말 세 번, 기분은 좋은데 제가 욕심이 많아서요. 뭐가 어떻게 좋았는지 딱 하나만 더요. 재심 아니고 앙코르입니다.',
         },
         {
           label: 'D',

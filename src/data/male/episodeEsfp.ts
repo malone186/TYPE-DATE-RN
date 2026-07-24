@@ -48,7 +48,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '그 계산을 안 한 건 아니에요. 근데 오늘은 그거보다 남는 게 있을 것 같아서요. 아마도요.',
+          npcReaction: '그 계산을 안 한 건 아니에요. 근데 오늘은 그거보다 남는 게 있을 것 같아서요. 지금 보니까 맞는 판단이었네요.',
         },
         {
           label: 'D',
@@ -81,7 +81,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'S',
           secondaryAxis: 'J',
           likeScore: -1,
-          npcReaction: '그 질문, 저희 어머니가 자주 하세요. 굶진 않아요. 준비 없이 나온 건 맞고요.',
+          npcReaction: '그 질문, 저희 어머니가 자주 하세요. 굶진 않아요. 요즘은 단골도 꽤 생겼고요. 걱정해주는 마음으로 들을게요.',
         },
         {
           label: 'C',
@@ -131,7 +131,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'S',
           likeScore: -1,
-          npcReaction: '오늘만 만 오천 보 넘게 걸었어요. 뭐, 안 겪어보면 그렇게 보이는 게 당연하죠.',
+          npcReaction: '오늘만 만 오천 보 넘게 걸었어요. 겉에서 보면 그렇게 보이는 게 당연하긴 해요. 다음에 주방 한번 구경시켜줄게요. 그럼 바로 이해돼요.',
         },
         {
           label: 'D',
@@ -139,7 +139,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'N',
           likeScore: -1,
-          npcReaction: '방금 그게 딱 다들 하는 말이에요. 힐링처럼 보이겠지만 저한텐 생계라서요. 서운한 건 아니고요.',
+          npcReaction: '힐링처럼 보이는 거 알아요. 사실 생계이기도 해서 마냥 낭만은 아닌데, 그래도 부럽다는 말은 기분 좋네요. 오늘은 좋은 것만 보여주고 싶기도 하고요.',
         },
       ],
     },
@@ -247,7 +247,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'T',
           secondaryAxis: 'I',
           likeScore: -1,
-          npcReaction: '맞는 말이에요. 논리적으로는 다 맞는데, 이상하게 하나도 안 풀리네요. 제 문제겠죠.',
+          npcReaction: '맞는 말이에요. 머리로는 아는데 마음이 좀 늦네요. 그래도 이렇게 꺼내놓고 나니까 한결 낫긴 해요.',
         },
         {
           label: 'C',
@@ -338,7 +338,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'E',
           secondaryAxis: 'T',
           likeScore: -1,
-          npcReaction: '저는 마음 가지고 밀당하는 게 제일 안 맞는 사람이라. 좋은데 왜 숨겨야 하는지 잘 모르겠어요. 여기선 좀 갈리네요.',
+          npcReaction: '저는 마음 가지고 밀당하는 게 제일 안 맞는 사람이라. 좋은데 왜 숨겨야 하는지 잘 모르겠어요. 방식은 좀 다르지만, 그건 천천히 맞춰가면 되는 거니까요.',
         },
         {
           label: 'D',
@@ -354,7 +354,7 @@ export const maleEpisodeEsfp: BlindDate = {
       turnNumber: 9,
       isPlayerInitiated: false,
       npcMessage:
-        '마지막으로 하나만 물을게요. 오늘 저 어땠어요? 사람 표정 삼 년 보면서 장사한 사람이라, 빈말은 대충 티가 나요. 그러니까 진짜 느낀 것만 말해줘요.',
+        '마지막으로 하나만 물을게요. 오늘 저 어땠어요? 사람 표정 삼 년 보면서 장사한 사람이라, 빈말은 대충 티가 나요. 그러니까 진짜 느낀 것만 말해줘요. 저부터 말하면, 오늘 문 닫은 거 하나도 후회 안 해요.',
       monologue: '빈말은 안 통한다는 사람. 어차피 오늘은 빈말이 나오지도 않는다.',
       choices: [
         {
@@ -387,7 +387,7 @@ export const maleEpisodeEsfp: BlindDate = {
           primaryAxis: 'F',
           secondaryAxis: 'P',
           likeScore: -1,
-          npcReaction: '좋았다, 최고다, 처음이다. 세 개가 붙으면 저는 좀 의심해요. 뭐가 어떻게 좋았는지 하나만 말해줄래요?',
+          npcReaction: '좋았다, 최고다, 처음이다. 이렇게 다 담으면 오히려 하나도 안 잡혀요. 저는 욕심쟁이라 하나가 더 궁금해요. 뭐가 제일 좋았는지, 그거 하나만 말해줄래요?',
         },
       ],
     },
