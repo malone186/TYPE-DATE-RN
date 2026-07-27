@@ -217,7 +217,7 @@ export function CharacterAvatar({ character, size = 40 }: { character: TDCharact
   );
 }
 
-/// 13턴 진행 바
+/// 턴 진행 바
 export function TurnProgressBar({ progress }: { progress: number }) {
   const c = useColors();
   const clamped = Math.max(0, Math.min(1, progress));

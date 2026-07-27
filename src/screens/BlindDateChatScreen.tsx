@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -13,6 +14,7 @@ import { useStore, sessionCurrentTurn, sessionIsLastTurn } from '../state/store'
 import { TDCharacter, Turn, Choice, ChatLine, DateResult } from '../types';
 import {
   GlowBackground,
+  GlassPanel,
   CharacterAvatar,
   MonologuePill,
   TurnProgressBar,
@@ -90,6 +92,7 @@ export function BlindDateChatScreen({
   const [showEffect, setShowEffect] = useState(false);
   const [reactionTyping, setReactionTyping] = useState(false);
   const [reactionRevealed, setReactionRevealed] = useState(false);
+  const [exitAsking, setExitAsking] = useState(false);
 
   // 도입부(도착·인사·착석) — 선택지 없이 자동으로 흘러가다가 턴1로 이어짐
   const [openingDone, setOpeningDone] = useState(false);
@@ -165,6 +168,12 @@ export function BlindDateChatScreen({
   };
 
   const onChoiceSelected = (choice: Choice) => {
+    // 호감/비호감을 진동으로도 구분해준다 — 이펙트 오버레이와 같은 타이밍.
+    void Haptics.notificationAsync(
+      choice.likeScore > 0
+        ? Haptics.NotificationFeedbackType.Success
+        : Haptics.NotificationFeedbackType.Warning,
+    );
     selectChoice(choice);
     setShowEffect(true);
     scrollToBottom();
@@ -298,6 +307,17 @@ export function BlindDateChatScreen({
     [session.date.id, session.currentTurnIndex],
   );
 
+  // 세션은 저장되지 않으므로 나가면 이 회차 진행이 사라진다 — 진행 중일 때만 한 번 묻는다.
+  // Alert는 웹에서 동작하지 않으므로(react-native-web에서 no-op) 앱 내 모달로 확인받는다.
+  const confirmExit = () => {
+    const inProgress = session.currentTurnIndex > 0 || session.lastChoice != null;
+    if (inProgress) {
+      setExitAsking(true);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   const opening = session.date.openingScript;
   const openingVisible = opening.slice(0, openingRevealCount);
   const showChoices =
@@ -309,7 +329,7 @@ export function BlindDateChatScreen({
         {/* 헤더 — 배경 그라디언트 위에 떠 있는 느낌으로, 별도 배경 없이 투명하게 */}
         <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
+            <Pressable onPress={confirmExit} hitSlop={8}>
               <MaterialIcons name="arrow-back-ios" size={16} color={c.textPrimary} />
             </Pressable>
             <View style={{ width: 8 }} />
@@ -449,8 +469,57 @@ export function BlindDateChatScreen({
             <CoralButton label="결과 확인하기" onPress={goToResult} />
           </View>
         )}
+
+        <ExitConfirmModal
+          visible={exitAsking}
+          onStay={() => setExitAsking(false)}
+          onLeave={() => {
+            setExitAsking(false);
+            navigation.goBack();
+          }}
+        />
       </SafeAreaView>
     </GlowBackground>
+  );
+}
+
+/// 소개팅 도중 나가기 확인 — 진행이 저장되지 않는다는 걸 알리고 한 번 되묻는다.
+function ExitConfirmModal({
+  visible,
+  onStay,
+  onLeave,
+}: {
+  visible: boolean;
+  onStay: () => void;
+  onLeave: () => void;
+}) {
+  const c = useColors();
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onStay}>
+      <View
+        style={{
+          flex: 1,
+          padding: 32,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: withAlpha('#000000', 0.45),
+        }}
+      >
+        <GlassPanel style={{ width: '100%', maxWidth: 360 }}>
+          <Text style={[TypeDateTextStyles.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
+            소개팅을 그만둘까요?
+          </Text>
+          <View style={{ height: 10 }} />
+          <Text style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
+            지금 나가면 이 회차 진행이 저장되지 않아요.{'\n'}처음부터 다시 해야 해요.
+          </Text>
+          <View style={{ height: 20 }} />
+          <CoralButton label="계속하기" onPress={onStay} />
+          <View style={{ height: 10 }} />
+          <CoralButton label="나가기" outlined onPress={onLeave} />
+        </GlassPanel>
+      </View>
+    </Modal>
   );
 }
 

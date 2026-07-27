@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Asset } from 'expo-asset';
+import * as SplashScreen from 'expo-splash-screen';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useStore } from './src/state/store';
 import { useColors, useIsDark } from './src/theme/useColors';
@@ -22,6 +23,9 @@ function Root() {
     </View>
   );
 }
+
+// 폰트·이미지 로딩이 끝날 때까지 스플래시를 띄워둔다 — 그동안 빈 화면이 보이지 않게.
+void SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const loadPersisted = useStore((s) => s.loadPersisted);
@@ -41,7 +45,12 @@ export default function App() {
       .finally(() => setImagesLoaded(true));
   }, []);
 
-  if (!fontsLoaded || !imagesLoaded) return null;
+  const ready = fontsLoaded && imagesLoaded;
+  useEffect(() => {
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
 
   return (
     <SafeAreaProvider>

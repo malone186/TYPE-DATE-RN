@@ -70,9 +70,7 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
             contentContainerStyle={{ gap: 16, paddingBottom: 16 }}
             renderItem={({ item, index }) => {
               const hasContent = index < episodes.length;
-              // ⚠️ TEMP(테스트용 전체 해금) — 배포/커밋 전 아래 원본 줄로 되돌릴 것:
-              // const unlocked = hasContent && (index === 0 || isCompleted(episodes[index - 1].id));
-              const unlocked = hasContent;
+              const unlocked = hasContent && (index === 0 || isCompleted(episodes[index - 1].id));
               return (
                 <CharacterSlot
                   character={item}
