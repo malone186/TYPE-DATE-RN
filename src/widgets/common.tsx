@@ -168,9 +168,20 @@ export function ThemeToggleButton() {
   const cycle = useStore((s) => s.cycleThemeMode);
   const icon =
     mode === 'light' ? 'light-mode' : mode === 'dark' ? 'dark-mode' : 'brightness-auto';
+  // 사진·그라디언트 배경 위에서도 아이콘이 묻히지 않도록 불투명한 원형 칩을 깐다.
   return (
-    <Pressable onPress={cycle} hitSlop={8} style={{ padding: 8 }}>
-      <MaterialIcons name={icon as any} size={22} color={c.textSecondary} />
+    <Pressable
+      onPress={cycle}
+      hitSlop={8}
+      style={({ pressed }) => ({
+        padding: 8,
+        borderRadius: 999,
+        backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: withAlpha(c.border, 0.8),
+      })}
+    >
+      <MaterialIcons name={icon as any} size={22} color={c.textPrimary} />
     </Pressable>
   );
 }

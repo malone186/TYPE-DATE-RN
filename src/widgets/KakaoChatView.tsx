@@ -3,6 +3,7 @@ import {
   Animated,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -10,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { useColors } from '../theme/useColors';
+import { useColors, useIsDark } from '../theme/useColors';
 import { ChatLine } from '../types';
 import { GlowBackground, MonologuePill, ThemeToggleButton, TypingIndicator, CoralButton } from './common';
 
@@ -31,6 +32,7 @@ export function KakaoChatView({
   onBack?: () => void;
 }) {
   const c = useColors();
+  const isDark = useIsDark();
   const [visibleCount, setVisibleCount] = useState(1);
   const [typing, setTyping] = useState(false);
   const [skipMode, setSkipMode] = useState(false);
@@ -138,7 +140,18 @@ export function KakaoChatView({
   return (
     <GlowBackground showLogoWatermark>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 }}>
+        {/* 헤더 — 배경 위에서도 이름·버튼이 읽히도록 반불투명 바를 깐다 */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            backgroundColor: withAlpha(c.surface, isDark ? 0.82 : 0.88),
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: withAlpha(c.border, 0.7),
+          }}
+        >
           {onBack && (
             <>
               <Pressable onPress={onBack} hitSlop={8}>

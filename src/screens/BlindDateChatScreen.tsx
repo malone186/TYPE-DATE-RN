@@ -73,6 +73,7 @@ export function BlindDateChatScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'BlindDateChat'>) {
   const c = useColors();
+  const isDark = useIsDark();
 
   const session = useStore((s) => s.session);
   const selectChoice = useStore((s) => s.selectChoice);
@@ -326,8 +327,16 @@ export function BlindDateChatScreen({
   return (
     <GlowBackground photoBackground photoSource={imageSource(character.backgroundPath ?? undefined)}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* 헤더 — 배경 그라디언트 위에 떠 있는 느낌으로, 별도 배경 없이 투명하게 */}
-        <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+        {/* 헤더 — 사진 배경 위에서도 이름·진행도·테마 버튼이 읽히도록 반불투명 바를 깐다 */}
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            backgroundColor: withAlpha(c.surface, isDark ? 0.82 : 0.88),
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: withAlpha(c.border, 0.7),
+          }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Pressable onPress={confirmExit} hitSlop={8}>
               <MaterialIcons name="arrow-back-ios" size={16} color={c.textPrimary} />
