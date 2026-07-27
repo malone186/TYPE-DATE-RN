@@ -70,7 +70,7 @@ const registry: Record<string, ImageSourcePropType> = {
   'assets/images/ISTP_male_face.png': require('../../assets/images/ISTP_male_face.jpg'),
   'assets/images/logo.png': require('../../assets/images/logo.png'),
   'assets/images/logo_mark.png': require('../../assets/images/logo_mark.png'),
-  'assets/images/background.png': require('../../assets/images/background.jpg'),
+  'assets/images/ENFP_female_background.jpg': require('../../assets/images/ENFP_female_background.jpg'),
   'assets/images/ESFP_background.jpg': require('../../assets/images/ESFP_background.jpg'),
   'assets/images/ENFP_background.png': require('../../assets/images/ENFP_background.jpg'),
   'assets/images/INTJ_background.png': require('../../assets/images/INTJ_background.jpg'),
@@ -94,6 +94,14 @@ const registry: Record<string, ImageSourcePropType> = {
   'assets/images/ESTP_female_background.jpg': require('../../assets/images/ESTP_female_background.jpg'),
   'assets/images/ISFJ_female_background.jpg': require('../../assets/images/ISFJ_female_background.jpg'),
   'assets/images/ISTP_female_background.jpg': require('../../assets/images/ISTP_female_background.jpg'),
+  'assets/images/ENFJ_female_background.jpg': require('../../assets/images/ENFJ_female_background.jpg'),
+  'assets/images/ENTJ_female_background.jpg': require('../../assets/images/ENTJ_female_background.jpg'),
+  'assets/images/ENTP_female_background.jpg': require('../../assets/images/ENTP_female_background.jpg'),
+  'assets/images/ESFJ_female_background.jpg': require('../../assets/images/ESFJ_female_background.jpg'),
+  'assets/images/ESFP_female_background.jpg': require('../../assets/images/ESFP_female_background.jpg'),
+  'assets/images/INFJ_female_background.jpg': require('../../assets/images/INFJ_female_background.jpg'),
+  'assets/images/INTP_female_background.jpg': require('../../assets/images/INTP_female_background.jpg'),
+  'assets/images/ISTJ_female_background.jpg': require('../../assets/images/ISTJ_female_background.jpg'),
 };
 
 export function imageSource(path?: string | null): ImageSourcePropType | undefined {

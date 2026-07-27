@@ -14,6 +14,7 @@ export const episode11: BlindDate = {
     isUnlocked: true,
     imagePath: 'assets/images/INTP_female.png',
     facePath: 'assets/images/INTP_female_face.png',
+    backgroundPath: 'assets/images/INTP_female_background.jpg',
   },
   turns: [
     {
