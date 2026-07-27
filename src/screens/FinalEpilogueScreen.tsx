@@ -9,10 +9,19 @@ import { GlowBackground, GlassPanel, ThemeToggleButton, CoralButton, CharacterAv
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { useStore } from '../state/store';
 import { lineData } from '../data';
-import { pickBestMatch, buildFinalEpilogueLines, FinalMatch } from '../data/finalEpilogue';
+import {
+  pickBestMatch,
+  buildFinalEpilogueLines,
+  finalEndingFor,
+  isNoMatch,
+  noMatchEndingFor,
+  FinalMatch,
+} from '../data/finalEpilogue';
+import { NoMatchEnding } from '../data/finalEndings';
 
 // 16화 완주 후 최종 에필로그 — 최고 매칭 상대와 연애를 시작하는 엔딩 시퀀스.
 // Scene 1(발표 카드) → Scene 2(상대의 고백 카톡) → Scene 3(연애 시작 카드)
+// 열여섯 명 전부와 fail로 끝났으면 상대 대신 주선자 친구와의 마무리 엔딩으로 갈린다.
 type Step = 'reveal' | 'chat' | 'ending';
 
 export function FinalEpilogueScreen({
@@ -31,27 +40,40 @@ export function FinalEpilogueScreen({
 
   // 결과가 하나도 저장돼 있지 않으면(이론상 도달 불가) 목록으로 되돌린다.
   if (match == null) {
-    return <RevealScene match={null} onNext={goToList} />;
+    return <RevealScene match={null} noMatch={null} onNext={goToList} />;
   }
 
+  const noMatch = isNoMatch(match) ? noMatchEndingFor(match) : null;
+
   if (step === 'reveal') {
-    return <RevealScene match={match} onNext={() => setStep('chat')} />;
+    return <RevealScene match={match} noMatch={noMatch} onNext={() => setStep('chat')} />;
   }
   if (step === 'chat') {
     return (
       <KakaoChatView
-        contactName={match.episode.character.name}
+        contactName={noMatch != null ? noMatch.contactName : match.episode.character.name}
         lines={buildFinalEpilogueLines(match, userName)}
         completeButtonLabel="계속"
         onComplete={() => setStep('ending')}
       />
     );
   }
+  if (noMatch != null) {
+    return <NoMatchEndingScene ending={noMatch} onNext={goToList} />;
+  }
   return <EndingScene match={match} onNext={goToList} />;
 }
 
 /// Scene 1 — 16번의 만남이 끝났고, 가장 오래 남은 한 사람을 공개하는 카드.
-function RevealScene({ match, onNext }: { match: FinalMatch | null; onNext: () => void }) {
+function RevealScene({
+  match,
+  noMatch,
+  onNext,
+}: {
+  match: FinalMatch | null;
+  noMatch: NoMatchEnding | null;
+  onNext: () => void;
+}) {
   const c = useColors();
   const partner = match?.episode.character;
   return (
@@ -63,11 +85,17 @@ function RevealScene({ match, onNext }: { match: FinalMatch | null; onNext: () =
           </View>
           <GlassPanel style={{ width: '100%' }}>
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 32 }}>💘</Text>
+              <Text style={{ fontSize: 32 }}>{noMatch != null ? '🌙' : '💘'}</Text>
               <View style={{ height: 8 }} />
               <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>16 / 16 완료</Text>
               <View style={{ height: 16 }} />
-              {partner != null ? (
+              {noMatch != null ? (
+                <Text
+                  style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
+                >
+                  {noMatch.revealText}
+                </Text>
+              ) : partner != null ? (
                 <Text
                   style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
                 >
@@ -87,6 +115,35 @@ function RevealScene({ match, onNext }: { match: FinalMatch | null; onNext: () =
           </GlassPanel>
           <View style={{ height: 32 }} />
           <CoralButton label={partner != null ? '그 밤의 이야기' : '목록으로'} onPress={onNext} />
+        </View>
+      </SafeAreaView>
+    </GlowBackground>
+  );
+}
+
+/// Scene 3(전원 fail) — 남은 상대가 없는 마무리 카드.
+function NoMatchEndingScene({ ending, onNext }: { ending: NoMatchEnding; onNext: () => void }) {
+  const c = useColors();
+  return (
+    <GlowBackground>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
+          <View style={{ alignSelf: 'flex-end' }}>
+            <ThemeToggleButton />
+          </View>
+          <GlassPanel style={{ width: '100%' }}>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 32 }}>🌙</Text>
+              <View style={{ height: 12 }} />
+              <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>{ending.endingTitle}</Text>
+              <View style={{ height: 16 }} />
+              <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+                {ending.endingCaption}
+              </Text>
+            </View>
+          </GlassPanel>
+          <View style={{ height: 32 }} />
+          <CoralButton label="처음 목록으로" onPress={onNext} />
         </View>
       </SafeAreaView>
     </GlowBackground>
@@ -128,7 +185,7 @@ function EndingScene({ match, onNext }: { match: FinalMatch; onNext: () => void 
               )}
               <View style={{ height: 16 }} />
               <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
-                16번의 소개팅 끝에, 앱이 아니라 사람이 남았다.
+                {finalEndingFor(match).endingCaption}
               </Text>
             </View>
           </GlassPanel>
