@@ -7,7 +7,7 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, ThemeToggleButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
 import { episodeById } from '../data';
 import { DateResult, Ending, axisLetters } from '../types';
@@ -27,6 +27,7 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
           <View style={{ width: 4 }} />
           <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>공유 카드</Text>
           <View style={{ flex: 1 }} />
+          <SoundControlButton />
           <ThemeToggleButton />
         </View>
         <View style={{ flex: 1, padding: 24 }}>

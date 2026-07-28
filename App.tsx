@@ -10,16 +10,20 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { useStore } from './src/state/store';
 import { useColors, useIsDark } from './src/theme/useColors';
 import { allImages } from './src/assets/images';
+import { IntroLogo } from './src/widgets/IntroLogo';
 
 function Root() {
   const c = useColors();
   const isDark = useIsDark();
+  // 로딩이 끝난 직후 로고 인트로를 한 번 보여주고, 끝나면 타이틀 화면이 드러난다.
+  const [introDone, setIntroDone] = useState(false);
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
+      {!introDone && <IntroLogo onFinished={() => setIntroDone(true)} />}
     </View>
   );
 }

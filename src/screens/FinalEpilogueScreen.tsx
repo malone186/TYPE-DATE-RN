@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
-import { GlowBackground, GlassPanel, ThemeToggleButton, CoralButton, CharacterAvatar } from '../widgets/common';
+import { GlowBackground, GlassPanel, SoundControlButton, ThemeToggleButton, CoralButton, CharacterAvatar } from '../widgets/common';
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { useStore } from '../state/store';
 import { lineData } from '../data';
@@ -52,6 +52,8 @@ export function FinalEpilogueScreen({
     return (
       <KakaoChatView
         contactName={noMatch != null ? noMatch.contactName : match.episode.character.name}
+        // 노매치 엔딩은 상대가 주선자 친구라 캐릭터 데이터가 없다 — 그때는 첫 글자 아바타 유지
+        avatarCharacter={noMatch != null ? null : match.episode.character}
         lines={buildFinalEpilogueLines(match, userName)}
         completeButtonLabel="계속"
         onComplete={() => setStep('ending')}
@@ -80,7 +82,8 @@ function RevealScene({
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>
@@ -128,7 +131,8 @@ function NoMatchEndingScene({ ending, onNext }: { ending: NoMatchEnding; onNext:
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>
@@ -159,7 +163,8 @@ function EndingScene({ match, onNext }: { match: FinalMatch; onNext: () => void 
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>

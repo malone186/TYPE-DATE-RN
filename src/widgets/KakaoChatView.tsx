@@ -12,11 +12,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useColors, useIsDark } from '../theme/useColors';
-import { ChatLine } from '../types';
-import { GlowBackground, MonologuePill, ThemeToggleButton, TypingIndicator, CoralButton } from './common';
+import { ChatLine, TDCharacter } from '../types';
+import { GlowBackground, MonologuePill, SoundControlButton, ThemeToggleButton, TypingIndicator, CoralButton, CharacterAvatar } from './common';
+import { playMessageSound, useTypingSound } from '../audio/sounds';
 
 // Flutter widgets/kakao_chat_view.dart 이식.
 // 프롤로그/에필로그용 카카오톡 모방 채팅 뷰. 기본 자동 진행, "건너뛰기" 누르면 탭 진행 모드.
+
+/// 실제 주고받는 말풍선인지 — 시스템 안내/독백에는 도착음을 울리지 않는다.
+const isDialogue = (line: ChatLine) => !line.isSystemNote && !line.isMonologue;
 
 export function KakaoChatView({
   contactName,
@@ -24,12 +28,14 @@ export function KakaoChatView({
   onComplete,
   completeButtonLabel,
   onBack,
+  avatarCharacter,
 }: {
   contactName: string;
   lines: ChatLine[];
   onComplete: () => void;
   completeButtonLabel?: string | null;
   onBack?: () => void;
+  avatarCharacter?: TDCharacter | null; // 넘기면 상대 아바타를 프로필 사진으로, 없으면 이름 첫 글자
 }) {
   const c = useColors();
   const isDark = useIsDark();
@@ -57,9 +63,11 @@ export function KakaoChatView({
     return contactName.substring(0, 1);
   })();
 
+  // 대사 표시 후 다음 대사까지 유지하는 시간.
+  // 하한은 도착음(1.06초)이 다음 도착음과 겹치지 않을 만큼 확보한다.
   const delayFor = (line: ChatLine): number => {
-    if (line.isSystemNote) return 1000;
-    return Math.max(500, Math.min(1600, 320 + line.text.length * 20));
+    if (line.isSystemNote) return 1200;
+    return Math.max(700, Math.min(1800, 420 + line.text.length * 22));
   };
 
   const nextIsNpcMessage = (): boolean => {
@@ -90,17 +98,18 @@ export function KakaoChatView({
     let preDelay: number;
     if (nextIsNpcMessage()) {
       setTyping(true);
-      preDelay = 500;
+      preDelay = 700;
     } else if (nextIsMyMessage()) {
-      preDelay = 300;
+      preDelay = 550;
     } else {
-      preDelay = 250;
+      preDelay = 400;
     }
 
     timer.current = setTimeout(() => {
       const line = lines[visibleRef.current];
       setTyping(false);
       setVisible(visibleRef.current + 1);
+      if (isDialogue(line)) playMessageSound();
       scrollToBottom();
       timer.current = setTimeout(() => scheduleNext(), delayFor(line));
     }, preDelay);
@@ -131,6 +140,7 @@ export function KakaoChatView({
       }
       return;
     }
+    // 건너뛰기 모드에서는 대사가 연타로 넘어가므로 도착음을 울리지 않는다.
     setVisible(visibleRef.current + 1);
     scrollToBottom();
   };
@@ -182,6 +192,7 @@ export function KakaoChatView({
               <Text style={TypeDateTextStyles.caption(c.textMuted)}>탭해서 계속</Text>
             </View>
           )}
+          <SoundControlButton />
           <ThemeToggleButton />
         </View>
 
@@ -192,11 +203,11 @@ export function KakaoChatView({
             onContentSizeChange={scrollToBottom}
           >
             {visibleLines.map((line, i) => (
-              <ChatLineWidget key={i} line={line} />
+              <ChatLineWidget key={i} line={line} avatarCharacter={avatarCharacter} />
             ))}
             {typing && (
               <View style={{ paddingVertical: 4 }}>
-                <TypingBubble senderInitial={npcInitial} />
+                <TypingBubble senderInitial={npcInitial} avatarCharacter={avatarCharacter} />
               </View>
             )}
           </ScrollView>
@@ -212,13 +223,37 @@ export function KakaoChatView({
   );
 }
 
-function TypingBubble({ senderInitial }: { senderInitial: string }) {
+/// 상대 아바타 — 캐릭터가 있으면 얼굴 사진, 없으면 이름 첫 글자 동그라미.
+function NpcAvatar({
+  avatarCharacter,
+  initial,
+}: {
+  avatarCharacter?: TDCharacter | null;
+  initial: string;
+}) {
   const c = useColors();
+  if (avatarCharacter != null) {
+    return <CharacterAvatar character={avatarCharacter} size={24} useFace />;
+  }
+  return (
+    <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: c.accentCoralSoft, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 11, color: '#FFFFFF' }}>{initial}</Text>
+    </View>
+  );
+}
+
+function TypingBubble({
+  senderInitial,
+  avatarCharacter,
+}: {
+  senderInitial: string;
+  avatarCharacter?: TDCharacter | null;
+}) {
+  const c = useColors();
+  useTypingSound();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: c.accentCoralSoft, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 11, color: '#FFFFFF' }}>{senderInitial}</Text>
-      </View>
+      <NpcAvatar avatarCharacter={avatarCharacter} initial={senderInitial} />
       <View style={{ width: 8 }} />
       <View
         style={{
@@ -236,7 +271,13 @@ function TypingBubble({ senderInitial }: { senderInitial: string }) {
   );
 }
 
-function ChatLineWidget({ line }: { line: ChatLine }) {
+function ChatLineWidget({
+  line,
+  avatarCharacter,
+}: {
+  line: ChatLine;
+  avatarCharacter?: TDCharacter | null;
+}) {
   const c = useColors();
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -269,9 +310,10 @@ function ChatLineWidget({ line }: { line: ChatLine }) {
     <View style={{ paddingVertical: 4, flexDirection: 'row', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-start' }}>
       {!isMe && (
         <>
-          <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: c.accentCoralSoft, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 11, color: '#FFFFFF' }}>{line.sender.length > 0 ? line.sender.substring(0, 1) : '?'}</Text>
-          </View>
+          <NpcAvatar
+            avatarCharacter={avatarCharacter}
+            initial={line.sender.length > 0 ? line.sender.substring(0, 1) : '?'}
+          />
           <View style={{ width: 8 }} />
         </>
       )}

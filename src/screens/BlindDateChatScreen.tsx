@@ -19,12 +19,14 @@ import {
   MonologuePill,
   TurnProgressBar,
   TypingIndicator,
+  SoundControlButton,
   ThemeToggleButton,
   CoralButton,
 } from '../widgets/common';
 import { ChoiceList } from '../widgets/ChoiceList';
 import { LikeEffectOverlay } from '../widgets/LikeEffectOverlay';
 import { imageSource } from '../assets/images';
+import { playMessageSound, useSceneBgm, useTypingSound } from '../audio/sounds';
 
 // Flutter screens/blind_date_chat_screen.dart 이식.
 
@@ -36,8 +38,14 @@ function applyName(text: string, userName: string): string {
 }
 
 /// 메시지 길이에 비례한 "입력 중..." 표시 시간 — 카카오톡 대화창과 같은 리듬을 주기 위함.
+/// 하한은 도착음(1.06초)이 연달아 겹쳐 들리지 않을 만큼 확보한다.
 function typingDelayFor(text: string): number {
-  return Math.max(600, Math.min(1800, 350 + text.length * 22));
+  return Math.max(800, Math.min(2000, 450 + text.length * 24));
+}
+
+/// 대사가 뜬 뒤 다음 줄로 넘어가기 전 유지 시간 — 대사는 짧게, 안내/독백은 조금 더 길게.
+function holdMsFor(isDialogue: boolean): number {
+  return isDialogue ? 700 : 900;
 }
 
 /// 선택지 표시 순서를 턴마다 무작위로 섞는다 — 데이터상 좋은 답이 앞자리에 몰려 있어도
@@ -74,6 +82,9 @@ export function BlindDateChatScreen({
 }: NativeStackScreenProps<RootStackParamList, 'BlindDateChat'>) {
   const c = useColors();
   const isDark = useIsDark();
+
+  // 소개팅 화면에 있는 동안만 배경음이 깔린다 — 나가면 자동으로 멈춘다.
+  useSceneBgm();
 
   const session = useStore((s) => s.session);
   const selectChoice = useStore((s) => s.selectChoice);
@@ -138,6 +149,7 @@ export function BlindDateChatScreen({
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setNpcMessageRevealed(true);
+      playMessageSound();
       scrollToBottom();
     }, typingDelayFor(npcMessage));
   };
@@ -157,6 +169,7 @@ export function BlindDateChatScreen({
       typingTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         setPlayerPromptRevealed(true);
+        playMessageSound();
         scrollToBottom();
         advanceTimer.current = setTimeout(() => {
           if (!mounted.current) return;
@@ -176,6 +189,7 @@ export function BlindDateChatScreen({
         : Haptics.NotificationFeedbackType.Warning,
     );
     selectChoice(choice);
+    playMessageSound();
     setShowEffect(true);
     scrollToBottom();
   };
@@ -190,6 +204,7 @@ export function BlindDateChatScreen({
       if (!mounted.current) return;
       setReactionTyping(false);
       setReactionRevealed(true);
+      playMessageSound();
       scrollToBottom();
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
@@ -226,13 +241,14 @@ export function BlindDateChatScreen({
     // "입력 중..."은 상대(NPC) 대사에만 — 주인공(me) 대사는 짧은 딜레이 후 바로 표시
     const isNpcDialogue = isDialogue && next.sender !== 'me';
     if (isNpcDialogue) setClosingTyping(true);
-    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 400 : 250;
+    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 600 : 400;
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setClosingTyping(false);
       setClosingReveal(closingRevealCountRef.current + 1);
+      if (isDialogue) playMessageSound();
       scrollToBottom();
-      const holdMs = isDialogue ? 500 : 800;
+      const holdMs = holdMsFor(isDialogue);
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         scheduleClosingLine();
@@ -254,13 +270,14 @@ export function BlindDateChatScreen({
     // "입력 중..."은 상대(NPC) 대사에만 — 주인공(me) 대사는 짧은 딜레이 후 바로 표시
     const isNpcDialogue = isDialogue && next.sender !== 'me';
     if (isNpcDialogue) setOpeningTyping(true);
-    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 400 : 250;
+    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 600 : 400;
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setOpeningTyping(false);
       setOpeningReveal(openingRevealCountRef.current + 1);
+      if (isDialogue) playMessageSound();
       scrollToBottom();
-      const holdMs = isDialogue ? 500 : 800;
+      const holdMs = holdMsFor(isDialogue);
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         scheduleOpeningLine();
@@ -357,6 +374,7 @@ export function BlindDateChatScreen({
                 {`${turn.turnNumber} / ${session.date.turns.length}`}
               </Text>
             )}
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           {openingDone && (
@@ -607,6 +625,7 @@ function CompletedTurnBlock({
 function TypingRow({ character }: { character: TDCharacter }) {
   const c = useColors();
   const isDark = useIsDark();
+  useTypingSound();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <CharacterAvatar character={character} size={24} />

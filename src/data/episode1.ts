@@ -525,7 +525,7 @@ export const epilogue1Lines: ChatLine[] = [
   { sender: '민준', text: 'ㅋㅋㅋ 결과 캡처해줘' },
   { sender: 'me', text: '[결과카드 이미지]' },
   { sender: '민준', text: '오 이게 네 소개팅 스타일이구나' },
-  { sender: '민준', text: '다음 화도 계속 해봐' },
+  { sender: '민준', text: '다음 사람도 계속 만나봐' },
   { sender: '민준', text: '16명 다 만나면 진짜 인연 유형 나온다잖아' },
   { sender: '민준', text: '혹시 진짜 설레는 사람 나오면 알려줘' },
   { sender: 'me', text: '니가 직접 하든가' },

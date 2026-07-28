@@ -28,6 +28,14 @@ interface AppState {
   themeMode: ThemeMode;
   cycleThemeMode: () => void;
 
+  // 사운드 설정 — 화면 우측 상단 사운드 버튼에서 조절, AsyncStorage 영속화
+  soundMuted: boolean;
+  bgmVolume: number; // 0~1
+  sfxVolume: number; // 0~1
+  toggleSoundMuted: () => void;
+  setBgmVolume: (v: number) => void;
+  setSfxVolume: (v: number) => void;
+
   // 라인(남/여) — 스플래시 다음 선택 화면에서 결정, AsyncStorage 영속화
   line: LineKey;
   setLine: (line: LineKey) => Promise<void>;
@@ -68,6 +76,26 @@ const freshSession = (date: BlindDate): DateSession => ({
   history: [],
 });
 
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+/// 저장된 볼륨 문자열을 복원 — 저장된 적 없거나 손상된 값이면 기본값.
+/// (0으로 저장한 경우도 그대로 살려야 하므로 null 여부로 판단한다)
+function savedVolume(raw: string | null, fallback: number): number {
+  if (raw == null) return fallback;
+  const v = Number(raw);
+  return Number.isFinite(v) ? clamp01(v) : fallback;
+}
+
+// 슬라이더를 끄는 동안 매 프레임 저장하지 않도록 잠깐 모았다가 한 번만 기록한다.
+let volumeSaveTimer: ReturnType<typeof setTimeout> | null = null;
+function saveVolumesSoon(bgm: number, sfx: number) {
+  if (volumeSaveTimer != null) clearTimeout(volumeSaveTimer);
+  volumeSaveTimer = setTimeout(() => {
+    void AsyncStorage.setItem('td_bgm_volume', String(bgm));
+    void AsyncStorage.setItem('td_sfx_volume', String(sfx));
+  }, 400);
+}
+
 function currentTurn(s: DateSession) {
   return s.date.turns[s.currentTurnIndex];
 }
@@ -82,6 +110,25 @@ export const useStore = create<AppState>((set, get) => ({
       get().themeMode === 'light' ? 'dark' : get().themeMode === 'dark' ? 'system' : 'light';
     set({ themeMode: next });
     void AsyncStorage.setItem('td_theme_mode', next);
+  },
+
+  soundMuted: false,
+  bgmVolume: 0.4,
+  sfxVolume: 0.8,
+  toggleSoundMuted: () => {
+    const next = !get().soundMuted;
+    set({ soundMuted: next });
+    void AsyncStorage.setItem('td_sound_muted', next ? 'true' : 'false');
+  },
+  setBgmVolume: (v) => {
+    const next = clamp01(v);
+    set({ bgmVolume: next });
+    saveVolumesSoon(next, get().sfxVolume);
+  },
+  setSfxVolume: (v) => {
+    const next = clamp01(v);
+    set({ sfxVolume: next });
+    saveVolumesSoon(get().bgmVolume, next);
   },
 
   line: 'female',
@@ -177,6 +224,9 @@ export const useStore = create<AppState>((set, get) => ({
     const name = (await AsyncStorage.getItem('td_user_name')) ?? '';
     const savedLine = (await AsyncStorage.getItem('td_line')) as LineKey | null;
     const savedTheme = (await AsyncStorage.getItem('td_theme_mode')) as ThemeMode | null;
+    const savedMuted = await AsyncStorage.getItem('td_sound_muted');
+    const savedBgm = await AsyncStorage.getItem('td_bgm_volume');
+    const savedSfx = await AsyncStorage.getItem('td_sfx_volume');
     const completed = new Set<string>();
     const savedResults: Record<string, DateResult> = {};
     for (const e of [...allEpisodes, ...allMaleEpisodes]) {
@@ -198,6 +248,9 @@ export const useStore = create<AppState>((set, get) => ({
           ? savedTheme
           : 'light',
       line: savedLine === 'male' || savedLine === 'female' ? savedLine : 'female',
+      soundMuted: savedMuted === 'true',
+      bgmVolume: savedVolume(savedBgm, 0.4),
+      sfxVolume: savedVolume(savedSfx, 0.8),
       completedIds: completed,
       totalCompleted: completed.size,
       results: savedResults,
