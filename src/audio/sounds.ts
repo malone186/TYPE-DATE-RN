@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import { useStore } from '../state/store';
 
-// 채팅 연출용 사운드 — 메시지 도착음(1회), "입력 중" 타이핑음(반복), 소개팅 배경음(루프).
+// 채팅 연출용 사운드 — 메시지 도착음(1회), "입력 중" 타이핑음(반복).
 // 플레이어는 앱 전체에서 하나씩만 만들어 재사용한다(메시지가 빠르게 이어져도 새로 로드하지 않게).
 // 소리는 어디까지나 부가 연출이므로, 재생 실패가 대화 진행을 막지 않도록 전부 조용히 삼킨다.
 
@@ -11,7 +11,6 @@ const TYPING_RELATIVE = 0.5;
 
 let messagePlayer: AudioPlayer | null = null;
 let typingPlayer: AudioPlayer | null = null;
-let bgmPlayer: AudioPlayer | null = null;
 
 function messageSound(): AudioPlayer | null {
   if (messagePlayer == null) {
@@ -34,18 +33,6 @@ function typingSound(): AudioPlayer | null {
     }
   }
   return typingPlayer;
-}
-
-function bgmSound(): AudioPlayer | null {
-  if (bgmPlayer == null) {
-    try {
-      bgmPlayer = createAudioPlayer(require('../../assets/sound/scene_bgm.mp3'));
-      bgmPlayer.loop = true;
-    } catch {
-      return null;
-    }
-  }
-  return bgmPlayer;
 }
 
 /// 효과음에 실제로 적용할 볼륨 — 음소거면 0.
@@ -78,40 +65,6 @@ export function useTypingSound() {
     if (p == null) return;
     try {
       p.volume = volume;
-      void p.seekTo(0).catch(() => {});
-      p.play();
-    } catch {
-      // 무시
-    }
-    return () => {
-      try {
-        p.pause();
-      } catch {
-        // 무시
-      }
-    };
-  }, []);
-}
-
-/// 소개팅 화면에 머무는 동안만 배경음 루프. 볼륨/음소거는 실시간으로 반영된다.
-export function useSceneBgm() {
-  const muted = useStore((s) => s.soundMuted);
-  const volume = useStore((s) => s.bgmVolume);
-
-  useEffect(() => {
-    const p = bgmSound();
-    if (p == null) return;
-    try {
-      p.volume = muted ? 0 : volume;
-    } catch {
-      // 무시
-    }
-  }, [muted, volume]);
-
-  useEffect(() => {
-    const p = bgmSound();
-    if (p == null) return;
-    try {
       void p.seekTo(0).catch(() => {});
       p.play();
     } catch {

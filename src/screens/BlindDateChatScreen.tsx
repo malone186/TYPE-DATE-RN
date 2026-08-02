@@ -26,7 +26,7 @@ import {
 import { ChoiceList } from '../widgets/ChoiceList';
 import { LikeEffectOverlay } from '../widgets/LikeEffectOverlay';
 import { imageSource } from '../assets/images';
-import { playMessageSound, useSceneBgm, useTypingSound } from '../audio/sounds';
+import { playMessageSound, useTypingSound } from '../audio/sounds';
 
 // Flutter screens/blind_date_chat_screen.dart 이식.
 
@@ -82,9 +82,6 @@ export function BlindDateChatScreen({
 }: NativeStackScreenProps<RootStackParamList, 'BlindDateChat'>) {
   const c = useColors();
   const isDark = useIsDark();
-
-  // 소개팅 화면에 있는 동안만 배경음이 깔린다 — 나가면 자동으로 멈춘다.
-  useSceneBgm();
 
   const session = useStore((s) => s.session);
   const selectChoice = useStore((s) => s.selectChoice);

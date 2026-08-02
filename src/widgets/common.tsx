@@ -189,17 +189,15 @@ export function ThemeToggleButton() {
   );
 }
 
-/// 사운드 설정 버튼 — 우측 상단에서 음소거 토글 + 배경음/효과음 볼륨을 조절한다.
+/// 사운드 설정 버튼 — 우측 상단에서 음소거 토글 + 효과음 볼륨을 조절한다.
 /// 아이콘을 누르면 헤더 아래쪽에 볼륨 박스가 열리고, 바깥을 누르면 닫힌다.
 export function SoundControlButton() {
   const c = useColors();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const muted = useStore((s) => s.soundMuted);
-  const bgmVolume = useStore((s) => s.bgmVolume);
   const sfxVolume = useStore((s) => s.sfxVolume);
   const toggleMuted = useStore((s) => s.toggleSoundMuted);
-  const setBgmVolume = useStore((s) => s.setBgmVolume);
   const setSfxVolume = useStore((s) => s.setSfxVolume);
 
   return (
@@ -254,8 +252,6 @@ export function SoundControlButton() {
             </View>
 
             <View style={{ height: 12 }} />
-            <VolumeRow label="배경음" value={bgmVolume} disabled={muted} onChange={setBgmVolume} />
-            <View style={{ height: 6 }} />
             <VolumeRow label="효과음" value={sfxVolume} disabled={muted} onChange={setSfxVolume} />
           </GlassPanel>
         </View>
