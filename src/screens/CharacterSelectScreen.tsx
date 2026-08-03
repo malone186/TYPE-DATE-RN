@@ -7,7 +7,7 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { CoralButton, GlowBackground, ThemeToggleButton } from '../widgets/common';
+import { CoralButton, GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
 import { lineData } from '../data';
 import { imageSource } from '../assets/images';
@@ -48,6 +48,7 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
             </Pressable>
             <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>소개팅 상대</Text>
             <View style={{ flex: 1 }} />
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <View style={{ height: 4 }} />
@@ -70,9 +71,7 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
             contentContainerStyle={{ gap: 16, paddingBottom: 16 }}
             renderItem={({ item, index }) => {
               const hasContent = index < episodes.length;
-              // ⚠️ TEMP(테스트용 전체 해금) — 배포/커밋 전 아래 원본 줄로 되돌릴 것:
-              // const unlocked = hasContent && (index === 0 || isCompleted(episodes[index - 1].id));
-              const unlocked = hasContent;
+              const unlocked = hasContent && (index === 0 || isCompleted(episodes[index - 1].id));
               return (
                 <CharacterSlot
                   character={item}

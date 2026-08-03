@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,7 +7,7 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
 import { episodeById } from '../data';
 import { DateResult, Ending, axisLetters } from '../types';
@@ -27,6 +27,7 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
           <View style={{ width: 4 }} />
           <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>공유 카드</Text>
           <View style={{ flex: 1 }} />
+          <SoundControlButton />
           <ThemeToggleButton />
         </View>
         <View style={{ flex: 1, padding: 24 }}>
@@ -36,15 +37,9 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
             </View>
           </View>
           <View style={{ height: 24 }} />
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1 }}>
-              <CoralButton label="저장" outlined onPress={() => Alert.alert('알림', '데모 버전에서는 저장 기능이 비활성화되어 있어요')} />
-            </View>
-            <View style={{ width: 12 }} />
-            <View style={{ flex: 1 }}>
-              <CoralButton label="공유" onPress={() => Alert.alert('알림', '데모 버전에서는 공유 기능이 비활성화되어 있어요')} />
-            </View>
-          </View>
+          <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+            스크린샷으로 저장해서 공유해보세요
+          </Text>
         </View>
       </SafeAreaView>
     </GlowBackground>

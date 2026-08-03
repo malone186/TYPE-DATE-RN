@@ -8,7 +8,7 @@ import { episodeById } from '../data';
 import { useColors } from '../theme/useColors';
 import { withAlpha } from '../theme/colors';
 import { useStore } from '../state/store';
-import { GlowBackground, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 
 // Flutter screens/result_report_screen.dart 이식.
 
@@ -97,7 +97,8 @@ export function ResultReportScreen({
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 24 }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
 

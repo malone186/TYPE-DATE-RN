@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { TextInput, Text, View } from 'react-native';
+import { Pressable, TextInput, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { useStore } from '../state/store';
 
 // Flutter screens/name_input_screen.dart 이식.
@@ -27,7 +28,18 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: 32 }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Pressable
+              onPress={() =>
+                navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Splash')
+              }
+              hitSlop={8}
+              style={{ padding: 8 }}
+            >
+              <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
+            </Pressable>
+            <View style={{ flex: 1 }} />
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <View style={{ flex: 3 }} />

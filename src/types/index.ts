@@ -62,7 +62,7 @@ export interface BlindDate {
   character: TDCharacter;
   turns: Turn[];
   openingScript: ChatLine[]; // 도착·인사·착석 — 선택지 없이 자동 진행되는 도입부
-  closingScripts: Record<Ending, ChatLine[]>; // 13턴 종료 후 결과별 클로징 씬
+  closingScripts: Record<Ending, ChatLine[]>; // 마지막 턴 종료 후 결과별 클로징 씬
   styleInfo: Record<string, StyleInfo>; // EF/ET/IF/IT — 이 상대 기준의 유형별 보고서
 }
 

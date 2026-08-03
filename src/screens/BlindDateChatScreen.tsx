@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -13,16 +14,19 @@ import { useStore, sessionCurrentTurn, sessionIsLastTurn } from '../state/store'
 import { TDCharacter, Turn, Choice, ChatLine, DateResult } from '../types';
 import {
   GlowBackground,
+  GlassPanel,
   CharacterAvatar,
   MonologuePill,
   TurnProgressBar,
   TypingIndicator,
+  SoundControlButton,
   ThemeToggleButton,
   CoralButton,
 } from '../widgets/common';
 import { ChoiceList } from '../widgets/ChoiceList';
 import { LikeEffectOverlay } from '../widgets/LikeEffectOverlay';
 import { imageSource } from '../assets/images';
+import { playMessageSound, useTypingSound } from '../audio/sounds';
 
 // Flutter screens/blind_date_chat_screen.dart 이식.
 
@@ -34,8 +38,14 @@ function applyName(text: string, userName: string): string {
 }
 
 /// 메시지 길이에 비례한 "입력 중..." 표시 시간 — 카카오톡 대화창과 같은 리듬을 주기 위함.
+/// 하한은 도착음(1.06초)이 연달아 겹쳐 들리지 않을 만큼 확보한다.
 function typingDelayFor(text: string): number {
-  return Math.max(600, Math.min(1800, 350 + text.length * 22));
+  return Math.max(800, Math.min(2000, 450 + text.length * 24));
+}
+
+/// 대사가 뜬 뒤 다음 줄로 넘어가기 전 유지 시간 — 대사는 짧게, 안내/독백은 조금 더 길게.
+function holdMsFor(isDialogue: boolean): number {
+  return isDialogue ? 700 : 900;
 }
 
 /// 선택지 표시 순서를 턴마다 무작위로 섞는다 — 데이터상 좋은 답이 앞자리에 몰려 있어도
@@ -71,6 +81,7 @@ export function BlindDateChatScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'BlindDateChat'>) {
   const c = useColors();
+  const isDark = useIsDark();
 
   const session = useStore((s) => s.session);
   const selectChoice = useStore((s) => s.selectChoice);
@@ -90,6 +101,7 @@ export function BlindDateChatScreen({
   const [showEffect, setShowEffect] = useState(false);
   const [reactionTyping, setReactionTyping] = useState(false);
   const [reactionRevealed, setReactionRevealed] = useState(false);
+  const [exitAsking, setExitAsking] = useState(false);
 
   // 도입부(도착·인사·착석) — 선택지 없이 자동으로 흘러가다가 턴1로 이어짐
   const [openingDone, setOpeningDone] = useState(false);
@@ -134,6 +146,7 @@ export function BlindDateChatScreen({
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setNpcMessageRevealed(true);
+      playMessageSound();
       scrollToBottom();
     }, typingDelayFor(npcMessage));
   };
@@ -153,6 +166,7 @@ export function BlindDateChatScreen({
       typingTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         setPlayerPromptRevealed(true);
+        playMessageSound();
         scrollToBottom();
         advanceTimer.current = setTimeout(() => {
           if (!mounted.current) return;
@@ -165,7 +179,14 @@ export function BlindDateChatScreen({
   };
 
   const onChoiceSelected = (choice: Choice) => {
+    // 호감/비호감을 진동으로도 구분해준다 — 이펙트 오버레이와 같은 타이밍.
+    void Haptics.notificationAsync(
+      choice.likeScore > 0
+        ? Haptics.NotificationFeedbackType.Success
+        : Haptics.NotificationFeedbackType.Warning,
+    );
     selectChoice(choice);
+    playMessageSound();
     setShowEffect(true);
     scrollToBottom();
   };
@@ -180,6 +201,7 @@ export function BlindDateChatScreen({
       if (!mounted.current) return;
       setReactionTyping(false);
       setReactionRevealed(true);
+      playMessageSound();
       scrollToBottom();
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
@@ -216,13 +238,14 @@ export function BlindDateChatScreen({
     // "입력 중..."은 상대(NPC) 대사에만 — 주인공(me) 대사는 짧은 딜레이 후 바로 표시
     const isNpcDialogue = isDialogue && next.sender !== 'me';
     if (isNpcDialogue) setClosingTyping(true);
-    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 400 : 250;
+    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 600 : 400;
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setClosingTyping(false);
       setClosingReveal(closingRevealCountRef.current + 1);
+      if (isDialogue) playMessageSound();
       scrollToBottom();
-      const holdMs = isDialogue ? 500 : 800;
+      const holdMs = holdMsFor(isDialogue);
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         scheduleClosingLine();
@@ -244,13 +267,14 @@ export function BlindDateChatScreen({
     // "입력 중..."은 상대(NPC) 대사에만 — 주인공(me) 대사는 짧은 딜레이 후 바로 표시
     const isNpcDialogue = isDialogue && next.sender !== 'me';
     if (isNpcDialogue) setOpeningTyping(true);
-    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 400 : 250;
+    const preDelay = isNpcDialogue ? typingDelayFor(next.text) : isDialogue ? 600 : 400;
     typingTimer.current = setTimeout(() => {
       if (!mounted.current) return;
       setOpeningTyping(false);
       setOpeningReveal(openingRevealCountRef.current + 1);
+      if (isDialogue) playMessageSound();
       scrollToBottom();
-      const holdMs = isDialogue ? 500 : 800;
+      const holdMs = holdMsFor(isDialogue);
       advanceTimer.current = setTimeout(() => {
         if (!mounted.current) return;
         scheduleOpeningLine();
@@ -298,6 +322,17 @@ export function BlindDateChatScreen({
     [session.date.id, session.currentTurnIndex],
   );
 
+  // 세션은 저장되지 않으므로 나가면 이 회차 진행이 사라진다 — 진행 중일 때만 한 번 묻는다.
+  // Alert는 웹에서 동작하지 않으므로(react-native-web에서 no-op) 앱 내 모달로 확인받는다.
+  const confirmExit = () => {
+    const inProgress = session.currentTurnIndex > 0 || session.lastChoice != null;
+    if (inProgress) {
+      setExitAsking(true);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   const opening = session.date.openingScript;
   const openingVisible = opening.slice(0, openingRevealCount);
   const showChoices =
@@ -306,10 +341,18 @@ export function BlindDateChatScreen({
   return (
     <GlowBackground photoBackground photoSource={imageSource(character.backgroundPath ?? undefined)}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* 헤더 — 배경 그라디언트 위에 떠 있는 느낌으로, 별도 배경 없이 투명하게 */}
-        <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+        {/* 헤더 — 사진 배경 위에서도 이름·진행도·테마 버튼이 읽히도록 반불투명 바를 깐다 */}
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            backgroundColor: withAlpha(c.surface, isDark ? 0.82 : 0.88),
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: withAlpha(c.border, 0.7),
+          }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
+            <Pressable onPress={confirmExit} hitSlop={8}>
               <MaterialIcons name="arrow-back-ios" size={16} color={c.textPrimary} />
             </Pressable>
             <View style={{ width: 8 }} />
@@ -328,6 +371,7 @@ export function BlindDateChatScreen({
                 {`${turn.turnNumber} / ${session.date.turns.length}`}
               </Text>
             )}
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           {openingDone && (
@@ -449,8 +493,57 @@ export function BlindDateChatScreen({
             <CoralButton label="결과 확인하기" onPress={goToResult} />
           </View>
         )}
+
+        <ExitConfirmModal
+          visible={exitAsking}
+          onStay={() => setExitAsking(false)}
+          onLeave={() => {
+            setExitAsking(false);
+            navigation.goBack();
+          }}
+        />
       </SafeAreaView>
     </GlowBackground>
+  );
+}
+
+/// 소개팅 도중 나가기 확인 — 진행이 저장되지 않는다는 걸 알리고 한 번 되묻는다.
+function ExitConfirmModal({
+  visible,
+  onStay,
+  onLeave,
+}: {
+  visible: boolean;
+  onStay: () => void;
+  onLeave: () => void;
+}) {
+  const c = useColors();
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onStay}>
+      <View
+        style={{
+          flex: 1,
+          padding: 32,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: withAlpha('#000000', 0.45),
+        }}
+      >
+        <GlassPanel style={{ width: '100%', maxWidth: 360 }}>
+          <Text style={[TypeDateTextStyles.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
+            소개팅을 그만둘까요?
+          </Text>
+          <View style={{ height: 10 }} />
+          <Text style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
+            지금 나가면 이 회차 진행이 저장되지 않아요.{'\n'}처음부터 다시 해야 해요.
+          </Text>
+          <View style={{ height: 20 }} />
+          <CoralButton label="계속하기" onPress={onStay} />
+          <View style={{ height: 10 }} />
+          <CoralButton label="나가기" outlined onPress={onLeave} />
+        </GlassPanel>
+      </View>
+    </Modal>
   );
 }
 
@@ -529,6 +622,7 @@ function CompletedTurnBlock({
 function TypingRow({ character }: { character: TDCharacter }) {
   const c = useColors();
   const isDark = useIsDark();
+  useTypingSound();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <CharacterAvatar character={character} size={24} />

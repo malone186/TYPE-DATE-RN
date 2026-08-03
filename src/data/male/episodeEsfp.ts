@@ -490,7 +490,7 @@ export const maleEpisodeEsfp: BlindDate = {
 
 // 조력자 친구 예린(신혼) — 결혼식 당일 프롤로그 이후, 신혼여행에서 근황 전달.
 export const maleEpilogueEsfpLines: ChatLine[] = [
-  { sender: '예린', text: '신혼여행 몰디브 도착. 여기 물 색깔 실화 아니야' },
+  { sender: '예린', text: '신혼여행 몰디브 도착. 여기 물 색깔 실화냐' },
   { sender: '예린', text: '근데 너 오늘 그 디저트 카페 사장님 만나는 날 아니었어?' },
   { sender: 'me', text: '방금 헤어짐. 나 소개팅에서 카페 통째로 대접받고 왔다' },
   { sender: '예린', text: '뭐야 그거 소개팅이야 대접이야' },

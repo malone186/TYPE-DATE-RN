@@ -500,7 +500,7 @@ export const maleEpilogueEstpLines: ChatLine[] = [
   { sender: '예린', text: '마지막이잖아' },
   { sender: 'me', text: '어 그러네' },
   { sender: '예린', text: '어 그러네가 아니라. 나 지금 손에 땀 남' },
-  { sender: 'me', text: '니가 왜 긴장을 해. 신혼여행이나 즐겨' },
+  { sender: 'me', text: '니가 왜 긴장을 해. 너는 강릉 갈 준비나 해' },
   { sender: '예린', text: '16명 다 만나야 진짜 인연 유형 나온다며. 나 그날 알람 맞춰놓을 거야' },
   { sender: 'me', text: '오바하지 마' },
   { sender: '예린', text: '마지막 사람 잘 골라. 아니 잘 만나. 아 몰라 나만 떨려' },

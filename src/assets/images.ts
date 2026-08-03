@@ -70,6 +70,9 @@ const registry: Record<string, ImageSourcePropType> = {
   'assets/images/ISTP_male_face.png': require('../../assets/images/ISTP_male_face.jpg'),
   'assets/images/logo.png': require('../../assets/images/logo.png'),
   'assets/images/logo_mark.png': require('../../assets/images/logo_mark.png'),
+  // 인트로용 — logo.png에서 흰 배경을 잘라내고 투명 처리한 버전
+  'assets/images/logo_intro.png': require('../../assets/images/logo_intro.png'),
+  'assets/images/background.png': require('../../assets/images/background.jpg'),
   'assets/images/ENFP_female_background.jpg': require('../../assets/images/ENFP_female_background.jpg'),
   'assets/images/ESFP_background.jpg': require('../../assets/images/ESFP_background.jpg'),
   'assets/images/ENFP_background.png': require('../../assets/images/ENFP_background.jpg'),
@@ -114,3 +117,4 @@ export const allImages = Object.values(registry) as number[];
 
 export const logoImage = registry['assets/images/logo.png'];
 export const logoMarkImage = registry['assets/images/logo_mark.png'];
+export const logoIntroImage = registry['assets/images/logo_intro.png'];

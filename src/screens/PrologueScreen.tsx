@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
-import { GlowBackground, GlassPanel, MonologuePill, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, GlassPanel, MonologuePill, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { lineData } from '../data';
 import { useStore } from '../state/store';
@@ -55,7 +55,8 @@ function OnboardingScene({ onNext }: { onNext: () => void }) {
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: 32 }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <View style={{ flex: 2 }} />
@@ -85,7 +86,8 @@ function AssignmentScene({ character, onNext }: { character: TDCharacter; onNext
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>

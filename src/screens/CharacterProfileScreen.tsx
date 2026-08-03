@@ -8,7 +8,7 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { useStore } from '../state/store';
 import { characterById, episodeForCharacter } from '../data';
 import { imageSource } from '../assets/images';
@@ -40,6 +40,7 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
           <View style={{ flex: 1 }} />
+          <SoundControlButton />
           <ThemeToggleButton />
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32, alignItems: 'center' }}>

@@ -5,23 +5,31 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Asset } from 'expo-asset';
+import * as SplashScreen from 'expo-splash-screen';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useStore } from './src/state/store';
 import { useColors, useIsDark } from './src/theme/useColors';
 import { allImages } from './src/assets/images';
+import { IntroLogo } from './src/widgets/IntroLogo';
 
 function Root() {
   const c = useColors();
   const isDark = useIsDark();
+  // 로딩이 끝난 직후 로고 인트로를 한 번 보여주고, 끝나면 타이틀 화면이 드러난다.
+  const [introDone, setIntroDone] = useState(false);
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
+      {!introDone && <IntroLogo onFinished={() => setIntroDone(true)} />}
     </View>
   );
 }
+
+// 폰트·이미지 로딩이 끝날 때까지 스플래시를 띄워둔다 — 그동안 빈 화면이 보이지 않게.
+void SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const loadPersisted = useStore((s) => s.loadPersisted);
@@ -41,7 +49,12 @@ export default function App() {
       .finally(() => setImagesLoaded(true));
   }, []);
 
-  if (!fontsLoaded || !imagesLoaded) return null;
+  const ready = fontsLoaded && imagesLoaded;
+  useEffect(() => {
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
 
   return (
     <SafeAreaProvider>

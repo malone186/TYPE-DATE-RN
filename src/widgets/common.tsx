@@ -1,14 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Image,
   ImageBackground,
   ImageSourcePropType,
+  Modal,
+  PanResponder,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -168,17 +171,187 @@ export function ThemeToggleButton() {
   const cycle = useStore((s) => s.cycleThemeMode);
   const icon =
     mode === 'light' ? 'light-mode' : mode === 'dark' ? 'dark-mode' : 'brightness-auto';
+  // 사진·그라디언트 배경 위에서도 아이콘이 묻히지 않도록 불투명한 원형 칩을 깐다.
   return (
-    <Pressable onPress={cycle} hitSlop={8} style={{ padding: 8 }}>
-      <MaterialIcons name={icon as any} size={22} color={c.textSecondary} />
+    <Pressable
+      onPress={cycle}
+      hitSlop={8}
+      style={({ pressed }) => ({
+        padding: 8,
+        borderRadius: 999,
+        backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: withAlpha(c.border, 0.8),
+      })}
+    >
+      <MaterialIcons name={icon as any} size={22} color={c.textPrimary} />
     </Pressable>
   );
 }
 
-/// 원형 프사 — 브랜드 그라디언트 글로우 링 + 이미지, 없으면 이니셜 placeholder
-export function CharacterAvatar({ character, size = 40 }: { character: TDCharacter; size?: number }) {
+/// 사운드 설정 버튼 — 우측 상단에서 음소거 토글 + 효과음 볼륨을 조절한다.
+/// 아이콘을 누르면 헤더 아래쪽에 볼륨 박스가 열리고, 바깥을 누르면 닫힌다.
+export function SoundControlButton() {
   const c = useColors();
-  const img = imageSource(character.imagePath);
+  const insets = useSafeAreaInsets();
+  const [open, setOpen] = useState(false);
+  const muted = useStore((s) => s.soundMuted);
+  const sfxVolume = useStore((s) => s.sfxVolume);
+  const toggleMuted = useStore((s) => s.toggleSoundMuted);
+  const setSfxVolume = useStore((s) => s.setSfxVolume);
+
+  return (
+    <>
+      {/* 사진·그라디언트 배경 위에서도 아이콘이 묻히지 않도록 불투명한 원형 칩을 깐다. */}
+      <Pressable
+        onPress={() => setOpen(true)}
+        hitSlop={8}
+        style={({ pressed }) => ({
+          padding: 8,
+          marginRight: 6,
+          borderRadius: 999,
+          backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
+          borderWidth: StyleSheet.hairlineWidth,
+          borderColor: withAlpha(c.border, 0.8),
+        })}
+      >
+        <MaterialIcons
+          name={muted ? 'volume-off' : 'volume-up'}
+          size={22}
+          color={muted ? c.textMuted : c.textPrimary}
+        />
+      </Pressable>
+
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
+        <View style={{ position: 'absolute', top: insets.top + 52, right: 12, width: 248 }}>
+          <GlassPanel padding={16}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={TypeDateTextStyles.caption(c.textSecondary)}>사운드</Text>
+              <View style={{ flex: 1 }} />
+              <Pressable
+                onPress={toggleMuted}
+                hitSlop={6}
+                style={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 12,
+                  borderRadius: 999,
+                  backgroundColor: muted ? withAlpha(c.textMuted, 0.2) : c.accentCoral,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontFamily: 'Pretendard-SemiBold',
+                    color: muted ? c.textSecondary : '#FFFFFF',
+                  }}
+                >
+                  {muted ? '음소거 중' : '소리 켜짐'}
+                </Text>
+              </Pressable>
+            </View>
+
+            <View style={{ height: 12 }} />
+            <VolumeRow label="효과음" value={sfxVolume} disabled={muted} onChange={setSfxVolume} />
+          </GlassPanel>
+        </View>
+      </Modal>
+    </>
+  );
+}
+
+function VolumeRow({
+  label,
+  value,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  disabled: boolean;
+  onChange: (v: number) => void;
+}) {
+  const c = useColors();
+  return (
+    <View style={{ opacity: disabled ? 0.4 : 1 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={TypeDateTextStyles.caption(c.textSecondary)}>{label}</Text>
+        <View style={{ flex: 1 }} />
+        <Text style={TypeDateTextStyles.caption(c.textMuted)}>{`${Math.round(value * 100)}%`}</Text>
+      </View>
+      <VolumeSlider value={value} onChange={onChange} />
+    </View>
+  );
+}
+
+/// 슬라이더 — 새 의존성 없이 PanResponder로 탭/드래그를 모두 받는다.
+/// 트랙의 화면상 좌표는 터치 시작 시 pageX-locationX로 구해두고, 드래그 중에는 그 기준으로 환산한다.
+function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const c = useColors();
+  const trackWidth = useRef(1);
+  const trackOriginX = useRef(0);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  const responder = useMemo(() => {
+    const apply = (x: number) => {
+      const ratio = Math.max(0, Math.min(1, x / trackWidth.current));
+      onChangeRef.current(Math.round(ratio * 100) / 100);
+    };
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (e) => {
+        trackOriginX.current = e.nativeEvent.pageX - e.nativeEvent.locationX;
+        apply(e.nativeEvent.locationX);
+      },
+      onPanResponderMove: (_, gesture) => apply(gesture.moveX - trackOriginX.current),
+    });
+  }, []);
+
+  const pct = Math.max(0, Math.min(1, value));
+  return (
+    <View
+      {...responder.panHandlers}
+      onLayout={(e) => {
+        trackWidth.current = Math.max(1, e.nativeEvent.layout.width);
+      }}
+      style={{ paddingVertical: 10 }}
+    >
+      <View style={{ height: 6, borderRadius: 3, overflow: 'hidden', backgroundColor: withAlpha(c.border, 0.9) }}>
+        <View style={{ width: `${pct * 100}%`, height: 6, backgroundColor: c.accentCoral }} />
+      </View>
+      <View
+        pointerEvents="none"
+        style={{
+          position: 'absolute',
+          top: 4,
+          left: `${pct * 100}%`,
+          marginLeft: -9,
+          width: 18,
+          height: 18,
+          borderRadius: 9,
+          backgroundColor: c.accentCoral,
+          borderWidth: 2,
+          borderColor: '#FFFFFF',
+        }}
+      />
+    </View>
+  );
+}
+
+/// 원형 프사 — 브랜드 그라디언트 글로우 링 + 이미지, 없으면 이니셜 placeholder
+export function CharacterAvatar({
+  character,
+  size = 40,
+  useFace = false,
+}: {
+  character: TDCharacter;
+  size?: number;
+  useFace?: boolean; // 작은 동그라미에서는 얼굴 크롭이 더 잘 보인다
+}) {
+  const c = useColors();
+  const img = (useFace ? imageSource(character.facePath) : undefined) ?? imageSource(character.imagePath);
   return (
     <LinearGradient
       colors={[c.accentCoral, c.accentCoralSoft, c.accentLavender, c.accentLavenderDeep, c.accentCoral]}
@@ -217,7 +390,7 @@ export function CharacterAvatar({ character, size = 40 }: { character: TDCharact
   );
 }
 
-/// 13턴 진행 바
+/// 턴 진행 바
 export function TurnProgressBar({ progress }: { progress: number }) {
   const c = useColors();
   const clamped = Math.max(0, Math.min(1, progress));

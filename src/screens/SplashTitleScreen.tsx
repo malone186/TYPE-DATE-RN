@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { TypeDateTextStyles } from '../theme/textStyles';
-import { GlowBackground, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { logoMarkImage } from '../assets/images';
 
 // Flutter screens/splash_title_screen.dart 이식.
@@ -15,7 +15,8 @@ export function SplashTitleScreen({ navigation }: NativeStackScreenProps<RootSta
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: 24 }}>
-          <View style={{ alignSelf: 'flex-end' }}>
+          <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
+            <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <View style={{ flex: 3 }} />
