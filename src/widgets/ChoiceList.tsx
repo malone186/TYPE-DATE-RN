@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { TypeDateTokens, withAlpha } from '../theme/colors';
 import { useColors, useIsDark } from '../theme/useColors';
 import { Choice } from '../types';
@@ -63,6 +63,7 @@ function ChoiceButton({
   onTap?: () => void;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   const isDark = useIsDark();
   const [pressed, setPressed] = useState(false);
   return (
@@ -102,7 +103,7 @@ function ChoiceButton({
           }}
         />
         <View style={{ width: 10 }} />
-        <Text style={[TypeDateTextStyles.choiceButton(c.textPrimary), { flex: 1 }]}>{choice.text}</Text>
+        <Text style={[t.choiceButton(c.textPrimary), { flex: 1 }]}>{choice.text}</Text>
       </View>
     </Pressable>
   );

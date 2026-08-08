@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
@@ -15,6 +15,7 @@ import { DateResult, Ending, axisLetters } from '../types';
 // Flutter screens/sns_card_screen.dart 이식.
 export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'SnsCard'>) {
   const c = useColors();
+  const t = useTextStyles();
   const { result } = route.params;
 
   return (
@@ -25,7 +26,7 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
           <View style={{ width: 4 }} />
-          <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>공유 카드</Text>
+          <Text style={t.screenTitle(c.textPrimary)}>공유 카드</Text>
           <View style={{ flex: 1 }} />
           <SoundControlButton />
           <ThemeToggleButton />
@@ -37,7 +38,7 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
             </View>
           </View>
           <View style={{ height: 24 }} />
-          <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+          <Text style={[t.caption(c.textMuted), { textAlign: 'center' }]}>
             스크린샷으로 저장해서 공유해보세요
           </Text>
         </View>
@@ -59,6 +60,7 @@ function endingEmoji(ending: Ending): string {
 
 export function ResultShareCard({ result }: { result: DateResult }) {
   const c = useColors();
+  const t = useTextStyles();
   const episode = episodeById(result.dateId);
   const style = episode.styleInfo[result.styleType] ?? episode.styleInfo['EF'];
   const completedCount = useStore((s) => s.totalCompleted);
@@ -82,22 +84,22 @@ export function ResultShareCard({ result }: { result: DateResult }) {
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
         <MaterialIcons name="favorite" size={16} color={c.accentCoral} />
         <View style={{ width: 6 }} />
-        <Text style={TypeDateTextStyles.choiceLabel(c.textSecondary)}>TYPE DATE</Text>
+        <Text style={t.choiceLabel(c.textSecondary)}>TYPE DATE</Text>
       </View>
       <View style={{ flex: 2 }} />
       <Text style={{ fontSize: 40 }}>{style.emoji}</Text>
       <View style={{ height: 12 }} />
-      <Text style={[TypeDateTextStyles.resultTitle(c.textPrimary), { textAlign: 'center' }]}>{style.title}</Text>
+      <Text style={[t.resultTitle(c.textPrimary), { textAlign: 'center' }]}>{style.title}</Text>
       <View style={{ height: 20 }} />
-      <Text style={TypeDateTextStyles.chatMessage(c.textSecondary)}>분석 유형   {axisLetters(result.axisScore)}</Text>
+      <Text style={t.chatMessage(c.textSecondary)}>분석 유형   {axisLetters(result.axisScore)}</Text>
       <View style={{ height: 6 }} />
-      <Text style={TypeDateTextStyles.chatMessage(c.accentCoral)}>궁합   {style.compatibilityStars}</Text>
+      <Text style={t.chatMessage(c.accentCoral)}>궁합   {style.compatibilityStars}</Text>
       <View style={{ flex: 1 }} />
-      <Text style={[TypeDateTextStyles.monologue(c.textSecondary), { textAlign: 'center', paddingHorizontal: 8 }]}>
+      <Text style={[t.monologue(c.textSecondary), { textAlign: 'center', paddingHorizontal: 8 }]}>
         "{style.summary}"
       </Text>
       <View style={{ flex: 2 }} />
-      <Text style={TypeDateTextStyles.choiceButton(c.textPrimary)}>
+      <Text style={t.choiceButton(c.textPrimary)}>
         {endingEmoji(result.ending)}   {completedCount} / 16
       </Text>
     </View>

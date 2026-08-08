@@ -7,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../navigation/types';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useColors, useIsDark } from '../theme/useColors';
 import { useStore, sessionCurrentTurn, sessionIsLastTurn } from '../state/store';
@@ -81,6 +81,8 @@ export function BlindDateChatScreen({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'BlindDateChat'>) {
   const c = useColors();
+  // 이 파일 안에는 턴을 가리키는 지역 변수 t가 이미 있어 스타일은 ts로 받는다.
+  const ts = useTextStyles();
   const isDark = useIsDark();
 
   const session = useStore((s) => s.session);
@@ -89,6 +91,7 @@ export function BlindDateChatScreen({
   const buildResult = useStore((s) => s.buildResult);
   const completeDate = useStore((s) => s.completeDate);
   const userName = useStore((s) => s.userName);
+  const adRemoved = useStore((s) => s.adRemoved);
 
   const character = session.date.character;
   const turn = sessionCurrentTurn(session);
@@ -285,8 +288,13 @@ export function BlindDateChatScreen({
   const goToResult = () => {
     const result = pendingResultRef.current;
     if (result == null) return;
+    // 진행 저장은 광고보다 먼저 — 광고 화면에서 이탈해도 이번 회차는 완료로 남는다.
     void completeDate(result);
-    navigation.replace('ResultReport', { result });
+    if (adRemoved) {
+      navigation.replace('ResultReport', { result });
+    } else {
+      navigation.replace('AdInterstitial', { result });
+    }
   };
 
   // initState + dispose 대응
@@ -359,15 +367,15 @@ export function BlindDateChatScreen({
             <CharacterAvatar character={character} size={32} />
             <View style={{ width: 10 }} />
             <View style={{ flex: 1 }}>
-              <Text numberOfLines={1} style={TypeDateTextStyles.screenTitle(c.textPrimary)}>
+              <Text numberOfLines={1} style={ts.screenTitle(c.textPrimary)}>
                 {character.name}
               </Text>
-              <Text numberOfLines={1} style={TypeDateTextStyles.caption(c.textSecondary)}>
+              <Text numberOfLines={1} style={ts.caption(c.textSecondary)}>
                 {`${character.mbti} · ${character.age}`}
               </Text>
             </View>
             {openingDone && (
-              <Text style={TypeDateTextStyles.caption(c.textMuted)}>
+              <Text style={ts.caption(c.textMuted)}>
                 {`${turn.turnNumber} / ${session.date.turns.length}`}
               </Text>
             )}
@@ -518,6 +526,7 @@ function ExitConfirmModal({
   onLeave: () => void;
 }) {
   const c = useColors();
+  const ts = useTextStyles();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onStay}>
       <View
@@ -530,11 +539,11 @@ function ExitConfirmModal({
         }}
       >
         <GlassPanel style={{ width: '100%', maxWidth: 360 }}>
-          <Text style={[TypeDateTextStyles.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
+          <Text style={[ts.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
             소개팅을 그만둘까요?
           </Text>
           <View style={{ height: 10 }} />
-          <Text style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
+          <Text style={[ts.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
             지금 나가면 이 회차 진행이 저장되지 않아요.{'\n'}처음부터 다시 해야 해요.
           </Text>
           <View style={{ height: 20 }} />
@@ -558,10 +567,11 @@ function OpeningLine({
   userName: string;
 }) {
   const c = useColors();
+  const ts = useTextStyles();
   if (line.isSystemNote) {
     return (
       <View style={{ paddingVertical: 10, alignItems: 'center' }}>
-        <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+        <Text style={[ts.caption(c.textMuted), { textAlign: 'center' }]}>
           {line.text}
         </Text>
       </View>
@@ -648,6 +658,7 @@ function TypingRow({ character }: { character: TDCharacter }) {
 
 function NpcBubble({ character, text }: { character: TDCharacter; text: string }) {
   const c = useColors();
+  const ts = useTextStyles();
   const isDark = useIsDark();
   return (
     <FadeSlideIn>
@@ -670,7 +681,7 @@ function NpcBubble({ character, text }: { character: TDCharacter; text: string }
               ...NPC_RADII,
             }}
           >
-            <Text style={TypeDateTextStyles.chatMessage(c.textPrimary)}>{text}</Text>
+            <Text style={ts.chatMessage(c.textPrimary)}>{text}</Text>
           </View>
         </View>
       </View>
@@ -681,6 +692,7 @@ function NpcBubble({ character, text }: { character: TDCharacter; text: string }
 /// 선택지를 고르면 실제로 "보낸" 내 메시지 말풍선 — 퀴즈가 아니라 대화처럼 보이게
 function PlayerBubble({ text }: { text: string }) {
   const c = useColors();
+  const ts = useTextStyles();
   return (
     <FadeSlideIn>
       <View style={{ alignItems: 'flex-end' }}>
@@ -693,7 +705,7 @@ function PlayerBubble({ text }: { text: string }) {
             ...PLAYER_RADII,
           }}
         >
-          <Text style={TypeDateTextStyles.chatMessage('#FFFFFF')}>{text}</Text>
+          <Text style={ts.chatMessage('#FFFFFF')}>{text}</Text>
         </View>
       </View>
     </FadeSlideIn>

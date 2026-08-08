@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { TextStyle } from 'react-native';
+import { useStore } from '../state/store';
 
 // UI 디자인 명세서 v1.0 §2 타입 스케일 (Flutter theme.dart TypeDateTextStyles 이식)
 // Flutter의 height(줄간격 배수)는 RN lineHeight(px) = fontSize * height 로 환산.
@@ -54,3 +56,26 @@ export const TypeDateTextStyles = {
     color,
   }),
 };
+
+type TextStyleSet = typeof TypeDateTextStyles;
+
+/// 설정창에서 고른 글자 크기 배율이 반영된 텍스트 스타일 모음.
+/// 사용법은 TypeDateTextStyles와 같고, fontSize/lineHeight에만 배율이 곱해져 나온다.
+/// fs(n)은 스타일 셋을 거치지 않는 인라인 fontSize에 같은 배율을 먹일 때 쓴다.
+export function useTextStyles(): TextStyleSet & { fs: (size: number) => number } {
+  const scale = useStore((s) => s.fontScale);
+  return useMemo(() => {
+    const scaled: Record<string, (color: string) => TextStyle> = {};
+    for (const [name, make] of Object.entries(TypeDateTextStyles)) {
+      scaled[name] = (color) => {
+        const base = make(color);
+        return {
+          ...base,
+          fontSize: (base.fontSize as number) * scale,
+          lineHeight: (base.lineHeight as number) * scale,
+        };
+      };
+    }
+    return { ...(scaled as TextStyleSet), fs: (size: number) => size * scale };
+  }, [scale]);
+}

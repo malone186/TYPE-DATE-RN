@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { useStore } from '../state/store';
@@ -13,6 +13,7 @@ import { useStore } from '../state/store';
 // Flutter screens/name_input_screen.dart 이식.
 export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'NameInput'>) {
   const c = useColors();
+  const t = useTextStyles();
   const setUserName = useStore((s) => s.setUserName);
   const [text, setText] = useState('');
   const [focused, setFocused] = useState(false);
@@ -43,9 +44,9 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
             <ThemeToggleButton />
           </View>
           <View style={{ flex: 3 }} />
-          <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>만나기 전에,</Text>
+          <Text style={t.screenTitle(c.textPrimary)}>만나기 전에,</Text>
           <View style={{ height: 8 }} />
-          <Text style={[TypeDateTextStyles.resultTitle(c.textPrimary), { fontSize: 20 }]}>
+          <Text style={[t.resultTitle(c.textPrimary), { fontSize: t.fs(20) }]}>
             상대가 당신을 뭐라고 부르면 좋을까요?
           </Text>
           <View style={{ height: 24 }} />
@@ -60,7 +61,7 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
             placeholder="이름 또는 닉네임"
             placeholderTextColor={c.textMuted}
             style={[
-              TypeDateTextStyles.chatMessage(c.textPrimary),
+              t.chatMessage(c.textPrimary),
               {
                 backgroundColor: withAlpha(c.surface, 0.72),
                 paddingHorizontal: 16,

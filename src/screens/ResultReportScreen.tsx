@@ -6,6 +6,7 @@ import { RootStackParamList } from '../navigation/types';
 import { DateResult, Ending, StyleInfo, TDCharacter, axisLetters } from '../types';
 import { episodeById } from '../data';
 import { useColors } from '../theme/useColors';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useStore } from '../state/store';
 import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
@@ -188,6 +189,7 @@ function CoverSection({
   style: StyleInfo;
   now: Date;
 }) {
+  const t = useTextStyles();
   const stamp = stampMeta(result.ending);
   return (
     <View
@@ -207,9 +209,9 @@ function CoverSection({
       <Text
         style={{
           fontFamily: fBold,
-          fontSize: 20,
+          fontSize: t.fs(20),
           color: paperText,
-          lineHeight: 30,
+          lineHeight: t.fs(30),
           letterSpacing: -0.3,
           textAlign: 'center',
         }}
@@ -232,7 +234,7 @@ function CoverSection({
       <Text
         style={{
           fontFamily: fRegular,
-          fontSize: 13,
+          fontSize: t.fs(13),
           color: paperSub,
           letterSpacing: 1.5,
           textAlign: 'center',
@@ -251,7 +253,7 @@ function CoverSection({
           alignItems: 'center',
         }}
       >
-        <Text style={{ fontFamily: fRegular, fontSize: 13, color: accentBlue }}>TYPE DATE  :</Text>
+        <Text style={{ fontFamily: fRegular, fontSize: t.fs(13), color: accentBlue }}>TYPE DATE  :</Text>
         <View style={{ width: 40 }} />
         <View
           style={{
@@ -274,7 +276,7 @@ function CoverSection({
       <Text
         style={{
           fontFamily: fRegular,
-          fontSize: 13,
+          fontSize: t.fs(13),
           color: paperSub,
           letterSpacing: 2,
           textAlign: 'center',
@@ -295,15 +297,16 @@ function BulletRow({
   value: string;
   isHighlight: boolean;
 }) {
+  const t = useTextStyles();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-      <Text style={{ fontSize: 13, color: paperText }}>•  </Text>
-      <Text style={{ fontFamily: fSemiBold, fontSize: 13, color: paperText }}>{`${label}  :  `}</Text>
+      <Text style={{ fontSize: t.fs(13), color: paperText }}>•  </Text>
+      <Text style={{ fontFamily: fSemiBold, fontSize: t.fs(13), color: paperText }}>{`${label}  :  `}</Text>
       <Text
         style={{
           flex: 1,
           fontFamily: isHighlight ? fBold : fRegular,
-          fontSize: 13,
+          fontSize: t.fs(13),
           color: isHighlight ? accentBlue : paperText,
         }}
       >
@@ -327,6 +330,7 @@ function BodySection({
   ctrl: Animated.Value;
   completedCount: number;
 }) {
+  const t = useTextStyles();
   const endingMsg = style.endingMessages[result.ending] ?? '';
 
   return (
@@ -388,7 +392,7 @@ function BodySection({
           borderRadius: 4,
         }}
       >
-        <Text style={{ fontFamily: fRegular, fontSize: 13, color: paperText, lineHeight: 13 * 1.7 }}>
+        <Text style={{ fontFamily: fRegular, fontSize: t.fs(13), color: paperText, lineHeight: t.fs(13 * 1.7) }}>
           {endingMsg}
         </Text>
       </View>
@@ -400,7 +404,7 @@ function BodySection({
         <Text
           style={{
             fontFamily: fRegular,
-            fontSize: 11,
+            fontSize: t.fs(11),
             color: paperSub,
             letterSpacing: 0.5,
             textAlign: 'center',
@@ -414,11 +418,12 @@ function BodySection({
 }
 
 function SectionHeader({ text }: { text: string }) {
+  const t = useTextStyles();
   return (
     <Text
       style={{
         fontFamily: fBold,
-        fontSize: 13,
+        fontSize: t.fs(13),
         color: paperText,
         letterSpacing: -0.2,
       }}
@@ -437,6 +442,7 @@ function SectionDivider() {
 }
 
 function InfoBlock({ text }: { text: string }) {
+  const t = useTextStyles();
   return (
     <View
       style={{
@@ -448,7 +454,7 @@ function InfoBlock({ text }: { text: string }) {
         borderLeftColor: withAlpha(paperBorder, 0.35),
       }}
     >
-      <Text style={{ fontFamily: fRegular, fontSize: 13, color: paperText, lineHeight: 13 * 1.7 }}>
+      <Text style={{ fontFamily: fRegular, fontSize: t.fs(13), color: paperText, lineHeight: t.fs(13 * 1.7) }}>
         {text}
       </Text>
     </View>
@@ -456,6 +462,7 @@ function InfoBlock({ text }: { text: string }) {
 }
 
 function AxisOverview({ result, style }: { result: DateResult; style: StyleInfo }) {
+  const t = useTextStyles();
   return (
     <View
       style={{
@@ -479,7 +486,7 @@ function AxisOverview({ result, style }: { result: DateResult; style: StyleInfo 
           <Text
             style={{
               fontFamily: fBold,
-              fontSize: 12,
+              fontSize: t.fs(12),
               color: '#FFFFFF',
               letterSpacing: 0.8,
             }}
@@ -492,9 +499,9 @@ function AxisOverview({ result, style }: { result: DateResult; style: StyleInfo 
           style={{
             flex: 1,
             fontFamily: fBold,
-            fontSize: 13,
+            fontSize: t.fs(13),
             color: paperText,
-            lineHeight: 13 * 1.4,
+            lineHeight: t.fs(13 * 1.4),
           }}
         >
           {style.title}
@@ -504,9 +511,9 @@ function AxisOverview({ result, style }: { result: DateResult; style: StyleInfo 
       <Text
         style={{
           fontFamily: fRegular,
-          fontSize: 12,
+          fontSize: t.fs(12),
           color: paperSub,
-          lineHeight: 12 * 1.6,
+          lineHeight: t.fs(12 * 1.6),
         }}
       >
         {style.summary}
@@ -541,6 +548,7 @@ function AxisRow({
   result: DateResult;
   ctrl: Animated.Value;
 }) {
+  const t = useTextStyles();
   const l = result.axisScore[left] ?? 0;
   const r = result.axisScore[right] ?? 0;
   const total = l + r === 0 ? 1 : l + r;
@@ -558,7 +566,7 @@ function AxisRow({
 
   const labelStyle = (isWinner: boolean) => ({
     fontFamily: isWinner ? fBold : fMedium,
-    fontSize: isWinner ? 13 : 12,
+    fontSize: t.fs(isWinner ? 13 : 12),
     color: isWinner ? accentBlue : withAlpha(paperSub, 0.55),
   });
 
@@ -580,7 +588,7 @@ function AxisRow({
           style={{
             flex: 1,
             fontFamily: fSemiBold,
-            fontSize: 12,
+            fontSize: t.fs(12),
             color: paperText,
           }}
         >
@@ -594,14 +602,15 @@ function AxisRow({
             borderRadius: 999,
           }}
         >
-          <Text style={{ fontFamily: fBold, fontSize: 11, color: accentBlue }}>{`${dominant} 우세`}</Text>
+          <Text style={{ fontFamily: fBold, fontSize: t.fs(11), color: accentBlue }}>{`${dominant} 우세`}</Text>
         </View>
       </View>
 
       <View style={{ height: 8 }} />
 
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ width: 40 }}>
+        {/* 퍼센트 라벨 칸 — 글자가 커지면 칸도 같이 넓혀야 줄바꿈되지 않는다 */}
+        <View style={{ width: t.fs(40) }}>
           <Text style={labelStyle(leftWins)}>{`${left}  ${leftPercent}%`}</Text>
         </View>
         <View style={{ width: 8 }} />
@@ -623,7 +632,7 @@ function AxisRow({
           />
         </View>
         <View style={{ width: 8 }} />
-        <View style={{ width: 40 }}>
+        <View style={{ width: t.fs(40) }}>
           <Text style={[labelStyle(!leftWins), { textAlign: 'right' }]}>{`${rightPercent}%  ${right}`}</Text>
         </View>
       </View>
@@ -639,6 +648,7 @@ function CompatibilityAxisGrid({
   result: DateResult;
   character: TDCharacter;
 }) {
+  const t = useTextStyles();
   const mine = axisLetters(result.axisScore);
   const theirs = character.mbti;
   const matchCount = Array.from({ length: 4 }, (_, i) => mine[i] === theirs[i]).filter(
@@ -647,7 +657,7 @@ function CompatibilityAxisGrid({
 
   return (
     <View>
-      <Text style={{ fontFamily: fBold, fontSize: 12, color: accentBlue }}>
+      <Text style={{ fontFamily: fBold, fontSize: t.fs(12), color: accentBlue }}>
         {`나와 ${character.name}, 4개 성향 중 ${matchCount}개 일치`}
       </Text>
       <View style={{ height: 8 }} />
@@ -677,6 +687,7 @@ function CompatibilityRow({
   theirs: string;
   characterName: string;
 }) {
+  const t = useTextStyles();
   const match = mine === theirs;
   const diffColor = '#B35C00';
   return (
@@ -692,14 +703,15 @@ function CompatibilityRow({
         borderColor: match ? withAlpha(accentBlue, 0.3) : '#E7E1DA',
       }}
     >
-      <View style={{ width: 68 }}>
-        <Text style={{ fontFamily: fRegular, fontSize: 11, color: paperSub }}>{label}</Text>
+      {/* 항목 라벨 칸 — 글자가 커지면 칸도 같이 넓혀야 줄바꿈되지 않는다 */}
+      <View style={{ width: t.fs(68) }}>
+        <Text style={{ fontFamily: fRegular, fontSize: t.fs(11), color: paperSub }}>{label}</Text>
       </View>
       <Text
         style={{
           flex: 1,
           fontFamily: fSemiBold,
-          fontSize: 12,
+          fontSize: t.fs(12),
           color: paperText,
         }}
       >
@@ -708,7 +720,7 @@ function CompatibilityRow({
       <Text
         style={{
           fontFamily: fBold,
-          fontSize: 11,
+          fontSize: t.fs(11),
           color: match ? accentBlue : diffColor,
         }}
       >

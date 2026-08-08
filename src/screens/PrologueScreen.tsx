@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { GlowBackground, GlassPanel, MonologuePill, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { lineData } from '../data';
@@ -51,6 +51,7 @@ export function PrologueScreen({ navigation }: NativeStackScreenProps<RootStackP
 
 function OnboardingScene({ onNext }: { onNext: () => void }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
@@ -62,11 +63,11 @@ function OnboardingScene({ onNext }: { onNext: () => void }) {
           <View style={{ flex: 2 }} />
           <Image source={logoImage} style={{ width: 100, height: 100, alignSelf: 'center' }} resizeMode="contain" />
           <View style={{ height: 32 }} />
-          <Text style={[TypeDateTextStyles.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
+          <Text style={[t.screenTitle(c.textPrimary), { textAlign: 'center' }]}>
             "당신의 진짜 인연을 찾아드립니다"
           </Text>
           <View style={{ height: 16 }} />
-          <Text style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
+          <Text style={[t.chatMessage(c.textSecondary), { textAlign: 'center' }]}>
             16가지 유형의 상대를 만나보세요.{'\n'}16번의 만남이 끝날 때,{'\n'}당신이 진짜 설레는 인연 유형이 밝혀집니다.
           </Text>
           <View style={{ height: 28 }} />
@@ -82,6 +83,7 @@ function OnboardingScene({ onNext }: { onNext: () => void }) {
 
 function AssignmentScene({ character, onNext }: { character: TDCharacter; onNext: () => void }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
@@ -95,7 +97,7 @@ function AssignmentScene({ character, onNext }: { character: TDCharacter; onNext
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ fontSize: 22 }}>💘</Text>
                 <View style={{ width: 8 }} />
-                <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>첫 번째 인연</Text>
+                <Text style={t.screenTitle(c.textPrimary)}>첫 번째 인연</Text>
               </View>
               <View style={{ height: 20 }} />
               <InfoRow label="상대" value={`${character.name} (${character.age}세)`} />
@@ -103,7 +105,7 @@ function AssignmentScene({ character, onNext }: { character: TDCharacter; onNext
               <InfoRow label="지역" value={character.location} />
               <InfoRow label="MBTI" value={character.mbti} />
               <View style={{ height: 16 }} />
-              <Text style={TypeDateTextStyles.chatMessage(c.textSecondary)}>
+              <Text style={t.chatMessage(c.textSecondary)}>
                 "이 사람이 당신의 인연일까요?"
               </Text>
             </View>
@@ -120,12 +122,13 @@ function AssignmentScene({ character, onNext }: { character: TDCharacter; onNext
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <View style={{ flexDirection: 'row', paddingVertical: 4 }}>
       <View style={{ width: 48 }}>
-        <Text style={TypeDateTextStyles.caption(c.textMuted)}>{label}</Text>
+        <Text style={t.caption(c.textMuted)}>{label}</Text>
       </View>
-      <Text style={TypeDateTextStyles.chatMessage(c.textPrimary)}>{value}</Text>
+      <Text style={t.chatMessage(c.textPrimary)}>{value}</Text>
     </View>
   );
 }

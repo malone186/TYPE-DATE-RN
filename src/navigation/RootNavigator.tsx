@@ -10,6 +10,7 @@ import { PrologueScreen } from '../screens/PrologueScreen';
 import { CharacterSelectScreen } from '../screens/CharacterSelectScreen';
 import { CharacterProfileScreen } from '../screens/CharacterProfileScreen';
 import { BlindDateChatScreen } from '../screens/BlindDateChatScreen';
+import { AdInterstitialScreen } from '../screens/AdInterstitialScreen';
 import { ResultReportScreen } from '../screens/ResultReportScreen';
 import { SnsCardScreen } from '../screens/SnsCardScreen';
 import { EpilogueScreen } from '../screens/EpilogueScreen';
@@ -35,6 +36,11 @@ export function RootNavigator() {
       <Stack.Screen name="CharacterSelect" component={CharacterSelectScreen} />
       <Stack.Screen name="CharacterProfile" component={CharacterProfileScreen} />
       <Stack.Screen name="BlindDateChat" component={BlindDateChatScreen} />
+      <Stack.Screen
+        name="AdInterstitial"
+        component={AdInterstitialScreen}
+        options={{ gestureEnabled: false }}
+      />
       <Stack.Screen name="ResultReport" component={ResultReportScreen} />
       <Stack.Screen name="SnsCard" component={SnsCardScreen} />
       <Stack.Screen name="Epilogue" component={EpilogueScreen} />
