@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { CoralButton, GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
@@ -18,6 +18,7 @@ import { Pressable } from 'react-native';
 // 2열 그리드, 16슬롯, 순차 해금.
 export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'CharacterSelect'>) {
   const c = useColors();
+  const t = useTextStyles();
   const line = useStore((s) => s.line);
   const isCompleted = useStore((s) => s.isCompleted);
   // completedIds 변경 시 리렌더 보장
@@ -46,13 +47,13 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
             >
               <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
             </Pressable>
-            <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>소개팅 상대</Text>
+            <Text style={t.screenTitle(c.textPrimary)}>소개팅 상대</Text>
             <View style={{ flex: 1 }} />
             <SoundControlButton />
             <ThemeToggleButton />
           </View>
           <View style={{ height: 4 }} />
-          <Text style={TypeDateTextStyles.caption(c.textSecondary)}>{completedCount} / 16 완료</Text>
+          <Text style={t.caption(c.textSecondary)}>{completedCount} / 16 완료</Text>
           {completedCount >= episodes.length && (
             <>
               <View style={{ height: 10 }} />
@@ -106,6 +107,7 @@ function CharacterSlot({
   onTap?: () => void;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   const img = imageSource(character.imagePath);
   return (
     <Pressable
@@ -131,9 +133,9 @@ function CharacterSlot({
         )}
       </View>
       <View style={{ padding: 10 }}>
-        <Text style={TypeDateTextStyles.choiceLabel(c.accentLavenderDeep)}>{locked ? '?????' : character.mbti}</Text>
+        <Text style={t.choiceLabel(c.accentLavenderDeep)}>{locked ? '?????' : character.mbti}</Text>
         <View style={{ height: 2 }} />
-        <Text numberOfLines={1} style={TypeDateTextStyles.caption(c.textSecondary)}>
+        <Text numberOfLines={1} style={t.caption(c.textSecondary)}>
           {locked ? '???' : `${character.name} · ${character.age}세`}
         </Text>
       </View>

@@ -6,7 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
 import { useStore } from '../state/store';
@@ -17,6 +17,7 @@ import { track } from '../analytics/track';
 // Flutter screens/character_profile_screen.dart 이식.
 export function CharacterProfileScreen({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'CharacterProfile'>) {
   const c = useColors();
+  const t = useTextStyles();
   const setSelectedEpisode = useStore((s) => s.setSelectedEpisode);
   const startSession = useStore((s) => s.startSession);
 
@@ -71,19 +72,19 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
               <View style={{ height: 20 }} />
             </>
           )}
-          <Text style={[TypeDateTextStyles.resultTitle(c.textPrimary), { fontSize: 20, textAlign: 'center' }]}>
+          <Text style={[t.resultTitle(c.textPrimary), { fontSize: t.fs(20), textAlign: 'center' }]}>
             {character.name} · {character.age}세
           </Text>
           <View style={{ height: 6 }} />
-          <Text style={[TypeDateTextStyles.choiceButton(c.accentLavenderDeep), { fontFamily: 'Pretendard-Bold' }]}>
+          <Text style={[t.choiceButton(c.accentLavenderDeep), { fontFamily: 'Pretendard-Bold' }]}>
             {character.mbti}
           </Text>
           <View style={{ height: 4 }} />
-          <Text style={TypeDateTextStyles.caption(c.textSecondary)}>
+          <Text style={t.caption(c.textSecondary)}>
             {character.job} · {character.location}
           </Text>
           <View style={{ height: 16 }} />
-          <Text style={[TypeDateTextStyles.chatMessage(c.textPrimary), { textAlign: 'center' }]}>{character.intro}</Text>
+          <Text style={[t.chatMessage(c.textPrimary), { textAlign: 'center' }]}>{character.intro}</Text>
           <View style={{ height: 16 }} />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
             {character.tags.map((tag) => (
@@ -97,7 +98,7 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
                   backgroundColor: withAlpha(c.accentLavender, 0.35),
                 }}
               >
-                <Text style={TypeDateTextStyles.caption(c.accentLavenderText)}>{tag}</Text>
+                <Text style={t.caption(c.accentLavenderText)}>{tag}</Text>
               </View>
             ))}
           </View>

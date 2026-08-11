@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useColors, useIsDark } from '../theme/useColors';
 import { ChatLine, TDCharacter } from '../types';
@@ -38,6 +38,7 @@ export function KakaoChatView({
   avatarCharacter?: TDCharacter | null; // 넘기면 상대 아바타를 프로필 사진으로, 없으면 이름 첫 글자
 }) {
   const c = useColors();
+  const t = useTextStyles();
   const isDark = useIsDark();
   const [visibleCount, setVisibleCount] = useState(1);
   const [typing, setTyping] = useState(false);
@@ -170,7 +171,7 @@ export function KakaoChatView({
               <View style={{ width: 12 }} />
             </>
           )}
-          <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>{contactName}</Text>
+          <Text style={t.screenTitle(c.textPrimary)}>{contactName}</Text>
           <View style={{ flex: 1 }} />
           {!skipMode ? (
             <Pressable
@@ -185,11 +186,11 @@ export function KakaoChatView({
                 backgroundColor: withAlpha(c.surface, pressed ? 0.9 : 0.7),
               })}
             >
-              <Text style={TypeDateTextStyles.caption(c.accentCoral)}>건너뛰기 ⏭</Text>
+              <Text style={t.caption(c.accentCoral)}>건너뛰기 ⏭</Text>
             </Pressable>
           ) : (
             <View style={{ paddingHorizontal: 8 }}>
-              <Text style={TypeDateTextStyles.caption(c.textMuted)}>탭해서 계속</Text>
+              <Text style={t.caption(c.textMuted)}>탭해서 계속</Text>
             </View>
           )}
           <SoundControlButton />
@@ -279,6 +280,7 @@ function ChatLineWidget({
   avatarCharacter?: TDCharacter | null;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(fade, { toValue: 1, duration: 250, useNativeDriver: true }).start();
@@ -330,7 +332,7 @@ function ChatLineWidget({
           ...radius,
         }}
       >
-        <Text style={TypeDateTextStyles.chatMessage(textColor)}>{line.text}</Text>
+        <Text style={t.chatMessage(textColor)}>{line.text}</Text>
       </Animated.View>
     </View>
   );

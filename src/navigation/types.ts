@@ -9,6 +9,7 @@ export type RootStackParamList = {
   CharacterSelect: undefined;
   CharacterProfile: { characterId: string };
   BlindDateChat: undefined;
+  AdInterstitial: { result: DateResult };
   ResultReport: { result: DateResult };
   SnsCard: { result: DateResult };
   Epilogue: { result: DateResult };

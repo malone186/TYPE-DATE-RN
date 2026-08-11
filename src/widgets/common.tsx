@@ -18,7 +18,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { TypeDateColors, withAlpha } from '../theme/colors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { useColors, useIsDark } from '../theme/useColors';
 import { useStore } from '../state/store';
 import { TDCharacter } from '../types';
@@ -30,6 +30,7 @@ import { imageSource, logoMarkImage } from '../assets/images';
 /// 그라디언트·사진 등 어떤 배경 위에서도 라이트/다크 모두 읽히게 한다.
 export function MonologuePill({ text, muted = false }: { text: string; muted?: boolean }) {
   const c = useColors();
+  const t = useTextStyles();
   const isDark = useIsDark();
   const textColor = isDark ? c.textSecondary : withAlpha(c.textPrimary, muted ? 0.6 : 0.72);
   return (
@@ -42,7 +43,7 @@ export function MonologuePill({ text, muted = false }: { text: string; muted?: b
           backgroundColor: withAlpha(c.surface, isDark ? 0.35 : 0.6),
         }}
       >
-        <Text style={[TypeDateTextStyles.monologue(textColor), { textAlign: 'center' }]}>
+        <Text style={[t.monologue(textColor), { textAlign: 'center' }]}>
           {text}
         </Text>
       </View>
@@ -193,6 +194,7 @@ export function ThemeToggleButton() {
 /// 아이콘을 누르면 헤더 아래쪽에 볼륨 박스가 열리고, 바깥을 누르면 닫힌다.
 export function SoundControlButton() {
   const c = useColors();
+  const t = useTextStyles();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
   const muted = useStore((s) => s.soundMuted);
@@ -227,7 +229,7 @@ export function SoundControlButton() {
         <View style={{ position: 'absolute', top: insets.top + 52, right: 12, width: 248 }}>
           <GlassPanel padding={16}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={TypeDateTextStyles.caption(c.textSecondary)}>사운드</Text>
+              <Text style={t.caption(c.textSecondary)}>사운드</Text>
               <View style={{ flex: 1 }} />
               <Pressable
                 onPress={toggleMuted}
@@ -241,7 +243,7 @@ export function SoundControlButton() {
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: t.fs(12),
                     fontFamily: 'Pretendard-SemiBold',
                     color: muted ? c.textSecondary : '#FFFFFF',
                   }}
@@ -272,12 +274,13 @@ function VolumeRow({
   onChange: (v: number) => void;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <View style={{ opacity: disabled ? 0.4 : 1 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={TypeDateTextStyles.caption(c.textSecondary)}>{label}</Text>
+        <Text style={t.caption(c.textSecondary)}>{label}</Text>
         <View style={{ flex: 1 }} />
-        <Text style={TypeDateTextStyles.caption(c.textMuted)}>{`${Math.round(value * 100)}%`}</Text>
+        <Text style={t.caption(c.textMuted)}>{`${Math.round(value * 100)}%`}</Text>
       </View>
       <VolumeSlider value={value} onChange={onChange} />
     </View>
@@ -463,6 +466,7 @@ export function CoralButton({
   disabled?: boolean;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
@@ -478,7 +482,7 @@ export function CoralButton({
         borderColor: outlined ? c.accentCoral : undefined,
       })}
     >
-      <Text style={{ fontSize: 15, fontFamily: 'Pretendard-SemiBold', color: outlined ? c.accentCoral : '#FFFFFF' }}>
+      <Text style={{ fontSize: t.fs(15), fontFamily: 'Pretendard-SemiBold', color: outlined ? c.accentCoral : '#FFFFFF' }}>
         {label}
       </Text>
     </Pressable>

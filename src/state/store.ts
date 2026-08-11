@@ -34,6 +34,14 @@ interface AppState {
   toggleSoundMuted: () => void;
   setSfxVolume: (v: number) => void;
 
+  // 글자 크기 배율 — 설정창에서 조절, AsyncStorage 영속화
+  fontScale: number;
+  setFontScale: (v: number) => void;
+
+  // 광고 제거 여부 — 설정창에서 구매, AsyncStorage 영속화
+  adRemoved: boolean;
+  removeAds: () => void;
+
   // 라인(남/여) — 스플래시 다음 선택 화면에서 결정, AsyncStorage 영속화
   line: LineKey;
   setLine: (line: LineKey) => Promise<void>;
@@ -84,6 +92,12 @@ function savedVolume(raw: string | null, fallback: number): number {
   return Number.isFinite(v) ? clamp01(v) : fallback;
 }
 
+/// 저장된 글자 배율을 복원 — 손상되거나 지원 범위 밖이면 기본값(1).
+function savedFontScale(raw: string | null): number {
+  const v = Number(raw);
+  return Number.isFinite(v) && v >= 0.8 && v <= 1.4 ? v : 1;
+}
+
 // 슬라이더를 끄는 동안 매 프레임 저장하지 않도록 잠깐 모았다가 한 번만 기록한다.
 let volumeSaveTimer: ReturnType<typeof setTimeout> | null = null;
 function saveVolumesSoon(sfx: number) {
@@ -120,6 +134,18 @@ export const useStore = create<AppState>((set, get) => ({
     const next = clamp01(v);
     set({ sfxVolume: next });
     saveVolumesSoon(next);
+  },
+
+  fontScale: 1,
+  setFontScale: (v) => {
+    set({ fontScale: v });
+    void AsyncStorage.setItem('td_font_scale', String(v));
+  },
+
+  adRemoved: false,
+  removeAds: () => {
+    set({ adRemoved: true });
+    void AsyncStorage.setItem('td_ad_removed', 'true');
   },
 
   line: 'female',
@@ -217,6 +243,8 @@ export const useStore = create<AppState>((set, get) => ({
     const savedTheme = (await AsyncStorage.getItem('td_theme_mode')) as ThemeMode | null;
     const savedMuted = await AsyncStorage.getItem('td_sound_muted');
     const savedSfx = await AsyncStorage.getItem('td_sfx_volume');
+    const savedScale = await AsyncStorage.getItem('td_font_scale');
+    const savedAdRemoved = await AsyncStorage.getItem('td_ad_removed');
     const completed = new Set<string>();
     const savedResults: Record<string, DateResult> = {};
     for (const e of [...allEpisodes, ...allMaleEpisodes]) {
@@ -240,6 +268,8 @@ export const useStore = create<AppState>((set, get) => ({
       line: savedLine === 'male' || savedLine === 'female' ? savedLine : 'female',
       soundMuted: savedMuted === 'true',
       sfxVolume: savedVolume(savedSfx, 0.8),
+      fontScale: savedFontScale(savedScale),
+      adRemoved: savedAdRemoved === 'true',
       completedIds: completed,
       totalCompleted: completed.size,
       results: savedResults,

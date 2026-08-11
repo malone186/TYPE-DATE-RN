@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
-import { TypeDateTextStyles } from '../theme/textStyles';
+import { useTextStyles } from '../theme/textStyles';
 import { GlowBackground, GlassPanel, SoundControlButton, ThemeToggleButton, CoralButton, CharacterAvatar } from '../widgets/common';
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { useStore } from '../state/store';
@@ -77,6 +77,7 @@ function RevealScene({
   onNext: () => void;
 }) {
   const c = useColors();
+  const t = useTextStyles();
   const partner = match?.episode.character;
   return (
     <GlowBackground>
@@ -90,17 +91,17 @@ function RevealScene({
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 32 }}>{noMatch != null ? '🌙' : '💘'}</Text>
               <View style={{ height: 8 }} />
-              <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>16 / 16 완료</Text>
+              <Text style={t.screenTitle(c.textPrimary)}>16 / 16 완료</Text>
               <View style={{ height: 16 }} />
               {noMatch != null ? (
                 <Text
-                  style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
+                  style={[t.chatMessage(c.textSecondary), { textAlign: 'center' }]}
                 >
                   {noMatch.revealText}
                 </Text>
               ) : partner != null ? (
                 <Text
-                  style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
+                  style={[t.chatMessage(c.textSecondary), { textAlign: 'center' }]}
                 >
                   열여섯 번의 소개팅이 모두 끝났어요.{'\n'}
                   유형 분석도, 궁합 리포트도 다 나왔지만{'\n'}
@@ -109,7 +110,7 @@ function RevealScene({
                 </Text>
               ) : (
                 <Text
-                  style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
+                  style={[t.chatMessage(c.textSecondary), { textAlign: 'center' }]}
                 >
                   저장된 결과가 없어요.{'\n'}소개팅을 먼저 진행해주세요.
                 </Text>
@@ -127,6 +128,7 @@ function RevealScene({
 /// Scene 3(전원 fail) — 남은 상대가 없는 마무리 카드.
 function NoMatchEndingScene({ ending, onNext }: { ending: NoMatchEnding; onNext: () => void }) {
   const c = useColors();
+  const t = useTextStyles();
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
@@ -139,9 +141,9 @@ function NoMatchEndingScene({ ending, onNext }: { ending: NoMatchEnding; onNext:
             <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 32 }}>🌙</Text>
               <View style={{ height: 12 }} />
-              <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>{ending.endingTitle}</Text>
+              <Text style={t.screenTitle(c.textPrimary)}>{ending.endingTitle}</Text>
               <View style={{ height: 16 }} />
-              <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+              <Text style={[t.caption(c.textMuted), { textAlign: 'center' }]}>
                 {ending.endingCaption}
               </Text>
             </View>
@@ -157,6 +159,7 @@ function NoMatchEndingScene({ ending, onNext }: { ending: NoMatchEnding; onNext:
 /// Scene 3 — 연애 시작 카드. 상대 정보와 함께 여정의 마침표를 찍는다.
 function EndingScene({ match, onNext }: { match: FinalMatch; onNext: () => void }) {
   const c = useColors();
+  const t = useTextStyles();
   const partner = match.episode.character;
   const style = match.episode.styleInfo[match.result.styleType];
   return (
@@ -171,25 +174,25 @@ function EndingScene({ match, onNext }: { match: FinalMatch; onNext: () => void 
             <View style={{ alignItems: 'center' }}>
               <CharacterAvatar character={partner} size={72} />
               <View style={{ height: 12 }} />
-              <Text style={TypeDateTextStyles.screenTitle(c.textPrimary)}>연애 시작</Text>
+              <Text style={t.screenTitle(c.textPrimary)}>연애 시작</Text>
               <View style={{ height: 6 }} />
-              <Text style={TypeDateTextStyles.chatMessage(c.accentLavenderDeep)}>
+              <Text style={t.chatMessage(c.accentLavenderDeep)}>
                 {`${partner.name} · ${partner.mbti}`}
               </Text>
               <View style={{ height: 4 }} />
-              <Text style={TypeDateTextStyles.caption(c.textSecondary)}>{partner.job}</Text>
+              <Text style={t.caption(c.textSecondary)}>{partner.job}</Text>
               {style != null && (
                 <>
                   <View style={{ height: 16 }} />
                   <Text
-                    style={[TypeDateTextStyles.chatMessage(c.textSecondary), { textAlign: 'center' }]}
+                    style={[t.chatMessage(c.textSecondary), { textAlign: 'center' }]}
                   >
                     {style.compatibilityComment}
                   </Text>
                 </>
               )}
               <View style={{ height: 16 }} />
-              <Text style={[TypeDateTextStyles.caption(c.textMuted), { textAlign: 'center' }]}>
+              <Text style={[t.caption(c.textMuted), { textAlign: 'center' }]}>
                 {finalEndingFor(match).endingCaption}
               </Text>
             </View>
