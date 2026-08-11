@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
@@ -11,6 +11,19 @@ import { useStore } from './src/state/store';
 import { useColors, useIsDark } from './src/theme/useColors';
 import { allImages } from './src/assets/images';
 import { IntroLogo } from './src/widgets/IntroLogo';
+import { track } from './src/analytics/track';
+
+// 화면 이탈 지점을 보려면 진입 기록이 필요한데, 스크린마다 심는 대신 여기 한 곳에서 잡는다.
+const navRef = createNavigationContainerRef();
+let lastScreen = '';
+
+function logScreen() {
+  const name = navRef.getCurrentRoute()?.name;
+  if (name != null && name !== lastScreen) {
+    lastScreen = name;
+    track('screen_view', { props: { screen: name } });
+  }
+}
 
 function Root() {
   const c = useColors();
@@ -20,7 +33,7 @@ function Root() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      <NavigationContainer>
+      <NavigationContainer ref={navRef} onReady={logScreen} onStateChange={logScreen}>
         <RootNavigator />
       </NavigationContainer>
       {!introDone && <IntroLogo onFinished={() => setIntroDone(true)} />}
@@ -43,7 +56,8 @@ export default function App() {
   // 화면 전환 시 사진이 뜨는 지연을 없애기 위해 시작 시 전체 이미지를 미리 캐싱한다.
   const [imagesLoaded, setImagesLoaded] = useState(false);
   useEffect(() => {
-    loadPersisted();
+    // 라인(남/여)이 복원된 뒤에 보내야 방문 기록에 올바른 라인이 남는다.
+    void loadPersisted().then(() => track('app_open'));
     Asset.loadAsync(allImages)
       .catch(() => {})
       .finally(() => setImagesLoaded(true));

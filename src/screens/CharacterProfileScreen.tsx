@@ -12,6 +12,7 @@ import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } fr
 import { useStore } from '../state/store';
 import { characterById, episodeForCharacter } from '../data';
 import { imageSource } from '../assets/images';
+import { track } from '../analytics/track';
 
 // Flutter screens/character_profile_screen.dart 이식.
 export function CharacterProfileScreen({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'CharacterProfile'>) {
@@ -28,6 +29,7 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
     if (!episode) return;
     setSelectedEpisode(episode);
     startSession(episode);
+    track('episode_start', { episodeId: episode.id, props: { mbti: character.mbti } });
     navigation.navigate('BlindDateChat');
   };
 

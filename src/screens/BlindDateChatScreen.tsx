@@ -27,6 +27,7 @@ import { ChoiceList } from '../widgets/ChoiceList';
 import { LikeEffectOverlay } from '../widgets/LikeEffectOverlay';
 import { imageSource } from '../assets/images';
 import { playMessageSound, useTypingSound } from '../audio/sounds';
+import { track } from '../analytics/track';
 
 // Flutter screens/blind_date_chat_screen.dart 이식.
 
@@ -186,6 +187,10 @@ export function BlindDateChatScreen({
         : Haptics.NotificationFeedbackType.Warning,
     );
     selectChoice(choice);
+    track('choice', {
+      episodeId: session.date.id,
+      props: { turn: turn.turnNumber, label: choice.label, likeScore: choice.likeScore },
+    });
     playMessageSound();
     setShowEffect(true);
     scrollToBottom();
@@ -286,6 +291,14 @@ export function BlindDateChatScreen({
     const result = pendingResultRef.current;
     if (result == null) return;
     void completeDate(result);
+    track('episode_complete', {
+      episodeId: result.dateId,
+      props: {
+        ending: result.ending,
+        styleType: result.styleType,
+        likeScore: result.likeScore,
+      },
+    });
     navigation.replace('ResultReport', { result });
   };
 
@@ -499,6 +512,10 @@ export function BlindDateChatScreen({
           onStay={() => setExitAsking(false)}
           onLeave={() => {
             setExitAsking(false);
+            track('episode_quit', {
+              episodeId: session.date.id,
+              props: { turn: turn.turnNumber },
+            });
             navigation.goBack();
           }}
         />

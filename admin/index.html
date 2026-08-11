@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>TYPE_DATE 관리자 대시보드</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --seq-400: #3987e5;
+    --seq-250: #86b6ef;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --seq-400: #3987e5;
+      --seq-250: #184f95;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --seq-400: #3987e5;
+    --seq-250: #184f95;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 20px 64px; }
+
+  header.top {
+    display: flex; align-items: baseline; gap: 12px;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  h1 { font-size: 20px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+  .sub { color: var(--text-secondary); font-size: 13px; }
+  .spacer { flex: 1; }
+
+  button {
+    font: inherit; cursor: pointer; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-primary); padding: 6px 12px;
+  }
+  button:hover { border-color: var(--baseline); }
+  select, input {
+    font: inherit; border-radius: 8px; padding: 6px 10px;
+    border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-primary);
+  }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 14px; font-weight: 600; margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .card .note { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .kpi .label { color: var(--text-secondary); font-size: 12px; }
+  .kpi .value { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; margin-top: 2px; }
+  .kpi .unit { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-left: 2px; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 12px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  .scroll { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--text-secondary); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .empty { color: var(--muted); padding: 28px 0; text-align: center; font-size: 13px; }
+  .err { color: #d03b3b; font-size: 13px; }
+
+  #tip {
+    position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.14); z-index: 10; white-space: nowrap;
+  }
+
+  #login { max-width: 340px; margin: 12vh auto; }
+  #login .card { display: grid; gap: 10px; }
+</style>
+</head>
+<body>
+
+<div id="tip"></div>
+
+<!-- 로그인 -->
+<div id="login" hidden>
+  <div class="card">
+    <h2>TYPE_DATE 관리자</h2>
+    <p class="note">Supabase에 등록된 관리자 계정으로 로그인하세요.</p>
+    <input id="email" type="email" placeholder="이메일" autocomplete="username" />
+    <input id="password" type="password" placeholder="비밀번호" autocomplete="current-password" />
+    <button id="signin">로그인</button>
+    <div id="loginErr" class="err"></div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <h1>TYPE_DATE 트래킹</h1>
+    <span class="sub" id="who"></span>
+    <span class="spacer"></span>
+    <button id="theme">테마</button>
+    <button id="reload">새로고침</button>
+    <button id="signout">로그아웃</button>
+  </header>
+
+  <div id="globalErr" class="err"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>일별 활성 기기</h2>
+    <p class="note">앱을 연 고유 기기 수. 신규는 그날 처음 접속한 기기.</p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--series-1)"></i>활성</span>
+      <span><i class="swatch" style="background:var(--series-2)"></i>신규</span>
+    </div>
+    <div id="daily"></div>
+  </div>
+
+  <div class="card">
+    <h2>온보딩 퍼널</h2>
+    <p class="note">첫 소개팅에 닿기까지 각 화면에 도달한 기기 수. 괄호는 스플래시 대비 비율.</p>
+    <div id="onboarding"></div>
+    <p class="note" style="margin:12px 0 0">
+      ‘이어하기’로 들어오면 이름 입력·프롤로그를 건너뛰므로 중간 단계가 낮게 잡힐 수 있다.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>리텐션</h2>
+    <p class="note">첫 방문일 기준, 정확히 하루 뒤(D1)·이레 뒤(D7)에 다시 온 비율.</p>
+    <div id="retention" class="scroll"></div>
+  </div>
+
+  <div class="card">
+    <h2>회차별 완주율</h2>
+    <p class="note">소개팅을 시작한 사람 중 끝까지 마친 비율.</p>
+    <div id="funnel"></div>
+  </div>
+
+  <div class="card">
+    <h2>엔딩 분포</h2>
+    <p class="note">완주한 소개팅의 결말 비율.</p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--series-1)"></i>성공</span>
+      <span><i class="swatch" style="background:var(--series-2)"></i>친구</span>
+      <span><i class="swatch" style="background:var(--series-3)"></i>실패</span>
+    </div>
+    <div id="ending"></div>
+    <div id="endingTable" class="scroll"></div>
+  </div>
+
+  <div class="card">
+    <h2>성향 유형 분포</h2>
+    <p class="note">결과 보고서에서 나온 EF / ET / IF / IT 유형.</p>
+    <div id="style"></div>
+  </div>
+
+  <div class="card">
+    <h2>회차 상세</h2>
+    <p class="note">턴별 도달 인원으로 이탈 지점을, 선택률로 선택지 쏠림을 본다.</p>
+    <div style="margin-bottom:14px">
+      <select id="episodePick"></select>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--series-1)"></i>도달</span>
+      <span><i class="swatch" style="background:var(--series-2)"></i>중도 포기</span>
+    </div>
+    <div id="turnReach"></div>
+    <div id="choiceTable" class="scroll" style="margin-top:18px"></div>
+  </div>
+
+  <div class="card">
+    <h2>선택지 밸런스 경고</h2>
+    <p class="note">
+      아무도 안 고르는 선택지(5% 미만)와 몰표 선택지(70% 초과). 표본이 20건 이상인 턴만 본다.
+    </p>
+    <div id="balance" class="scroll"></div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// ── 설정 ─────────────────────────────────────────────────────────────
+// Supabase 프로젝트 Settings → API 에서 복사해 아래 두 줄을 채운다.
+const SUPABASE_URL = 'https://odugzjsopjhekjmbrrnd.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_hlc2DNv220ysZYkrFOvI8A_uqeZQa23';
+// ─────────────────────────────────────────────────────────────────────
+
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+const nf = new Intl.NumberFormat('ko-KR');
+
+/* ── 툴팁 ── */
+const tip = $('tip');
+function showTip(evt, html) {
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  const pad = 12;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  const r = tip.getBoundingClientRect();
+  if (x + r.width > innerWidth) x = evt.clientX - r.width - pad;
+  if (y + r.height > innerHeight) y = evt.clientY - r.height - pad;
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+const hideTip = () => { tip.style.opacity = '0'; };
+function hoverable(el, html) {
+  el.style.cursor = 'default';
+  el.addEventListener('mousemove', (e) => showTip(e, html));
+  el.addEventListener('mouseleave', hideTip);
+}
+
+/* ── SVG 헬퍼 ── */
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs = {}) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+function newSvg(w, h) {
+  const s = svgEl('svg', { viewBox: `0 0 ${w} ${h}`, role: 'img' });
+  return s;
+}
+function txt(s, x, y, { anchor = 'start', fill = 'var(--muted)', size = 11, weight = 400 } = {}) {
+  const t = svgEl('text', {
+    x, y, 'text-anchor': anchor, 'font-size': size, 'font-weight': weight,
+    fill, 'font-family': 'system-ui, -apple-system, "Segoe UI", sans-serif',
+  });
+  t.textContent = s;
+  return t;
+}
+function empty(host, msg = '아직 데이터가 없습니다.') {
+  host.innerHTML = `<div class="empty">${msg}</div>`;
+}
+
+/* ── 선 그래프 (일별 활성/신규) ── */
+// days는 툴팁에 쓰는 전체 라벨, fmt는 x축에 짧게 줄여 찍을 때 쓴다.
+function lineChart(host, days, series, fmt = (d) => d) {
+  host.innerHTML = '';
+  if (!days.length) return empty(host);
+
+  const W = 860, H = 260, L = 44, R = 16, T = 14, B = 30;
+  const iw = W - L - R, ih = H - T - B;
+  const maxY = Math.max(1, ...series.flatMap((s) => s.values));
+  const x = (i) => days.length === 1 ? L + iw / 2 : L + (i / (days.length - 1)) * iw;
+  const y = (v) => T + ih - (v / maxY) * ih;
+
+  const svg = newSvg(W, H);
+
+  // y 눈금 — 옅은 그리드에 값 표시
+  const ticks = 4;
+  for (let t = 0; t <= ticks; t++) {
+    const v = Math.round((maxY / ticks) * t);
+    svg.append(svgEl('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: 'var(--grid)', 'stroke-width': 1 }));
+    svg.append(txt(nf.format(v), L - 8, y(v) + 4, { anchor: 'end' }));
+  }
+  svg.append(svgEl('line', { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }));
+
+  // x 라벨 — 최대 6개만
+  const step = Math.max(1, Math.ceil(days.length / 6));
+  days.forEach((d, i) => {
+    if (i % step === 0 || i === days.length - 1) {
+      svg.append(txt(fmt(d), x(i), H - 10, { anchor: 'middle' }));
+    }
+  });
+
+  for (const s of series) {
+    const d = s.values.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(v)}`).join(' ');
+    svg.append(svgEl('path', {
+      d, fill: 'none', stroke: s.color, 'stroke-width': 2,
+      'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+    }));
+    // 마지막 점에 직접 라벨 — 색만으로 계열을 구분하지 않게
+    const li = s.values.length - 1;
+    svg.append(svgEl('circle', {
+      cx: x(li), cy: y(s.values[li]), r: 4, fill: s.color,
+      stroke: 'var(--surface-1)', 'stroke-width': 2,
+    }));
+    svg.append(txt(s.name, x(li) - 8, y(s.values[li]) - 10, {
+      anchor: 'end', fill: 'var(--text-secondary)', size: 11, weight: 600,
+    }));
+  }
+
+  // 호버 — 세로 크로스헤어 + 그날 전체 계열 값
+  const cross = svgEl('line', { y1: T, y2: T + ih, stroke: 'var(--baseline)', 'stroke-width': 1, opacity: 0 });
+  svg.append(cross);
+  const hit = svgEl('rect', { x: L, y: T, width: iw, height: ih, fill: 'transparent' });
+  hit.addEventListener('mousemove', (e) => {
+    const box = svg.getBoundingClientRect();
+    const px = ((e.clientX - box.left) / box.width) * W;
+    const i = Math.max(0, Math.min(days.length - 1,
+      days.length === 1 ? 0 : Math.round(((px - L) / iw) * (days.length - 1))));
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 1);
+    showTip(e, `<b>${days[i]}</b><br>` +
+      series.map((s) => `${s.name} ${nf.format(s.values[i])}`).join('<br>'));
+  });
+  hit.addEventListener('mouseleave', () => { cross.setAttribute('opacity', 0); hideTip(); });
+  svg.append(hit);
+
+  host.append(svg);
+}
+
+/* ── 가로 막대 (회차별 완주율) ── */
+function barsH(host, rows) {
+  host.innerHTML = '';
+  if (!rows.length) return empty(host);
+
+  const rowH = 26, gap = 6, L = 150, R = 70, W = 860;
+  const H = rows.length * (rowH + gap) + 10;
+  const iw = W - L - R;
+  const maxV = Math.max(1, ...rows.map((r) => r.value));
+  const svg = newSvg(W, H);
+
+  rows.forEach((r, i) => {
+    const y = i * (rowH + gap);
+    svg.append(txt(r.label, L - 10, y + rowH / 2 + 4, { anchor: 'end', fill: 'var(--text-secondary)' }));
+    svg.append(svgEl('rect', { x: L, y, width: iw, height: rowH, rx: 4, fill: 'var(--grid)', opacity: .5 }));
+    const w = Math.max(2, (r.value / maxV) * iw);
+    const bar = svgEl('rect', { x: L, y, width: w, height: rowH, rx: 4, fill: 'var(--seq-400)' });
+    hoverable(bar, `<b>${r.label}</b><br>${r.tip}`);
+    svg.append(bar);
+    svg.append(txt(r.valueLabel, L + iw + 10, y + rowH / 2 + 4, {
+      fill: 'var(--text-primary)', size: 12, weight: 600,
+    }));
+  });
+
+  host.append(svg);
+}
+
+/* ── 누적 가로 막대 (엔딩 분포) ── */
+function stacked(host, segs) {
+  host.innerHTML = '';
+  const total = segs.reduce((a, s) => a + s.value, 0);
+  if (!total) return empty(host);
+
+  const W = 860, H = 96, barY = 8, barH = 40, GAP = 2;
+  const svg = newSvg(W, H);
+  let x = 0;
+  for (const s of segs) {
+    if (!s.value) continue;
+    const w = (s.value / total) * W;
+    const drawW = Math.max(2, w - GAP);
+    const rect = svgEl('rect', { x, y: barY, width: drawW, height: barH, rx: 4, fill: s.color });
+    const pct = ((s.value / total) * 100).toFixed(1);
+    hoverable(rect, `<b>${s.name}</b><br>${nf.format(s.value)}회 · ${pct}%`);
+    svg.append(rect);
+    // 직접 라벨 — 대비가 낮은 색이 섞여 있어 값은 항상 글자로도 보여준다
+    if (w > 74) {
+      svg.append(txt(`${s.name} ${pct}%`, x + drawW / 2, barY + barH + 20, {
+        anchor: 'middle', fill: 'var(--text-secondary)', size: 12, weight: 600,
+      }));
+    }
+    x += w;
+  }
+  host.append(svg);
+}
+
+/* ── 세로 막대 (유형 분포) ── */
+function barsV(host, rows) {
+  host.innerHTML = '';
+  if (!rows.length) return empty(host);
+
+  const W = 860, H = 240, T = 16, B = 44, L = 44, R = 16;
+  const iw = W - L - R, ih = H - T - B;
+  const maxV = Math.max(1, ...rows.map((r) => r.value));
+  const svg = newSvg(W, H);
+
+  for (let t = 0; t <= 4; t++) {
+    const v = Math.round((maxV / 4) * t);
+    const y = T + ih - (v / maxV) * ih;
+    svg.append(svgEl('line', { x1: L, x2: W - R, y1: y, y2: y, stroke: 'var(--grid)', 'stroke-width': 1 }));
+    svg.append(txt(nf.format(v), L - 8, y + 4, { anchor: 'end' }));
+  }
+  svg.append(svgEl('line', { x1: L, x2: W - R, y1: T + ih, y2: T + ih, stroke: 'var(--baseline)', 'stroke-width': 1 }));
+
+  const slot = iw / rows.length;
+  const bw = Math.min(76, slot - 16);
+  rows.forEach((r, i) => {
+    const h = Math.max(2, (r.value / maxV) * ih);
+    const x = L + slot * i + (slot - bw) / 2;
+    const y = T + ih - h;
+    const rect = svgEl('rect', { x, y, width: bw, height: h, rx: 4, fill: 'var(--seq-400)' });
+    hoverable(rect, `<b>${r.label}</b><br>${nf.format(r.value)}회`);
+    svg.append(rect);
+    svg.append(txt(nf.format(r.value), x + bw / 2, y - 7, {
+      anchor: 'middle', fill: 'var(--text-primary)', size: 12, weight: 600,
+    }));
+    svg.append(txt(r.label, x + bw / 2, T + ih + 20, {
+      anchor: 'middle', fill: 'var(--text-secondary)', size: 12,
+    }));
+  });
+
+  host.append(svg);
+}
+
+/* ── 데이터 로드 ── */
+async function q(view, build) {
+  let query = sb.from(view).select('*');
+  if (build) query = build(query);
+  const { data, error } = await query;
+  if (error) throw new Error(`${view}: ${error.message}`);
+  return data ?? [];
+}
+
+let episodeIds = [];
+
+async function load() {
+  $('globalErr').textContent = '';
+  try {
+    const [daily, funnel, ending, style, onboarding, retention, balance] = await Promise.all([
+      q('v_daily_active'),
+      q('v_episode_funnel'),
+      q('v_ending_dist'),
+      q('v_style_dist'),
+      q('v_onboarding'),
+      q('v_retention'),
+      q('v_choice_balance'),
+    ]);
+
+    // KPI
+    const today = new Date().toISOString().slice(0, 10);
+    const todayRow = daily.find((d) => d.day === today);
+    const totalDevices = daily.reduce((a, d) => a + Number(d.new_devices), 0);
+    const starts = funnel.reduce((a, r) => a + Number(r.starts), 0);
+    const completes = funnel.reduce((a, r) => a + Number(r.completes), 0);
+    const rate = starts ? (completes / starts) * 100 : 0;
+
+    $('kpis').innerHTML = [
+      ['누적 기기', nf.format(totalDevices), '대'],
+      ['오늘 활성', nf.format(todayRow ? todayRow.active_devices : 0), '대'],
+      ['소개팅 완주', nf.format(completes), '회'],
+      ['평균 완주율', starts ? rate.toFixed(1) : '—', starts ? '%' : ''],
+    ].map(([label, value, unit]) => `
+      <div class="kpi"><div class="label">${label}</div>
+      <div class="value">${value}<span class="unit">${unit}</span></div></div>`).join('');
+
+    // 일별 활성/신규
+    lineChart($('daily'), daily.map((d) => d.day), [
+      { name: '활성', color: 'var(--series-1)', values: daily.map((d) => Number(d.active_devices)) },
+      { name: '신규', color: 'var(--series-2)', values: daily.map((d) => Number(d.new_devices)) },
+    ], (d) => d.slice(5));
+
+    // 온보딩 퍼널 — 화면 순서는 앱 흐름대로 고정한다(뷰는 순서를 모른다)
+    const STAGES = [
+      ['Splash', '스플래시'], ['LineSelect', '라인 선택'], ['NameInput', '이름 입력'],
+      ['Prologue', '프롤로그'], ['CharacterSelect', '캐릭터 선택'], ['BlindDateChat', '소개팅 시작'],
+    ];
+    const seen = new Map(onboarding.map((r) => [r.screen, Number(r.devices)]));
+    const top = seen.get('Splash') ?? 0;
+    barsH($('onboarding'), STAGES.map(([key, label]) => {
+      const v = seen.get(key) ?? 0;
+      const pct = top ? (v / top) * 100 : 0;
+      return {
+        label,
+        value: v,
+        valueLabel: top ? `${nf.format(v)} (${pct.toFixed(0)}%)` : nf.format(v),
+        tip: `도달 ${nf.format(v)}대`,
+      };
+    }));
+
+    // 리텐션 — 코호트 표
+    $('retention').innerHTML = retention.length ? `
+      <table>
+        <thead><tr><th>첫 방문일</th><th class="num">신규</th>
+        <th class="num">D1 재방문</th><th class="num">D7 재방문</th></tr></thead>
+        <tbody>${retention.map((r) => `
+          <tr><td>${r.cohort_day}</td>
+          <td class="num">${nf.format(r.cohort_size)}</td>
+          <td class="num">${nf.format(r.returned_d1)} (${r.d1_rate ?? 0}%)</td>
+          <td class="num">${nf.format(r.returned_d7)} (${r.d7_rate ?? 0}%)</td></tr>`).join('')}
+        </tbody>
+      </table>` : '<div class="empty">아직 데이터가 없습니다.</div>';
+
+    // 선택지 밸런스 경고
+    $('balance').innerHTML = balance.length ? `
+      <table>
+        <thead><tr><th>회차</th><th class="num">턴</th><th>선택지</th>
+        <th class="num">선택률</th><th class="num">표본</th><th>판정</th></tr></thead>
+        <tbody>${balance.map((r) => `
+          <tr><td>${r.episode_id}</td><td class="num">${r.turn}</td><td>${r.label}</td>
+          <td class="num">${r.pct}%</td><td class="num">${nf.format(r.turn_total)}</td>
+          <td>${Number(r.pct) > 70 ? '몰표' : '죽은 선택지'}</td></tr>`).join('')}
+        </tbody>
+      </table>`
+      : '<div class="empty">경고 없음 — 표본 20건 이상인 턴 중 쏠린 선택지가 없습니다.</div>';
+
+    // 회차별 완주율 — 라인(남/여)이 나뉘어 오므로 회차 기준으로 합친다
+    const byEp = new Map();
+    for (const r of funnel) {
+      const cur = byEp.get(r.episode_id) ?? { starts: 0, completes: 0 };
+      cur.starts += Number(r.starts);
+      cur.completes += Number(r.completes);
+      byEp.set(r.episode_id, cur);
+    }
+    episodeIds = [...byEp.keys()].sort();
+    barsH($('funnel'), episodeIds.map((id) => {
+      const v = byEp.get(id);
+      const pct = v.starts ? (v.completes / v.starts) * 100 : 0;
+      return {
+        label: id,
+        value: pct,
+        valueLabel: v.starts ? pct.toFixed(1) + '%' : '—',
+        tip: `시작 ${nf.format(v.starts)} · 완주 ${nf.format(v.completes)}`,
+      };
+    }));
+
+    // 엔딩 분포
+    const endKo = { success: '성공', friend: '친구', fail: '실패' };
+    const endColor = { success: 'var(--series-1)', friend: 'var(--series-2)', fail: 'var(--series-3)' };
+    const endTotals = { success: 0, friend: 0, fail: 0 };
+    for (const r of ending) {
+      if (r.ending in endTotals) endTotals[r.ending] += Number(r.n);
+    }
+    stacked($('ending'), ['success', 'friend', 'fail'].map((k) => ({
+      name: endKo[k], value: endTotals[k], color: endColor[k],
+    })));
+
+    // 표 병행 — 색 대비가 낮은 계열이 있어 수치는 표로도 읽을 수 있게 둔다
+    const endSum = endTotals.success + endTotals.friend + endTotals.fail;
+    $('endingTable').innerHTML = endSum ? `
+      <table><thead><tr><th>엔딩</th><th class="num">횟수</th><th class="num">비율</th></tr></thead>
+      <tbody>${['success', 'friend', 'fail'].map((k) => `
+        <tr><td>${endKo[k]}</td><td class="num">${nf.format(endTotals[k])}</td>
+        <td class="num">${((endTotals[k] / endSum) * 100).toFixed(1)}%</td></tr>`).join('')}
+      </tbody></table>` : '';
+
+    // 유형 분포
+    barsV($('style'), ['EF', 'ET', 'IF', 'IT'].map((code) => ({
+      label: code,
+      value: Number(style.find((s) => s.style_type === code)?.n ?? 0),
+    })));
+
+    // 회차 선택
+    const pick = $('episodePick');
+    const prev = pick.value;
+    pick.innerHTML = episodeIds.map((id) => `<option value="${id}">${id}</option>`).join('');
+    if (episodeIds.includes(prev)) pick.value = prev;
+    await loadEpisode();
+  } catch (e) {
+    $('globalErr').textContent = '불러오기 실패 — ' + e.message;
+  }
+}
+
+async function loadEpisode() {
+  const id = $('episodePick').value;
+  if (!id) {
+    empty($('turnReach'), '회차 데이터가 없습니다.');
+    $('choiceTable').innerHTML = '';
+    return;
+  }
+  try {
+    const [reach, quits, choices] = await Promise.all([
+      q('v_turn_reach', (x) => x.eq('episode_id', id).order('turn')),
+      q('v_quit_turn', (x) => x.eq('episode_id', id).order('turn')),
+      q('v_choice_rate', (x) => x.eq('episode_id', id).order('turn').order('label')),
+    ]);
+
+    // 도달과 포기는 턴이 서로 어긋날 수 있어 두 쪽 턴을 합집합으로 놓고 맞춘다
+    const turnAxis = [...new Set([
+      ...reach.map((r) => Number(r.turn)),
+      ...quits.map((r) => Number(r.turn)),
+    ])].sort((a, b) => a - b);
+    const reachBy = new Map(reach.map((r) => [Number(r.turn), Number(r.devices)]));
+    const quitBy = new Map(quits.map((r) => [Number(r.turn), Number(r.quits)]));
+
+    lineChart($('turnReach'), turnAxis.map((t) => '턴 ' + t), [
+      { name: '도달', color: 'var(--series-1)', values: turnAxis.map((t) => reachBy.get(t) ?? 0) },
+      { name: '중도 포기', color: 'var(--series-2)', values: turnAxis.map((t) => quitBy.get(t) ?? 0) },
+    ]);
+
+    if (!choices.length) {
+      $('choiceTable').innerHTML = '<div class="empty">선택 기록이 없습니다.</div>';
+      return;
+    }
+    const turns = [...new Set(choices.map((c) => c.turn))].sort((a, b) => a - b);
+    $('choiceTable').innerHTML = `
+      <table>
+        <thead><tr><th>턴</th>${['A', 'B', 'C', 'D'].map((l) => `<th class="num">${l}</th>`).join('')}<th class="num">합계</th></tr></thead>
+        <tbody>${turns.map((t) => {
+          const row = choices.filter((c) => c.turn === t);
+          const sum = row.reduce((a, c) => a + Number(c.n), 0);
+          return `<tr><td>턴 ${t}</td>${['A', 'B', 'C', 'D'].map((l) => {
+            const hit = row.find((c) => c.label === l);
+            return `<td class="num">${hit ? hit.pct + '%' : '—'}</td>`;
+          }).join('')}<td class="num">${nf.format(sum)}</td></tr>`;
+        }).join('')}</tbody>
+      </table>`;
+  } catch (e) {
+    $('globalErr').textContent = '회차 상세 실패 — ' + e.message;
+  }
+}
+
+/* ── 인증 ── */
+async function render(session) {
+  const inApp = Boolean(session);
+  $('app').hidden = !inApp;
+  $('login').hidden = inApp;
+  if (inApp) {
+    $('who').textContent = session.user.email ?? '';
+    await load();
+  }
+}
+
+$('signin').addEventListener('click', async () => {
+  $('loginErr').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({
+    email: $('email').value.trim(),
+    password: $('password').value,
+  });
+  if (error) $('loginErr').textContent = '로그인 실패 — ' + error.message;
+});
+$('password').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('signin').click(); });
+$('signout').addEventListener('click', () => sb.auth.signOut());
+$('reload').addEventListener('click', load);
+$('episodePick').addEventListener('change', loadEpisode);
+$('theme').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+});
+
+const { data: { session } } = await sb.auth.getSession();
+await render(session);
+sb.auth.onAuthStateChange((_e, s) => { void render(s); });
+</script>
+</body>
+</html>
