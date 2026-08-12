@@ -23,7 +23,7 @@ const mono = (text: string): ChatLine => ({ sender: 'me', text, isMonologue: tru
 /// 여자 라인 상대별 최종 엔딩 — dateId 기준.
 export const femaleFinalEndings: Record<string, FinalEnding> = {
   // 1화 지수 / ENFP / 콘텐츠 기획자 — 플리마켓, 필름카메라, 즉흥 제주 여행.
-  date01: {
+  female_01: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 지수'),
@@ -48,7 +48,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 2화 서윤 / INTJ / 전략기획자 — 차갑다는 말, 체스, 계획된 여행.
-  date02: {
+  female_02: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 서윤'),
@@ -71,7 +71,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 3화 하린 / ISFP / 일러스트레이터 — 드로잉, 플레이리스트, 동네 산책, 고양이.
-  date03: {
+  female_03: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 하린'),
@@ -94,7 +94,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 4화 유진 / ESTJ / 마케팅 팀장 — 연애도 계획에, 뒤끝 없음, 테니스.
-  date04: {
+  female_04: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 유진'),
@@ -117,7 +117,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 5화 다은 / INFP / 출판사 편집자 — 필사노트, 독립서점, 서랍 속 소설.
-  date05: {
+  female_05: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 다은'),
@@ -140,7 +140,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 6화 세진 / ESTP / 서핑샵 운영, 양양 — 자전거, 일단 부딪히는 사람.
-  date06: {
+  female_06: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 세진'),
@@ -163,7 +163,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 7화 수민 / ISFJ / 간호사 — 3교대, 홈베이킹, 손편지, 사람에 대한 기억력.
-  date07: {
+  female_07: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 수민'),
@@ -185,7 +185,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 8화 나래 / ENTP / 스타트업 PM — 밸런스 게임, 토론, "원래 그래요"를 싫어함.
-  date08: {
+  female_08: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 나래'),
@@ -208,7 +208,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 9화 주하 / ISTP / 자동차 R&D 엔지니어 — 침묵, 홈로스팅, 올드카 복원.
-  date09: {
+  female_09: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 주하'),
@@ -232,7 +232,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 10화 민지 / ESFJ / 초등학교 교사 — 할 말 목록, 챙기는 게 특기, 다이어리.
-  date10: {
+  female_10: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 민지'),
@@ -255,7 +255,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 11화 연우 / INTP / AI 연구원 — 보드게임 카페, 실험 설계하듯 소개팅.
-  date11: {
+  female_11: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 연우'),
@@ -277,7 +277,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 12화 하은 / ENFJ / 강연 기획자 — 전망 있는 자리, 문장 수집, 질문 부자.
-  date12: {
+  female_12: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 하은'),
@@ -299,7 +299,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 13화 은서 / ISTJ / 회계사 — 8년 단골집, 실패 확률, 손글씨 가계부.
-  date13: {
+  female_13: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 은서'),
@@ -322,7 +322,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 14화 유나 / ESFP / 뮤지컬 배우 — 커튼콜, 어색한 공기가 힘들어 떠드는 사람.
-  date14: {
+  female_14: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 유나'),
@@ -345,7 +345,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 15화 지원 / INFJ / 심리상담사 — 꽃, 차, 필사, 한번 연 마음은 깊음.
-  date15: {
+  female_15: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 지원'),
@@ -368,7 +368,7 @@ export const femaleFinalEndings: Record<string, FinalEnding> = {
   },
 
   // 16화 태린 / ENTJ / 스타트업 대표 — 호텔 야경, 시간은 아껴도 진심은 아끼지 않음.
-  date16: {
+  female_16: {
     lines: [
       note('열여섯 번째 소개팅이 끝난 밤. 휴대폰이 울린다'),
       note('카카오톡 채팅방 — 태린'),

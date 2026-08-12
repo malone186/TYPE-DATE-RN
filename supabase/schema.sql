@@ -7,6 +7,35 @@
 --  · 대시보드는 Supabase Auth로 로그인한 계정만 집계 뷰를 읽는다.
 --  · 개인정보(사용자 이름)는 절대 보내지 않는다. device_id는 앱이 만든 임의 UUID다.
 
+-- ── 관리자 ──────────────────────────────────────────────────────────
+-- 익명 로그인을 쓰면 앱 사용자도 authenticated 역할이 된다.
+-- 따라서 "로그인했으면 관리자"라고 볼 수 없고, 명시적으로 등록된 계정만 관리자로 취급한다.
+-- 관리자 추가 (이미 등록돼 있어도 에러 없이 넘어간다):
+--   insert into public.admins (user_id) values ('<Auth Users의 UID>') on conflict do nothing;
+
+create table if not exists public.admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  added_at timestamptz not null default now()
+);
+
+alter table public.admins enable row level security;
+-- 관리자 목록 자체는 아무도 클라이언트에서 읽지 못한다(정책 없음 = 전부 거부).
+-- 아래 is_admin()이 security definer라 정책 없이도 판정은 동작한다.
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (select 1 from public.admins a where a.user_id = auth.uid());
+$$;
+
+revoke all on function public.is_admin() from public;
+grant execute on function public.is_admin() to authenticated;
+
+
 create table if not exists public.events (
   id          bigserial primary key,
   created_at  timestamptz not null default now(),
@@ -30,12 +59,14 @@ create policy "anon can insert events"
   to anon
   with check (true);
 
--- 원본 이벤트 읽기는 로그인한 관리자만.
+-- 원본 이벤트 읽기는 admins에 등록된 관리자만.
+-- (익명 로그인 사용자도 authenticated이므로 역할만으로 판단하면 전체 데이터가 새어나간다)
 drop policy if exists "authenticated can read events" on public.events;
-create policy "authenticated can read events"
+drop policy if exists "admins can read events" on public.events;
+create policy "admins can read events"
   on public.events for select
   to authenticated
-  using (true);
+  using (public.is_admin());
 
 
 -- ── 집계 뷰 ──────────────────────────────────────────────────────────
@@ -209,3 +240,177 @@ where name = 'choice'
   and props ? 'label'
 group by 1, 2, 3
 order by 1, 2, 3;
+
+
+-- ── 1:1 문의 ────────────────────────────────────────────────────────
+-- 익명 로그인(signInAnonymously)으로 발급된 auth.uid()에 스레드를 묶는다.
+-- 가입 절차는 없지만 JWT 기반이라 "남의 문의 읽기"가 실제로 차단된다.
+
+create table if not exists public.inquiries (
+  id          bigserial primary key,
+  created_at  timestamptz not null default now(),
+  user_id     uuid        not null references auth.users(id) on delete cascade,
+  device_id   uuid,                       -- 트래킹 기록과 연결하고 싶을 때만 사용
+  email       text,                       -- 선택 — 앱을 지워도 답변을 받을 수 있게
+  subject     text        not null,
+  status      text        not null default 'open'
+              check (status in ('open', 'answered', 'closed'))
+);
+
+create table if not exists public.inquiry_messages (
+  id          bigserial primary key,
+  created_at  timestamptz not null default now(),
+  inquiry_id  bigint      not null references public.inquiries(id) on delete cascade,
+  sender      text        not null check (sender in ('user', 'admin')),
+  body        text        not null
+);
+
+create index if not exists inquiries_user_idx     on public.inquiries (user_id, created_at desc);
+create index if not exists inquiry_msg_thread_idx on public.inquiry_messages (inquiry_id, created_at);
+
+alter table public.inquiries        enable row level security;
+alter table public.inquiry_messages enable row level security;
+
+-- 문의: 본인 것만 읽고 쓴다. 관리자는 전부.
+drop policy if exists "own inquiries" on public.inquiries;
+create policy "own inquiries"
+  on public.inquiries for select
+  to authenticated
+  using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "create own inquiry" on public.inquiries;
+create policy "create own inquiry"
+  on public.inquiries for insert
+  to authenticated
+  with check (user_id = auth.uid());
+
+-- 상태 변경(답변완료/종료)은 관리자만.
+drop policy if exists "admins update inquiries" on public.inquiries;
+create policy "admins update inquiries"
+  on public.inquiries for update
+  to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- 메시지: 자기 스레드의 글만 읽는다.
+drop policy if exists "read own thread" on public.inquiry_messages;
+create policy "read own thread"
+  on public.inquiry_messages for select
+  to authenticated
+  using (
+    public.is_admin()
+    or exists (
+      select 1 from public.inquiries i
+      where i.id = inquiry_id and i.user_id = auth.uid()
+    )
+  );
+
+-- 사용자는 자기 스레드에 'user'로만 쓸 수 있다 — 관리자 답변을 위조할 수 없게.
+drop policy if exists "write own thread" on public.inquiry_messages;
+create policy "write own thread"
+  on public.inquiry_messages for insert
+  to authenticated
+  with check (
+    (public.is_admin() and sender = 'admin')
+    or (
+      sender = 'user'
+      and exists (
+        select 1 from public.inquiries i
+        where i.id = inquiry_id and i.user_id = auth.uid()
+      )
+    )
+  );
+
+-- 관리자 목록용 — 마지막 메시지와 누가 마지막으로 말했는지까지 한 번에.
+create or replace view public.v_inquiry_list
+with (security_invoker = on) as
+select
+  i.id,
+  i.created_at,
+  i.subject,
+  i.status,
+  i.email,
+  i.user_id,
+  (select count(*)  from public.inquiry_messages m where m.inquiry_id = i.id) as message_count,
+  (select max(m.created_at) from public.inquiry_messages m where m.inquiry_id = i.id) as last_message_at,
+  (select m.sender from public.inquiry_messages m
+    where m.inquiry_id = i.id order by m.created_at desc limit 1) as last_sender
+from public.inquiries i;
+
+
+-- ── 회차 간 이어보기 ─────────────────────────────────────────────────
+-- 이 회차를 끝낸 사람이 그 뒤에 '다른 회차를 시작했는가'.
+-- 해금 순서에 의존하지 않도록 "다음 회차"가 아니라 "이후의 아무 회차"로 본다.
+-- 연재형 구조에서 완주율보다 중요한 지표 — 완주율이 높아도 여기서 끊기면 이탈이다.
+create or replace view public.v_continuation
+with (security_invoker = on) as
+with done as (
+  select device_id, episode_id, min(created_at) as done_at
+  from public.events
+  where name = 'episode_complete'
+  group by device_id, episode_id
+)
+select
+  d.episode_id,
+  count(*)                                as finishers,
+  count(*) filter (where nx.went)         as continued,
+  round(100.0 * count(*) filter (where nx.went)
+        / nullif(count(*), 0), 1)         as continue_rate
+from done d
+cross join lateral (
+  select exists (
+    select 1 from public.events e
+    where e.device_id  = d.device_id
+      and e.name       = 'episode_start'
+      and e.episode_id is distinct from d.episode_id
+      and e.created_at > d.done_at
+  ) as went
+) nx
+group by d.episode_id
+order by continue_rate nulls last;
+
+
+-- ── 앱 오류 ─────────────────────────────────────────────────────────
+-- 크래시가 나도 문의가 들어와야 아는 상태를 없애기 위한 수집.
+create or replace view public.v_errors
+with (security_invoker = on) as
+select
+  coalesce(props ->> 'screen', '(알 수 없음)')  as screen,
+  coalesce(props ->> 'message', '(메시지 없음)') as message,
+  props ->> 'fatal'                            as fatal,
+  count(*)                                     as n,
+  count(distinct device_id)                    as devices,
+  min(created_at)                              as first_seen,
+  max(created_at)                              as last_seen
+from public.events
+where name = 'error'
+group by 1, 2, 3
+order by n desc, last_seen desc;
+
+
+-- ── 수익 (광고 / 광고 제거) ──────────────────────────────────────────
+-- 주의: 여기 담기는 건 '노출 수'와 '광고 제거 전환 수'일 뿐 금액이 아니다.
+--   · 실제 광고 수익은 AdMob 등 광고 네트워크 콘솔에만 있다. 여기 노출 수 × eCPM은 추정치다.
+--   · 광고 제거는 현재 결제 SDK 미연동이라 무료로 켜진다. 즉 아직 '매출'이 아니라 '전환 의사'다.
+-- 결제·광고 SDK를 붙일 때 앱에서 이벤트를 성공 콜백으로 옮기면 그대로 실수익 집계가 된다.
+
+create or replace view public.v_monetization
+with (security_invoker = on) as
+select
+  count(*) filter (where name = 'ad_shown')                    as ad_impressions,
+  count(distinct device_id) filter (where name = 'ad_shown')   as ad_viewers,
+  count(*) filter (where name = 'remove_ads')                  as removals,
+  count(distinct device_id) filter (where name = 'remove_ads') as removal_devices,
+  count(distinct device_id)                                    as all_devices
+from public.events;
+
+create or replace view public.v_monetization_daily
+with (security_invoker = on) as
+select
+  created_at::date                            as day,
+  count(*) filter (where name = 'ad_shown')   as ad_impressions,
+  count(*) filter (where name = 'remove_ads') as removals
+from public.events
+where name in ('ad_shown', 'remove_ads')
+group by 1
+order by 1;

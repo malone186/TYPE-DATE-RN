@@ -4,242 +4,538 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
-<title>TYPE_DATE 관리자 대시보드</title>
+<title>TYPE_DATE 관리자</title>
 <style>
   :root {
     color-scheme: light;
-    --surface-1: #fcfcfb;
-    --page: #f9f9f7;
-    --text-primary: #0b0b0b;
-    --text-secondary: #52514e;
-    --muted: #898781;
-    --grid: #e1e0d9;
-    --baseline: #c3c2b7;
-    --border: rgba(11, 11, 11, 0.10);
-    --series-1: #2a78d6;
-    --series-2: #eb6834;
-    --series-3: #1baf7a;
-    --seq-400: #3987e5;
-    --seq-250: #86b6ef;
+    --page:           #f5f1e8;
+    --surface-1:      #fffefb;
+    --surface-2:      #faf6ee;
+    --side:           #241c17;
+    --side-text:      #e8e0d4;
+    --side-muted:     #9c9086;
+    --text-primary:   #1c1613;
+    --text-secondary: #6b6058;
+    --muted:          #9a9089;
+    --grid:           #e8e1d4;
+    --baseline:       #cfc6b6;
+    --border:         rgba(28, 22, 19, 0.10);
+    --accent:         #d99a5b;
+    --accent-ink:     #7a4a18;
+    --series-1:       #2a78d6;
+    --series-2:       #eb6834;
+    --series-3:       #1baf7a;
+    --seq-400:        #3987e5;
+    --good:           #0ca30c;
+    --critical:       #d03b3b;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --surface-1: #1a1a19;
-      --page: #0d0d0d;
-      --text-primary: #ffffff;
-      --text-secondary: #c3c2b7;
-      --muted: #898781;
-      --grid: #2c2c2a;
-      --baseline: #383835;
-      --border: rgba(255, 255, 255, 0.10);
-      --series-1: #3987e5;
-      --series-2: #d95926;
-      --series-3: #199e70;
-      --seq-400: #3987e5;
-      --seq-250: #184f95;
+      --page:           #12100e;
+      --surface-1:      #1e1815;
+      --surface-2:      #191412;
+      --side:           #191412;
+      --text-primary:   #ffffff;
+      --text-secondary: #c7bcae;
+      --muted:          #948a80;
+      --grid:           #2e2723;
+      --baseline:       #3d342e;
+      --border:         rgba(255, 255, 255, 0.10);
+      --accent-ink:     #f0c48d;
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --seq-400:        #3987e5;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --surface-1: #1a1a19;
-    --page: #0d0d0d;
-    --text-primary: #ffffff;
-    --text-secondary: #c3c2b7;
-    --muted: #898781;
-    --grid: #2c2c2a;
-    --baseline: #383835;
-    --border: rgba(255, 255, 255, 0.10);
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --series-3: #199e70;
-    --seq-400: #3987e5;
-    --seq-250: #184f95;
+    --page:           #12100e;
+    --surface-1:      #1e1815;
+    --surface-2:      #191412;
+    --side:           #191412;
+    --text-primary:   #ffffff;
+    --text-secondary: #c7bcae;
+    --muted:          #948a80;
+    --grid:           #2e2723;
+    --baseline:       #3d342e;
+    --border:         rgba(255, 255, 255, 0.10);
+    --accent-ink:     #f0c48d;
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --series-3:       #199e70;
+    --seq-400:        #3987e5;
   }
 
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: var(--page);
-    color: var(--text-primary);
+    margin: 0; background: var(--page); color: var(--text-primary);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 14px; line-height: 1.5;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 20px 64px; }
+  button { font: inherit; cursor: pointer; }
 
-  header.top {
-    display: flex; align-items: baseline; gap: 12px;
-    flex-wrap: wrap; margin-bottom: 20px;
-  }
-  h1 { font-size: 20px; margin: 0; font-weight: 650; letter-spacing: -0.01em; }
-  .sub { color: var(--text-secondary); font-size: 13px; }
-  .spacer { flex: 1; }
+  /* ── 셸 ── */
+  #shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
 
-  button {
-    font: inherit; cursor: pointer; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--surface-1);
-    color: var(--text-primary); padding: 6px 12px;
+  .side {
+    background: var(--side); color: var(--side-text);
+    display: flex; flex-direction: column; padding: 22px 16px;
+    position: sticky; top: 0; height: 100vh;
   }
-  button:hover { border-color: var(--baseline); }
-  select, input {
-    font: inherit; border-radius: 8px; padding: 6px 10px;
-    border: 1px solid var(--border); background: var(--surface-1);
-    color: var(--text-primary);
+  .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+  .brand .mark {
+    width: 32px; height: 32px; border-radius: 9px; flex: none;
+    background: var(--accent); color: #2b1c0b;
+    display: grid; place-items: center; font-weight: 800; font-size: 15px;
+  }
+  .brand b { font-size: 17px; letter-spacing: -0.01em; }
+  .tag {
+    margin: 14px 8px 20px; padding: 6px 10px; border-radius: 7px;
+    background: rgba(255,255,255,.07); color: var(--side-muted);
+    font-size: 11px; font-weight: 700; letter-spacing: .09em;
+  }
+  .nav { display: flex; flex-direction: column; gap: 3px; }
+  .nav button {
+    display: flex; align-items: center; gap: 11px; width: 100%;
+    background: none; border: 0; border-radius: 10px;
+    padding: 11px 12px; color: var(--side-muted); text-align: left; font-size: 14px;
+  }
+  .nav button:hover { background: rgba(255,255,255,.06); color: var(--side-text); }
+  .nav button[aria-current="true"] {
+    background: var(--accent); color: #2b1c0b; font-weight: 650;
+  }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .nav .count {
+    margin-left: auto; background: var(--series-2); color: #fff;
+    border-radius: 999px; padding: 1px 7px; font-size: 11px; font-weight: 700;
+  }
+  .nav .count.bad { background: var(--critical); }
+  .nav button[aria-current="true"] .count { background: #2b1c0b; }
+  .side .foot { margin-top: auto; }
+  .who {
+    display: flex; align-items: center; gap: 10px; padding: 10px 8px;
+    border-top: 1px solid rgba(255,255,255,.09);
+  }
+  .who .av {
+    width: 30px; height: 30px; border-radius: 50%; flex: none;
+    background: rgba(255,255,255,.12); display: grid; place-items: center; font-weight: 700;
+  }
+  .who .em { font-size: 12px; color: var(--side-muted); overflow: hidden; text-overflow: ellipsis; }
+  .side .out {
+    width: 100%; margin-top: 8px; padding: 10px; border-radius: 9px;
+    background: rgba(208,59,59,.16); color: #ff9b9b; border: 1px solid rgba(208,59,59,.3);
   }
 
+  main { padding: 24px 28px 64px; min-width: 0; }
+  .top { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .top h1 { font-size: 21px; margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+  .top .sp { flex: 1; }
+  .top button, select {
+    border-radius: 9px; border: 1px solid var(--border);
+    background: var(--surface-1); color: var(--text-primary); padding: 7px 13px; font: inherit;
+  }
+  .top button:hover { border-color: var(--baseline); }
+
+  /* ── 카드 ── */
   .card {
     background: var(--surface-1); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+    border-radius: 16px; padding: 20px 22px; margin-bottom: 18px;
   }
-  .card h2 {
-    font-size: 14px; font-weight: 600; margin: 0 0 2px;
-    letter-spacing: -0.01em;
+  .ch { display: flex; align-items: center; gap: 9px; margin-bottom: 3px; }
+  .ch h2 { font-size: 15px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .ch svg { width: 17px; height: 17px; color: var(--accent-ink); }
+  .ch .sp { flex: 1; }
+  .live {
+    font-size: 10px; font-weight: 800; letter-spacing: .07em;
+    color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent);
+    border-radius: 6px; padding: 3px 7px;
   }
-  .card .note { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 0 0 16px; }
 
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
-  .kpi { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-  .kpi .label { color: var(--text-secondary); font-size: 12px; }
-  .kpi .value { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; margin-top: 2px; }
-  .kpi .unit { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-left: 2px; }
+  /* ── KPI ── */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 18px; }
+  .kpi {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 16px; padding: 17px 19px;
+  }
+  .kpi .r { display: flex; align-items: flex-start; }
+  .kpi .label { color: var(--text-secondary); font-size: 13px; font-weight: 500; flex: 1; }
+  .kpi .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+  .kpi .ic svg { width: 17px; height: 17px; }
+  .kpi .value { font-size: 34px; font-weight: 750; letter-spacing: -0.03em; margin-top: 8px; line-height: 1.1; }
+  .kpi .unit { font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-left: 3px; }
+  .kpi .cap { color: var(--muted); font-size: 12px; margin-top: 6px; }
 
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 12px; }
   .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
   .scroll { overflow-x: auto; }
-  svg { display: block; width: 100%; height: auto; }
+  svg.chart { display: block; width: 100%; height: auto; }
 
   table { border-collapse: collapse; width: 100%; font-size: 13px; }
-  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--grid); }
-  th { color: var(--text-secondary); font-weight: 600; }
+  th, td { text-align: left; padding: 9px 11px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--text-secondary); font-weight: 650; font-size: 12px; }
+  tbody tr:last-child td { border-bottom: 0; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
-  .empty { color: var(--muted); padding: 28px 0; text-align: center; font-size: 13px; }
-  .err { color: #d03b3b; font-size: 13px; }
+  .empty { color: var(--muted); padding: 30px 0; text-align: center; font-size: 13px; }
+  .err { color: var(--critical); font-size: 13px; }
+
+  .warn {
+    border: 1px solid var(--border); border-left: 3px solid var(--critical);
+    background: var(--surface-1); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 13px;
+  }
+  .warn code {
+    display: block; margin-top: 9px; padding: 9px 11px; border-radius: 8px;
+    background: var(--surface-2); font-size: 12px; overflow-x: auto; white-space: pre;
+  }
+
+  /* ── 문의 ── */
+  .inq {
+    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+    padding: 13px 14px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface-2); margin-bottom: 8px;
+  }
+  .inq:hover { border-color: var(--baseline); }
+  .inq[aria-selected="true"] { border-color: var(--accent); background: var(--surface-1); }
+  .inq .subj { flex: 1; font-weight: 650; color: var(--text-primary); }
+  .inq .meta { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--series-2); flex: none; }
+  .dot.none { background: var(--baseline); }
+  .pill {
+    font-size: 11px; font-weight: 700; border-radius: 6px; padding: 3px 8px;
+    background: var(--surface-1); border: 1px solid var(--border); color: var(--text-secondary);
+  }
+
+  .msg { display: flex; flex-direction: column; margin-bottom: 14px; }
+  .msg.user { align-items: flex-start; }
+  .msg.admin { align-items: flex-end; }
+  .bubble { max-width: 76%; padding: 10px 14px; border-radius: 15px; font-size: 13.5px; }
+  .msg.user .bubble { background: var(--surface-2); border: 1px solid var(--border); border-top-left-radius: 5px; }
+  .msg.admin .bubble { background: var(--series-1); color: #fff; border-top-right-radius: 5px; }
+  .msg .who2 { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .reply { display: flex; gap: 9px; margin-top: 16px; }
+  .reply textarea {
+    flex: 1; min-height: 68px; resize: vertical; font: inherit; font-size: 13px;
+    border-radius: 11px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-primary); padding: 10px 13px;
+  }
+  .reply button { border-radius: 9px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); padding: 8px 14px; }
+  .reply button.pri { background: var(--accent); border-color: var(--accent); color: #2b1c0b; font-weight: 650; }
+
+  /* ── 챕터 카드 그리드 ── */
+  .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 13px; }
+  .chap {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 15px 16px; text-align: left; width: 100%;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .chap:hover { border-color: var(--baseline); }
+  .chap[aria-selected="true"] { border-color: var(--accent); background: var(--surface-1); }
+  .chap .hd { display: flex; align-items: center; gap: 8px; }
+  .chap .name { font-weight: 700; font-size: 13.5px; color: var(--text-primary); flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chap .rate {
+    font-size: 12px; font-weight: 800; border-radius: 6px; padding: 3px 7px;
+    background: color-mix(in srgb, var(--good) 13%, transparent); color: var(--good);
+  }
+  .chap .rate.mid { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent-ink); }
+  .chap .rate.low { background: color-mix(in srgb, var(--critical) 13%, transparent); color: var(--critical); }
+  .chap .flow { font-size: 12.5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .chap .flow b { color: var(--text-primary); font-weight: 700; }
+  .chap .drop { font-size: 12px; color: var(--muted); }
+  .chap .drop b { color: var(--series-2); font-weight: 700; }
 
   #tip {
     position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s;
     background: var(--surface-1); border: 1px solid var(--border);
-    border-radius: 8px; padding: 6px 10px; font-size: 12px;
-    box-shadow: 0 4px 14px rgba(0,0,0,.14); z-index: 10; white-space: nowrap;
+    border-radius: 9px; padding: 7px 11px; font-size: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.16); z-index: 10; white-space: nowrap;
   }
 
-  #login { max-width: 340px; margin: 12vh auto; }
-  #login .card { display: grid; gap: 10px; }
+  #login { max-width: 350px; margin: 13vh auto; }
+  #login .card { display: grid; gap: 11px; }
+  #login input {
+    font: inherit; border-radius: 10px; padding: 10px 13px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-primary);
+  }
+  #login .go { background: var(--accent); border: 0; color: #2b1c0b; font-weight: 700; padding: 11px; border-radius: 10px; }
+
+  @media (max-width: 860px) {
+    #shell { grid-template-columns: 1fr; }
+    .side { position: static; height: auto; flex-direction: column; }
+    .nav { flex-direction: row; overflow-x: auto; }
+    .nav button { white-space: nowrap; }
+    main { padding: 20px 16px 48px; }
+  }
 </style>
 </head>
 <body>
 
 <div id="tip"></div>
 
-<!-- 로그인 -->
 <div id="login" hidden>
   <div class="card">
-    <h2>TYPE_DATE 관리자</h2>
-    <p class="note">Supabase에 등록된 관리자 계정으로 로그인하세요.</p>
+    <div class="ch"><h2>TYPE_DATE 관리자</h2></div>
+    <p class="note">등록된 관리자 계정으로 로그인하세요.</p>
     <input id="email" type="email" placeholder="이메일" autocomplete="username" />
     <input id="password" type="password" placeholder="비밀번호" autocomplete="current-password" />
-    <button id="signin">로그인</button>
+    <button id="signin" class="go">로그인</button>
     <div id="loginErr" class="err"></div>
   </div>
 </div>
 
-<!-- 대시보드 -->
-<div id="app" class="wrap" hidden>
-  <header class="top">
-    <h1>TYPE_DATE 트래킹</h1>
-    <span class="sub" id="who"></span>
-    <span class="spacer"></span>
-    <button id="theme">테마</button>
-    <button id="reload">새로고침</button>
-    <button id="signout">로그아웃</button>
-  </header>
-
-  <div id="globalErr" class="err"></div>
-
-  <div class="kpis" id="kpis"></div>
-
-  <div class="card">
-    <h2>일별 활성 기기</h2>
-    <p class="note">앱을 연 고유 기기 수. 신규는 그날 처음 접속한 기기.</p>
-    <div class="legend">
-      <span><i class="swatch" style="background:var(--series-1)"></i>활성</span>
-      <span><i class="swatch" style="background:var(--series-2)"></i>신규</span>
+<div id="shell" hidden>
+  <aside class="side">
+    <div class="brand"><span class="mark">TD</span><b>TYPE_DATE</b></div>
+    <div class="tag">ADMIN CONSOLE</div>
+    <nav class="nav" id="nav">
+      <button data-page="dash" aria-current="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        대시보드
+      </button>
+      <button data-page="inquiry">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        1:1 문의 <span class="count" id="navCount" hidden>0</span>
+      </button>
+      <button data-page="episode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg>
+        회차 상세
+      </button>
+      <button data-page="quality">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        콘텐츠 품질
+      </button>
+      <button data-page="revenue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.2 5 1.3 5 3.3-2.2 3-5 3-5-1.1-5-3"/></svg>
+        수익 현황
+      </button>
+      <button data-page="errors">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg>
+        앱 오류 <span class="count bad" id="navErr" hidden>0</span>
+      </button>
+    </nav>
+    <div class="foot">
+      <div class="who"><span class="av" id="avatar">A</span><span class="em" id="who"></span></div>
+      <button class="out" id="signout">로그아웃</button>
     </div>
-    <div id="daily"></div>
-  </div>
+  </aside>
 
-  <div class="card">
-    <h2>온보딩 퍼널</h2>
-    <p class="note">첫 소개팅에 닿기까지 각 화면에 도달한 기기 수. 괄호는 스플래시 대비 비율.</p>
-    <div id="onboarding"></div>
-    <p class="note" style="margin:12px 0 0">
-      ‘이어하기’로 들어오면 이름 입력·프롤로그를 건너뛰므로 중간 단계가 낮게 잡힐 수 있다.
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>리텐션</h2>
-    <p class="note">첫 방문일 기준, 정확히 하루 뒤(D1)·이레 뒤(D7)에 다시 온 비율.</p>
-    <div id="retention" class="scroll"></div>
-  </div>
-
-  <div class="card">
-    <h2>회차별 완주율</h2>
-    <p class="note">소개팅을 시작한 사람 중 끝까지 마친 비율.</p>
-    <div id="funnel"></div>
-  </div>
-
-  <div class="card">
-    <h2>엔딩 분포</h2>
-    <p class="note">완주한 소개팅의 결말 비율.</p>
-    <div class="legend">
-      <span><i class="swatch" style="background:var(--series-1)"></i>성공</span>
-      <span><i class="swatch" style="background:var(--series-2)"></i>친구</span>
-      <span><i class="swatch" style="background:var(--series-3)"></i>실패</span>
+  <main>
+    <div class="top">
+      <h1 id="pageTitle">대시보드</h1>
+      <span class="sp"></span>
+      <button id="theme">테마</button>
+      <button id="reload">새로고침</button>
     </div>
-    <div id="ending"></div>
-    <div id="endingTable" class="scroll"></div>
-  </div>
 
-  <div class="card">
-    <h2>성향 유형 분포</h2>
-    <p class="note">결과 보고서에서 나온 EF / ET / IF / IT 유형.</p>
-    <div id="style"></div>
-  </div>
+    <div id="adminWarn"></div>
+    <div id="globalErr" class="err"></div>
 
-  <div class="card">
-    <h2>회차 상세</h2>
-    <p class="note">턴별 도달 인원으로 이탈 지점을, 선택률로 선택지 쏠림을 본다.</p>
-    <div style="margin-bottom:14px">
-      <select id="episodePick"></select>
-    </div>
-    <div class="legend">
-      <span><i class="swatch" style="background:var(--series-1)"></i>도달</span>
-      <span><i class="swatch" style="background:var(--series-2)"></i>중도 포기</span>
-    </div>
-    <div id="turnReach"></div>
-    <div id="choiceTable" class="scroll" style="margin-top:18px"></div>
-  </div>
+    <!-- 대시보드 -->
+    <section data-view="dash">
+      <div class="kpis" id="kpis"></div>
 
-  <div class="card">
-    <h2>선택지 밸런스 경고</h2>
-    <p class="note">
-      아무도 안 고르는 선택지(5% 미만)와 몰표 선택지(70% 초과). 표본이 20건 이상인 턴만 본다.
-    </p>
-    <div id="balance" class="scroll"></div>
-  </div>
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M6 16l4-6 4 4 4-8"/></svg>
+          <h2>일별 활성 기기</h2><span class="sp"></span><span class="live">LIVE</span>
+        </div>
+        <p class="note">앱을 연 고유 기기 수. 신규는 그날 처음 접속한 기기.</p>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--series-1)"></i>활성</span>
+          <span><i class="swatch" style="background:var(--series-2)"></i>신규</span>
+        </div>
+        <div id="daily"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v7l-4 2v-9z"/></svg>
+          <h2>온보딩 퍼널</h2>
+        </div>
+        <p class="note">첫 소개팅에 닿기까지 각 화면에 도달한 기기 수. 괄호는 스플래시 대비 비율.</p>
+        <div id="onboarding"></div>
+        <p class="note" style="margin:14px 0 0">‘이어하기’로 들어오면 이름 입력·프롤로그를 건너뛰므로 중간 단계가 낮게 잡힐 수 있다.</p>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 3v6h6"/></svg>
+          <h2>리텐션</h2>
+        </div>
+        <p class="note">첫 방문일 기준, 정확히 하루 뒤(D1)·이레 뒤(D7)에 다시 온 비율.</p>
+        <div id="retention" class="scroll"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <h2>회차 간 이어보기율</h2>
+        </div>
+        <p class="note">
+          이 회차를 <b>끝낸</b> 사람이 그 뒤에 다른 회차를 시작한 비율. 낮은 순으로 정렬됩니다.
+          완주율이 높아도 여기서 끊기면 연재가 거기서 멈춘 겁니다.
+        </p>
+        <div id="continuation"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+          <h2>회차별 완주율</h2>
+        </div>
+        <p class="note">소개팅을 시작한 사람 중 끝까지 마친 비율.</p>
+        <div id="funnel"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          <h2>엔딩 분포</h2>
+        </div>
+        <p class="note">완주한 소개팅의 결말 비율.</p>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--series-1)"></i>성공</span>
+          <span><i class="swatch" style="background:var(--series-2)"></i>친구</span>
+          <span><i class="swatch" style="background:var(--series-3)"></i>실패</span>
+        </div>
+        <div id="ending"></div>
+        <div id="endingTable" class="scroll"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M6 20v-6M18 20V4"/></svg>
+          <h2>성향 유형 분포</h2>
+        </div>
+        <p class="note">결과 보고서에서 나온 EF / ET / IF / IT 유형.</p>
+        <div id="style"></div>
+      </div>
+    </section>
+
+    <!-- 1:1 문의 -->
+    <section data-view="inquiry" hidden>
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <h2>문의 목록</h2><span class="sp"></span><span class="live">LIVE</span>
+        </div>
+        <p class="note">답변을 기다리는 문의가 위로 옵니다. 문의를 누르면 대화가 열립니다.</p>
+        <div id="inquiryList"></div>
+        <div id="thread"></div>
+      </div>
+    </section>
+
+    <!-- 회차 상세 -->
+    <section data-view="episode" hidden>
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <h2>챕터별 진행과 하차</h2><span class="sp"></span><span class="live">LIVE</span>
+        </div>
+        <p class="note">
+          막대는 턴별로 남아 있는 사람 수. 카드를 누르면 아래에 상세가 열립니다.
+          <b>하차</b>는 앞 단계 대비 가장 많이 빠져나간 구간입니다.
+        </p>
+        <div class="chapters" id="chapters"></div>
+        <p class="note" style="margin:16px 0 0">
+          턴별 수치는 <b>고유 기기 수</b>, 시작·완주는 <b>플레이 횟수</b>다. 같은 사람이 재도전하면
+          기준이 달라지므로 두 값을 직접 나누지 말 것 — 완주율은 시작·완주끼리만 계산한다.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-5 4 3 5-7"/></svg>
+          <h2>턴별 도달과 이탈</h2>
+        </div>
+        <p class="note">턴별 도달 인원으로 이탈 지점을, 선택률로 선택지 쏠림을 본다.</p>
+        <div style="margin-bottom:16px"><select id="episodePick"></select></div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--series-1)"></i>도달</span>
+          <span><i class="swatch" style="background:var(--series-2)"></i>중도 포기</span>
+        </div>
+        <div id="turnReach"></div>
+        <div id="choiceTable" class="scroll" style="margin-top:20px"></div>
+      </div>
+    </section>
+
+    <!-- 수익 현황 -->
+    <section data-view="revenue" hidden>
+      <div class="warn" id="revenueWarn"></div>
+
+      <div class="kpis" id="revKpis"></div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M6 16l4-6 4 4 4-8"/></svg>
+          <h2>일별 광고 노출과 광고 제거</h2><span class="sp"></span><span class="live">LIVE</span>
+        </div>
+        <p class="note">광고 노출은 왼쪽 축과 같은 기준으로 그립니다. 광고 제거는 건수가 훨씬 적어 선이 바닥에 붙습니다.</p>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--series-1)"></i>광고 노출</span>
+          <span><i class="swatch" style="background:var(--series-2)"></i>광고 제거</span>
+        </div>
+        <div id="revDaily"></div>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          <h2>계산에 쓴 가정</h2>
+        </div>
+        <p class="note">아래 값은 <b>추정</b>입니다. 실제 정산 금액은 광고 네트워크와 스토어 콘솔이 기준입니다.</p>
+        <div class="scroll" id="assumptions"></div>
+      </div>
+    </section>
+
+    <!-- 앱 오류 -->
+    <section data-view="errors" hidden>
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg>
+          <h2>앱에서 터진 오류</h2><span class="sp"></span><span class="live">LIVE</span>
+        </div>
+        <p class="note">
+          같은 화면·메시지끼리 묶어 많이 터진 순으로 보여줍니다.
+          <b>render</b>는 화면이 그려지다 죽은 것, <b>fatal</b>은 앱이 종료된 것, <b>async</b>는 타이머·네트워크 등 백그라운드입니다.
+        </p>
+        <div id="errors" class="scroll"></div>
+      </div>
+    </section>
+
+    <!-- 콘텐츠 품질 -->
+    <section data-view="quality" hidden>
+      <div class="card">
+        <div class="ch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <h2>선택지 밸런스 경고</h2>
+        </div>
+        <p class="note">아무도 안 고르는 선택지(5% 미만)와 몰표 선택지(70% 초과). 표본이 20건 이상인 턴만 본다.</p>
+        <div id="balance" class="scroll"></div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ── 설정 ─────────────────────────────────────────────────────────────
-// Supabase 프로젝트 Settings → API 에서 복사해 아래 두 줄을 채운다.
 const SUPABASE_URL = 'https://odugzjsopjhekjmbrrnd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_hlc2DNv220ysZYkrFOvI8A_uqeZQa23';
+
+// 수익 추정에 쓰는 가정 — 실제 정산액이 아니다. 실측이 생기면 이 값을 갱신한다.
+const MONEY = {
+  ecpm: 1800,        // 노출 1000회당 광고 수익(원). AdMob 콘솔의 실제 eCPM으로 바꿀 것
+  price: 2200,       // 광고 제거 가격(원) — 앱 SettingsSheet의 AD_REMOVE_PRICE와 맞출 것
+  storeCut: 0.30,    // 스토어 수수료(구글/애플 30%, 소규모 개발자 프로그램은 15%)
+};
 // ─────────────────────────────────────────────────────────────────────
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -274,8 +570,7 @@ function svgEl(tag, attrs = {}) {
   return el;
 }
 function newSvg(w, h) {
-  const s = svgEl('svg', { viewBox: `0 0 ${w} ${h}`, role: 'img' });
-  return s;
+  return svgEl('svg', { viewBox: `0 0 ${w} ${h}`, role: 'img', class: 'chart' });
 }
 function txt(s, x, y, { anchor = 'start', fill = 'var(--muted)', size = 11, weight = 400 } = {}) {
   const t = svgEl('text', {
@@ -303,7 +598,6 @@ function lineChart(host, days, series, fmt = (d) => d) {
 
   const svg = newSvg(W, H);
 
-  // y 눈금 — 옅은 그리드에 값 표시
   const ticks = 4;
   for (let t = 0; t <= ticks; t++) {
     const v = Math.round((maxY / ticks) * t);
@@ -312,7 +606,6 @@ function lineChart(host, days, series, fmt = (d) => d) {
   }
   svg.append(svgEl('line', { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }));
 
-  // x 라벨 — 최대 6개만
   const step = Math.max(1, Math.ceil(days.length / 6));
   days.forEach((d, i) => {
     if (i % step === 0 || i === days.length - 1) {
@@ -337,7 +630,6 @@ function lineChart(host, days, series, fmt = (d) => d) {
     }));
   }
 
-  // 호버 — 세로 크로스헤어 + 그날 전체 계열 값
   const cross = svgEl('line', { y1: T, y2: T + ih, stroke: 'var(--baseline)', 'stroke-width': 1, opacity: 0 });
   svg.append(cross);
   const hit = svgEl('rect', { x: L, y: T, width: iw, height: ih, fill: 'transparent' });
@@ -356,12 +648,12 @@ function lineChart(host, days, series, fmt = (d) => d) {
   host.append(svg);
 }
 
-/* ── 가로 막대 (회차별 완주율) ── */
+/* ── 가로 막대 (회차별 완주율 / 온보딩) ── */
 function barsH(host, rows) {
   host.innerHTML = '';
   if (!rows.length) return empty(host);
 
-  const rowH = 26, gap = 6, L = 150, R = 70, W = 860;
+  const rowH = 28, gap = 7, L = 150, R = 96, W = 860;
   const H = rows.length * (rowH + gap) + 10;
   const iw = W - L - R;
   const maxV = Math.max(1, ...rows.map((r) => r.value));
@@ -369,14 +661,14 @@ function barsH(host, rows) {
 
   rows.forEach((r, i) => {
     const y = i * (rowH + gap);
-    svg.append(txt(r.label, L - 10, y + rowH / 2 + 4, { anchor: 'end', fill: 'var(--text-secondary)' }));
-    svg.append(svgEl('rect', { x: L, y, width: iw, height: rowH, rx: 4, fill: 'var(--grid)', opacity: .5 }));
+    svg.append(txt(r.label, L - 12, y + rowH / 2 + 4, { anchor: 'end', fill: 'var(--text-secondary)', size: 12 }));
+    svg.append(svgEl('rect', { x: L, y, width: iw, height: rowH, rx: 4, fill: 'var(--grid)', opacity: .55 }));
     const w = Math.max(2, (r.value / maxV) * iw);
     const bar = svgEl('rect', { x: L, y, width: w, height: rowH, rx: 4, fill: 'var(--seq-400)' });
     hoverable(bar, `<b>${r.label}</b><br>${r.tip}`);
     svg.append(bar);
-    svg.append(txt(r.valueLabel, L + iw + 10, y + rowH / 2 + 4, {
-      fill: 'var(--text-primary)', size: 12, weight: 600,
+    svg.append(txt(r.valueLabel, L + iw + 12, y + rowH / 2 + 4, {
+      fill: 'var(--text-primary)', size: 12.5, weight: 700,
     }));
   });
 
@@ -389,7 +681,7 @@ function stacked(host, segs) {
   const total = segs.reduce((a, s) => a + s.value, 0);
   if (!total) return empty(host);
 
-  const W = 860, H = 96, barY = 8, barH = 40, GAP = 2;
+  const W = 860, H = 96, barY = 8, barH = 42, GAP = 2;
   const svg = newSvg(W, H);
   let x = 0;
   for (const s of segs) {
@@ -402,8 +694,8 @@ function stacked(host, segs) {
     svg.append(rect);
     // 직접 라벨 — 대비가 낮은 색이 섞여 있어 값은 항상 글자로도 보여준다
     if (w > 74) {
-      svg.append(txt(`${s.name} ${pct}%`, x + drawW / 2, barY + barH + 20, {
-        anchor: 'middle', fill: 'var(--text-secondary)', size: 12, weight: 600,
+      svg.append(txt(`${s.name} ${pct}%`, x + drawW / 2, barY + barH + 21, {
+        anchor: 'middle', fill: 'var(--text-secondary)', size: 12, weight: 650,
       }));
     }
     x += w;
@@ -438,11 +730,11 @@ function barsV(host, rows) {
     const rect = svgEl('rect', { x, y, width: bw, height: h, rx: 4, fill: 'var(--seq-400)' });
     hoverable(rect, `<b>${r.label}</b><br>${nf.format(r.value)}회`);
     svg.append(rect);
-    svg.append(txt(nf.format(r.value), x + bw / 2, y - 7, {
-      anchor: 'middle', fill: 'var(--text-primary)', size: 12, weight: 600,
+    svg.append(txt(nf.format(r.value), x + bw / 2, y - 8, {
+      anchor: 'middle', fill: 'var(--text-primary)', size: 12.5, weight: 700,
     }));
-    svg.append(txt(r.label, x + bw / 2, T + ih + 20, {
-      anchor: 'middle', fill: 'var(--text-secondary)', size: 12,
+    svg.append(txt(r.label, x + bw / 2, T + ih + 21, {
+      anchor: 'middle', fill: 'var(--text-secondary)', size: 12.5,
     }));
   });
 
@@ -458,22 +750,150 @@ async function q(view, build) {
   return data ?? [];
 }
 
+const ICONS = {
+  device: '<path d="M12 20h.01M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>',
+  today: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
+  heart: '<path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>',
+  chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  next: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  coin: '<path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.2 5 1.3 5 3.3-2.2 3-5 3-5-1.1-5-3"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z"/>',
+};
+function kpi(label, value, unit, cap, icon, tint) {
+  return `<div class="kpi">
+    <div class="r"><span class="label">${label}</span>
+      <span class="ic" style="background:color-mix(in srgb, ${tint} 15%, transparent); color:${tint}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icon}</svg>
+      </span></div>
+    <div class="value">${value}<span class="unit">${unit}</span></div>
+    <div class="cap">${cap}</div>
+  </div>`;
+}
+
 let episodeIds = [];
+
+/* ── 챕터별 진행·하차 카드 ── */
+
+/// 한 챕터의 단계별 잔존을 만든다: 시작 → 턴1 … 턴N → 완주.
+/// 턴 수치는 고유 기기 수, 시작·완주는 플레이 횟수라 단위가 다르다.
+/// 그래서 하차 지점은 턴 구간(같은 단위)에서만 찾는다.
+function chapterFlow(turns, reachBy) {
+  const stages = turns.map((t) => ({ label: `턴 ${t}`, value: reachBy.get(t) ?? 0 }));
+  let worst = null;
+  for (let i = 1; i < stages.length; i++) {
+    const lost = stages[i - 1].value - stages[i].value;
+    if (lost > 0 && (worst == null || lost > worst.lost)) {
+      worst = { lost, from: stages[i - 1].label, to: stages[i].label };
+    }
+  }
+  return { stages, worst };
+}
+
+/// 카드 안의 작은 잔존 막대 — 축·눈금 없이 형태만 읽는 용도.
+function sparkBars(stages) {
+  const W = 236, H = 40, GAP = 2;
+  const max = Math.max(1, ...stages.map((s) => s.value));
+  const bw = Math.max(2, W / Math.max(1, stages.length) - GAP);
+  const svg = newSvg(W, H);
+  stages.forEach((s, i) => {
+    const h = Math.max(2, (s.value / max) * H);
+    const r = svgEl('rect', {
+      x: i * (bw + GAP), y: H - h, width: bw, height: h, rx: 2,
+      fill: 'var(--seq-400)', opacity: 0.35 + 0.65 * (s.value / max),
+    });
+    hoverable(r, `<b>${s.label}</b><br>${nf.format(s.value)}명 남음`);
+    svg.append(r);
+  });
+  return svg;
+}
+
+function renderChapters(host, rows) {
+  host.innerHTML = '';
+  if (!rows.length) return empty(host, '아직 플레이 기록이 없습니다.');
+
+  for (const r of rows) {
+    const card = document.createElement('button');
+    card.className = 'chap';
+    card.dataset.id = r.id;
+    card.setAttribute('aria-selected', String(r.id === $('episodePick').value));
+
+    const cls = r.rate == null ? 'mid' : r.rate >= 70 ? '' : r.rate >= 40 ? 'mid' : 'low';
+    card.innerHTML = `
+      <div class="hd">
+        <span class="name">${esc(r.id)}</span>
+        <span class="rate ${cls}">${r.rate == null ? '—' : r.rate.toFixed(0) + '%'}</span>
+      </div>
+      <div class="flow">시작 <b>${nf.format(r.starts)}</b> → 완주 <b>${nf.format(r.completes)}</b></div>`;
+
+    card.append(sparkBars(r.flow.stages));
+
+    const foot = document.createElement('div');
+    foot.className = 'drop';
+    foot.innerHTML = r.flow.worst
+      ? `하차 최다 <b>${esc(r.flow.worst.from)}→${esc(r.flow.worst.to)}</b> · ${nf.format(r.flow.worst.lost)}명`
+      : (r.flow.stages.length ? '구간 하차 없음' : '턴 기록 없음');
+    card.append(foot);
+
+    if (r.quits > 0) {
+      const q = document.createElement('div');
+      q.className = 'drop';
+      q.innerHTML = `나가기로 포기 <b>${nf.format(r.quits)}</b>건`;
+      card.append(q);
+    }
+
+    card.addEventListener('click', () => {
+      $('episodePick').value = r.id;
+      for (const el of host.querySelectorAll('.chap')) {
+        el.setAttribute('aria-selected', String(el.dataset.id === r.id));
+      }
+      void loadEpisode();
+      $('turnReach').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    host.append(card);
+  }
+}
 
 async function load() {
   $('globalErr').textContent = '';
-  try {
-    const [daily, funnel, ending, style, onboarding, retention, balance] = await Promise.all([
-      q('v_daily_active'),
-      q('v_episode_funnel'),
-      q('v_ending_dist'),
-      q('v_style_dist'),
-      q('v_onboarding'),
-      q('v_retention'),
-      q('v_choice_balance'),
-    ]);
 
-    // KPI
+  // admins에 등록되지 않은 계정은 RLS에 걸려 전부 빈 값으로 보인다.
+  // 원인을 짐작하게 두지 말고 바로 알려준다.
+  const { data: isAdmin } = await sb.rpc('is_admin');
+  const { data: { user } } = await sb.auth.getUser();
+  $('adminWarn').innerHTML = isAdmin ? '' : `
+    <div class="warn">
+      이 계정은 <b>관리자로 등록되지 않았습니다.</b> 데이터가 모두 비어 보이는 게 정상입니다.
+      Supabase SQL Editor에서 아래를 실행한 뒤 새로고침하세요.
+      <code>insert into public.admins (user_id) values ('${esc(user?.id ?? '')}') on conflict do nothing;</code>
+    </div>`;
+
+  await loadInquiries();
+
+  try {
+    const [daily, funnel, ending, style, onboarding, retention, balance, allReach, allQuits,
+           continuation, errors, money, moneyDaily] =
+      await Promise.all([
+        q('v_daily_active'),
+        q('v_episode_funnel'),
+        q('v_ending_dist'),
+        q('v_style_dist'),
+        q('v_onboarding'),
+        q('v_retention'),
+        q('v_choice_balance'),
+        q('v_turn_reach', (x) => x.order('episode_id').order('turn')),
+        q('v_quit_turn', (x) => x.order('episode_id').order('turn')),
+        q('v_continuation'),
+        q('v_errors'),
+        q('v_monetization'),
+        q('v_monetization_daily'),
+      ]);
+
+    // PostgREST가 1000행에서 조용히 자른다. 잘렸으면 챕터 카드가 틀리므로 드러내 놓는다.
+    if (allReach.length >= 1000 || allQuits.length >= 1000) {
+      $('globalErr').textContent =
+        '주의 — 턴 기록이 1000행 제한에 걸려 일부만 불러왔습니다. 챕터 카드 수치가 실제보다 적을 수 있습니다.';
+    }
+
     const today = new Date().toISOString().slice(0, 10);
     const todayRow = daily.find((d) => d.day === today);
     const totalDevices = daily.reduce((a, d) => a + Number(d.new_devices), 0);
@@ -481,16 +901,90 @@ async function load() {
     const completes = funnel.reduce((a, r) => a + Number(r.completes), 0);
     const rate = starts ? (completes / starts) * 100 : 0;
 
-    $('kpis').innerHTML = [
-      ['누적 기기', nf.format(totalDevices), '대'],
-      ['오늘 활성', nf.format(todayRow ? todayRow.active_devices : 0), '대'],
-      ['소개팅 완주', nf.format(completes), '회'],
-      ['평균 완주율', starts ? rate.toFixed(1) : '—', starts ? '%' : ''],
-    ].map(([label, value, unit]) => `
-      <div class="kpi"><div class="label">${label}</div>
-      <div class="value">${value}<span class="unit">${unit}</span></div></div>`).join('');
+    // 이어보기 — 회차를 끝낸 사람이 다음 회차로 넘어갔는가(연재 이탈 지표)
+    const fin = continuation.reduce((a, r) => a + Number(r.finishers), 0);
+    const went = continuation.reduce((a, r) => a + Number(r.continued), 0);
+    const contRate = fin ? (went / fin) * 100 : 0;
 
-    // 일별 활성/신규
+    $('kpis').innerHTML =
+      kpi('누적 기기', nf.format(totalDevices), '대', '앱을 한 번이라도 연 기기', ICONS.device, 'var(--series-1)') +
+      kpi('오늘 활성', nf.format(todayRow ? todayRow.active_devices : 0), '대', 'UTC 기준 오늘', ICONS.today, 'var(--series-3)') +
+      kpi('소개팅 완주', nf.format(completes), '회', '끝까지 마친 횟수', ICONS.heart, 'var(--series-2)') +
+      kpi('평균 완주율', starts ? rate.toFixed(1) : '—', starts ? '%' : '', `시작 ${nf.format(starts)}회 기준`, ICONS.chat, 'var(--accent)') +
+      kpi('이어보기율', fin ? contRate.toFixed(1) : '—', fin ? '%' : '', `완주 ${nf.format(fin)}건 중 ${nf.format(went)}건`, ICONS.next, 'var(--series-1)');
+
+    barsH($('continuation'), continuation.map((r) => ({
+      label: r.episode_id,
+      value: Number(r.continue_rate ?? 0),
+      valueLabel: r.continue_rate == null ? '—' : Number(r.continue_rate).toFixed(1) + '%',
+      tip: `완주 ${nf.format(r.finishers)} → 이어감 ${nf.format(r.continued)}`,
+    })));
+
+    // 수익 — 금액은 전부 추정이다. 실제 정산은 광고 네트워크·스토어 콘솔이 기준.
+    const mz = money[0] ?? { ad_impressions: 0, ad_viewers: 0, removals: 0, removal_devices: 0, all_devices: 0 };
+    const imps = Number(mz.ad_impressions);
+    const removals = Number(mz.removals);
+    const adRev = (imps / 1000) * MONEY.ecpm;
+    const iapGross = removals * MONEY.price;
+    const iapNet = iapGross * (1 - MONEY.storeCut);
+    const convRate = Number(mz.all_devices) ? (Number(mz.removal_devices) / Number(mz.all_devices)) * 100 : 0;
+    const won = (v) => nf.format(Math.round(v));
+
+    $('revenueWarn').innerHTML = `
+      아래 금액은 <b>전부 추정치입니다.</b> 지금 앱에는 광고 SDK와 결제 SDK가 붙어 있지 않습니다 —
+      광고는 자리표시자 화면이고, 광고 제거는 결제 없이 켜집니다.
+      따라서 <b>실제 입금액은 0원</b>이고, ‘광고 제거’ 수치는 매출이 아니라 <b>얼마나 사려 했는지(전환 의사)</b>로 읽어야 합니다.
+      SDK를 붙인 뒤 앱에서 이벤트를 성공 콜백으로 옮기면 같은 화면이 그대로 실수익 집계가 됩니다.`;
+
+    $('revKpis').innerHTML =
+      kpi('추정 총수익', won(adRev + iapNet), '원', '광고 + 광고제거(수수료 차감)', ICONS.coin, 'var(--accent)') +
+      kpi('추정 광고 수익', won(adRev), '원', `노출 ${nf.format(imps)}회 × eCPM ${nf.format(MONEY.ecpm)}원`, ICONS.play, 'var(--series-1)') +
+      kpi('광고 제거 결제', nf.format(removals), '건', `정가 ${won(iapGross)}원 · 정산 ${won(iapNet)}원`, ICONS.coin, 'var(--series-2)') +
+      kpi('광고 제거 전환율', convRate.toFixed(1), '%', `전체 ${nf.format(mz.all_devices)}대 중 ${nf.format(mz.removal_devices)}대`, ICONS.next, 'var(--series-3)');
+
+    lineChart($('revDaily'), moneyDaily.map((d) => d.day), [
+      { name: '광고 노출', color: 'var(--series-1)', values: moneyDaily.map((d) => Number(d.ad_impressions)) },
+      { name: '광고 제거', color: 'var(--series-2)', values: moneyDaily.map((d) => Number(d.removals)) },
+    ], (d) => d.slice(5));
+
+    $('assumptions').innerHTML = `
+      <table>
+        <thead><tr><th>항목</th><th class="num">값</th><th>계산</th><th>실제 값은 어디에</th></tr></thead>
+        <tbody>
+          <tr><td>eCPM</td><td class="num">${nf.format(MONEY.ecpm)}원</td>
+            <td>노출 ${nf.format(imps)} ÷ 1000 × eCPM = <b>${won(adRev)}원</b></td>
+            <td>AdMob 콘솔</td></tr>
+          <tr><td>광고 제거 가격</td><td class="num">${nf.format(MONEY.price)}원</td>
+            <td>${nf.format(removals)}건 × 가격 = ${won(iapGross)}원</td>
+            <td>앱 SettingsSheet</td></tr>
+          <tr><td>스토어 수수료</td><td class="num">${(MONEY.storeCut * 100).toFixed(0)}%</td>
+            <td>${won(iapGross)} × ${(1 - MONEY.storeCut).toFixed(2)} = <b>${won(iapNet)}원</b></td>
+            <td>구글/애플 정산</td></tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:12px">
+        값을 바꾸려면 <b>admin/index.html</b> 상단의 <code>MONEY</code> 상수를 고치세요.
+        소규모 개발자 프로그램 대상이면 수수료는 15%입니다.
+      </p>`;
+
+    // 앱 오류
+    const errTotal = errors.reduce((a, r) => a + Number(r.n), 0);
+    const nb = $('navErr');
+    nb.hidden = errTotal === 0;
+    nb.textContent = String(errTotal);
+    $('errors').innerHTML = errors.length ? `
+      <table>
+        <thead><tr><th>화면</th><th>메시지</th><th>종류</th>
+        <th class="num">횟수</th><th class="num">기기</th><th>마지막 발생</th></tr></thead>
+        <tbody>${errors.map((r) => `
+          <tr><td>${esc(r.screen)}</td><td>${esc(r.message)}</td>
+          <td><span class="pill">${esc(r.fatal ?? '-')}</span></td>
+          <td class="num">${nf.format(r.n)}</td><td class="num">${nf.format(r.devices)}</td>
+          <td>${esc(String(r.last_seen).slice(0, 16).replace('T', ' '))}</td></tr>`).join('')}
+        </tbody>
+      </table>`
+      : '<div class="empty">보고된 오류가 없습니다.</div>';
+
     lineChart($('daily'), daily.map((d) => d.day), [
       { name: '활성', color: 'var(--series-1)', values: daily.map((d) => Number(d.active_devices)) },
       { name: '신규', color: 'var(--series-2)', values: daily.map((d) => Number(d.new_devices)) },
@@ -507,14 +1001,12 @@ async function load() {
       const v = seen.get(key) ?? 0;
       const pct = top ? (v / top) * 100 : 0;
       return {
-        label,
-        value: v,
+        label, value: v,
         valueLabel: top ? `${nf.format(v)} (${pct.toFixed(0)}%)` : nf.format(v),
         tip: `도달 ${nf.format(v)}대`,
       };
     }));
 
-    // 리텐션 — 코호트 표
     $('retention').innerHTML = retention.length ? `
       <table>
         <thead><tr><th>첫 방문일</th><th class="num">신규</th>
@@ -527,7 +1019,6 @@ async function load() {
         </tbody>
       </table>` : '<div class="empty">아직 데이터가 없습니다.</div>';
 
-    // 선택지 밸런스 경고
     $('balance').innerHTML = balance.length ? `
       <table>
         <thead><tr><th>회차</th><th class="num">턴</th><th>선택지</th>
@@ -535,7 +1026,7 @@ async function load() {
         <tbody>${balance.map((r) => `
           <tr><td>${r.episode_id}</td><td class="num">${r.turn}</td><td>${r.label}</td>
           <td class="num">${r.pct}%</td><td class="num">${nf.format(r.turn_total)}</td>
-          <td>${Number(r.pct) > 70 ? '몰표' : '죽은 선택지'}</td></tr>`).join('')}
+          <td><span class="pill">${Number(r.pct) > 70 ? '몰표' : '죽은 선택지'}</span></td></tr>`).join('')}
         </tbody>
       </table>`
       : '<div class="empty">경고 없음 — 표본 20건 이상인 턴 중 쏠린 선택지가 없습니다.</div>';
@@ -553,14 +1044,12 @@ async function load() {
       const v = byEp.get(id);
       const pct = v.starts ? (v.completes / v.starts) * 100 : 0;
       return {
-        label: id,
-        value: pct,
+        label: id, value: pct,
         valueLabel: v.starts ? pct.toFixed(1) + '%' : '—',
         tip: `시작 ${nf.format(v.starts)} · 완주 ${nf.format(v.completes)}`,
       };
     }));
 
-    // 엔딩 분포
     const endKo = { success: '성공', friend: '친구', fail: '실패' };
     const endColor = { success: 'var(--series-1)', friend: 'var(--series-2)', fail: 'var(--series-3)' };
     const endTotals = { success: 0, friend: 0, fail: 0 };
@@ -580,17 +1069,44 @@ async function load() {
         <td class="num">${((endTotals[k] / endSum) * 100).toFixed(1)}%</td></tr>`).join('')}
       </tbody></table>` : '';
 
-    // 유형 분포
     barsV($('style'), ['EF', 'ET', 'IF', 'IT'].map((code) => ({
       label: code,
       value: Number(style.find((s) => s.style_type === code)?.n ?? 0),
     })));
 
-    // 회차 선택
     const pick = $('episodePick');
     const prev = pick.value;
     pick.innerHTML = episodeIds.map((id) => `<option value="${id}">${id}</option>`).join('');
     if (episodeIds.includes(prev)) pick.value = prev;
+
+    // 챕터 카드 — 턴 기록을 회차별로 나눠 담은 뒤 잔존 곡선과 하차 지점을 계산한다.
+    const reachByEp = new Map();
+    for (const r of allReach) {
+      if (!reachByEp.has(r.episode_id)) reachByEp.set(r.episode_id, new Map());
+      reachByEp.get(r.episode_id).set(Number(r.turn), Number(r.devices));
+    }
+    const quitsByEp = new Map();
+    for (const r of allQuits) {
+      quitsByEp.set(r.episode_id, (quitsByEp.get(r.episode_id) ?? 0) + Number(r.quits));
+    }
+
+    const chapterRows = episodeIds.map((id) => {
+      const v = byEp.get(id);
+      const rb = reachByEp.get(id) ?? new Map();
+      const turns = [...rb.keys()].sort((a, b) => a - b);
+      return {
+        id,
+        starts: v.starts,
+        completes: v.completes,
+        rate: v.starts ? (v.completes / v.starts) * 100 : null,
+        quits: quitsByEp.get(id) ?? 0,
+        flow: chapterFlow(turns, rb),
+      };
+    });
+    // 완주율이 낮은 챕터를 먼저 보여준다 — 손봐야 할 곳이 위로 오게.
+    chapterRows.sort((a, b) => (a.rate ?? 999) - (b.rate ?? 999));
+    renderChapters($('chapters'), chapterRows);
+
     await loadEpisode();
   } catch (e) {
     $('globalErr').textContent = '불러오기 실패 — ' + e.message;
@@ -646,13 +1162,113 @@ async function loadEpisode() {
   }
 }
 
+/* ── 1:1 문의 ── */
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+const STATUS_KO = { open: '접수됨', answered: '답변 완료', closed: '종료' };
+let openInquiryId = null;
+
+async function loadInquiries() {
+  const { data, error } = await sb
+    .from('v_inquiry_list')
+    .select('*')
+    .order('last_message_at', { ascending: false, nullsFirst: false });
+  if (error) { $('inquiryList').innerHTML = `<div class="err">문의 목록 실패 — ${esc(error.message)}</div>`; return; }
+
+  const rows = data ?? [];
+  // 마지막 발신자가 사용자면 아직 답을 안 한 것 — 이걸 위로 올린다.
+  rows.sort((a, b) => (a.last_sender === 'user' ? 0 : 1) - (b.last_sender === 'user' ? 0 : 1));
+
+  const waiting = rows.filter((r) => r.last_sender === 'user').length;
+  const badge = $('navCount');
+  badge.hidden = waiting === 0;
+  badge.textContent = String(waiting);
+
+  $('inquiryList').innerHTML = rows.length ? rows.map((r) => `
+    <button class="inq" data-id="${r.id}" aria-selected="${r.id === openInquiryId}">
+      <span class="dot ${r.last_sender === 'user' ? '' : 'none'}"></span>
+      <span class="subj">${esc(r.subject)}</span>
+      <span class="pill">${esc(STATUS_KO[r.status] ?? r.status)}</span>
+      <span class="meta">${esc((r.last_message_at ?? r.created_at).slice(0, 10))}</span>
+    </button>`).join('') : '<div class="empty">문의가 없습니다.</div>';
+
+  for (const el of $('inquiryList').querySelectorAll('.inq')) {
+    el.addEventListener('click', () => openThread(Number(el.dataset.id)));
+  }
+  if (openInquiryId != null) await openThread(openInquiryId, true);
+}
+
+async function openThread(id, keep = false) {
+  openInquiryId = id;
+  if (!keep) for (const el of $('inquiryList').querySelectorAll('.inq')) {
+    el.setAttribute('aria-selected', String(Number(el.dataset.id) === id));
+  }
+
+  const { data, error } = await sb
+    .from('inquiry_messages')
+    .select('id, created_at, sender, body')
+    .eq('inquiry_id', id)
+    .order('created_at');
+  if (error) { $('thread').innerHTML = `<div class="err">대화 실패 — ${esc(error.message)}</div>`; return; }
+
+  $('thread').innerHTML = `
+    <div style="border-top:1px solid var(--grid); margin:18px 0 16px"></div>
+    ${(data ?? []).map((m) => `
+      <div class="msg ${m.sender}">
+        <span class="who2">${m.sender === 'admin' ? '운영자' : '사용자'} · ${esc(m.created_at.slice(0, 16).replace('T', ' '))}</span>
+        <div class="bubble">${esc(m.body)}</div>
+      </div>`).join('')}
+    <div class="reply">
+      <textarea id="replyBox" placeholder="답변을 입력하세요"></textarea>
+      <div style="display:flex; flex-direction:column; gap:7px">
+        <button id="replySend" class="pri">답변 보내기</button>
+        <button id="closeInq">종료 처리</button>
+      </div>
+    </div>`;
+
+  $('replySend').addEventListener('click', async () => {
+    const body = $('replyBox').value.trim();
+    if (!body) return;
+    $('replySend').disabled = true;
+    const { error: e1 } = await sb.from('inquiry_messages')
+      .insert({ inquiry_id: id, sender: 'admin', body });
+    if (e1) { $('globalErr').textContent = '답변 실패 — ' + e1.message; $('replySend').disabled = false; return; }
+    await sb.from('inquiries').update({ status: 'answered' }).eq('id', id);
+    await loadInquiries();
+  });
+
+  $('closeInq').addEventListener('click', async () => {
+    await sb.from('inquiries').update({ status: 'closed' }).eq('id', id);
+    await loadInquiries();
+  });
+}
+
+/* ── 페이지 전환 ── */
+const TITLES = {
+  dash: '대시보드', inquiry: '1:1 문의', episode: '회차 상세',
+  quality: '콘텐츠 품질', errors: '앱 오류', revenue: '수익 현황',
+};
+function showPage(name) {
+  for (const b of $('nav').querySelectorAll('button')) {
+    b.setAttribute('aria-current', String(b.dataset.page === name));
+  }
+  for (const s of document.querySelectorAll('[data-view]')) {
+    s.hidden = s.dataset.view !== name;
+  }
+  $('pageTitle').textContent = TITLES[name] ?? name;
+  scrollTo({ top: 0 });
+}
+
 /* ── 인증 ── */
 async function render(session) {
   const inApp = Boolean(session);
-  $('app').hidden = !inApp;
+  $('shell').hidden = !inApp;
   $('login').hidden = inApp;
   if (inApp) {
-    $('who').textContent = session.user.email ?? '';
+    const em = session.user.email ?? '';
+    $('who').textContent = em;
+    $('avatar').textContent = (em[0] ?? 'A').toUpperCase();
     await load();
   }
 }
@@ -669,6 +1285,10 @@ $('password').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('sig
 $('signout').addEventListener('click', () => sb.auth.signOut());
 $('reload').addEventListener('click', load);
 $('episodePick').addEventListener('change', loadEpisode);
+$('nav').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-page]');
+  if (b) showPage(b.dataset.page);
+});
 $('theme').addEventListener('click', () => {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');

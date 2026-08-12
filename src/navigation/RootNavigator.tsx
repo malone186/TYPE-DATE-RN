@@ -15,6 +15,8 @@ import { ResultReportScreen } from '../screens/ResultReportScreen';
 import { SnsCardScreen } from '../screens/SnsCardScreen';
 import { EpilogueScreen } from '../screens/EpilogueScreen';
 import { FinalEpilogueScreen } from '../screens/FinalEpilogueScreen';
+import { InquiryScreen } from '../screens/InquiryScreen';
+import { InquiryThreadScreen } from '../screens/InquiryThreadScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -45,6 +47,8 @@ export function RootNavigator() {
       <Stack.Screen name="SnsCard" component={SnsCardScreen} />
       <Stack.Screen name="Epilogue" component={EpilogueScreen} />
       <Stack.Screen name="FinalEpilogue" component={FinalEpilogueScreen} />
+      <Stack.Screen name="Inquiry" component={InquiryScreen} />
+      <Stack.Screen name="InquiryThread" component={InquiryThreadScreen} />
     </Stack.Navigator>
   );
 }

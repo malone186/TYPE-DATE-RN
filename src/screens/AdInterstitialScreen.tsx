@@ -8,6 +8,7 @@ import { withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors } from '../theme/useColors';
 import { GlowBackground, CoralButton } from '../widgets/common';
+import { track } from '../analytics/track';
 
 // 데이트가 끝나고 결과 리포트로 넘어가기 전에 끼는 전면 광고.
 // 지금은 SDK 없이 자리만 잡아둔 더미 뷰 — 나중에 이 박스를 실제 광고 뷰로 교체하면 된다.
@@ -21,6 +22,15 @@ export function AdInterstitialScreen({
   const c = useColors();
   const t = useTextStyles();
   const [remaining, setRemaining] = useState(COUNTDOWN_SECONDS);
+
+  // 광고가 실제로 노출된 횟수 — 수익 추정의 분모가 된다.
+  // SDK를 붙이면 이 자리에서 '광고 로드 성공' 콜백으로 옮겨야 정확해진다.
+  useEffect(() => {
+    track('ad_shown', {
+      episodeId: route.params.result.dateId,
+      props: { placement: 'interstitial_result' },
+    });
+  }, []);
 
   useEffect(() => {
     if (remaining <= 0) return;

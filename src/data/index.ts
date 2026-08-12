@@ -79,7 +79,7 @@ export const allCharacterSlots: TDCharacter[] = [
   ...Array.from({ length: Math.max(0, 16 - allEpisodes.length) }, (_, k) => {
     const i = allEpisodes.length + 1 + k;
     const slot: TDCharacter = {
-      id: `date${i.toString().padStart(2, '0')}`,
+      id: `female_${i.toString().padStart(2, '0')}`,
       name: '???',
       age: 0,
       job: '',

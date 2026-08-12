@@ -14,4 +14,6 @@ export type RootStackParamList = {
   SnsCard: { result: DateResult };
   Epilogue: { result: DateResult };
   FinalEpilogue: undefined;
+  Inquiry: undefined;
+  InquiryThread: { id: number; subject: string };
 };

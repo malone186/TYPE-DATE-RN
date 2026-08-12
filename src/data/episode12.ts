@@ -1,9 +1,9 @@
 import { BlindDate, ChatLine } from '../types';
 
 export const episode12: BlindDate = {
-  id: 'date12',
+  id: 'female_12',
   character: {
-    id: 'date12_haeun',
+    id: 'female_12_haeun',
     name: '하은',
     age: 29,
     job: '강연 기획자',

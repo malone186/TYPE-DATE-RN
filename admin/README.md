@@ -27,12 +27,33 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 `expo start`를 다시 실행하면 이때부터 이벤트가 쌓인다.
 **환경변수가 없으면 수집은 조용히 꺼진 채로 앱이 정상 동작한다** — 로컬 개발에서 통계가 오염되지 않게 하려면 그냥 비워두면 된다.
 
-## 3. 관리자 계정 만들기
+## 3. 익명 로그인 켜기 (1:1 문의에 필요)
 
-Supabase **Authentication → Users → Add user**에서 이메일/비밀번호로 계정을 하나 만든다.
-이 계정으로만 대시보드를 볼 수 있다.
+Supabase **Authentication → Providers → Anonymous sign-ins**를 켠다.
+문의 기능이 가입 절차 없이 익명 계정으로 스레드를 묶기 때문에, 꺼져 있으면 문의 화면이 실패한다.
 
-## 4. 대시보드 열기
+트래킹만 쓰고 문의는 안 쓸 거라면 켜지 않아도 된다.
+
+## 4. 관리자 계정 만들기
+
+두 단계다. **두 번째를 빠뜨리면 대시보드가 전부 빈 값으로 보인다.**
+
+1. **Authentication → Users → Add user**에서 이메일/비밀번호로 계정 생성
+   (`Auto Confirm User` 켜기)
+2. 그 계정을 관리자로 등록:
+
+```sql
+insert into public.admins (user_id) values ('<Users 목록의 UID>') on conflict do nothing;
+```
+
+`duplicate key ... admins_pkey` 에러가 나면 **이미 등록된 것**이다(실패가 아니다).
+`on conflict do nothing`을 붙이면 몇 번을 실행해도 조용히 넘어간다.
+
+익명 로그인을 쓰면 **앱 사용자도 `authenticated` 역할**이 된다. 그래서 "로그인했으면 관리자"로 볼 수 없고,
+`admins` 테이블에 등록된 계정만 관리자로 취급한다. 등록하지 않은 채 로그인하면 대시보드가
+UID와 함께 실행할 SQL을 그대로 띄워주니 복사해서 쓰면 된다.
+
+## 5. 대시보드 열기
 
 [`index.html`](index.html) 상단의 두 상수를 채운다:
 
@@ -64,11 +85,31 @@ const SUPABASE_ANON_KEY = 'your-anon-key';
 **보내지 않는 것:** 사용자 이름, 기기 정보, 위치, 광고 식별자.
 기기 구분은 앱이 처음 실행될 때 만든 임의 UUID(`td_device_id`) 하나뿐이며 사람과 연결되지 않는다.
 
+## 1:1 문의
+
+앱 **설정 → 1:1 문의**에서 들어간다. 회원가입은 없다 — `signInAnonymously()`로 익명 계정을 만들어
+스레드를 묶고, RLS가 `auth.uid()`로 남의 문의 접근을 막는다.
+
+| | |
+|---|---|
+| 앱 화면 | [InquiryScreen](../src/screens/InquiryScreen.tsx) 목록·작성, [InquiryThreadScreen](../src/screens/InquiryThreadScreen.tsx) 대화 |
+| 데이터 접근 | [src/lib/inquiries.ts](../src/lib/inquiries.ts) |
+| 관리자 | 대시보드 상단 **1:1 문의** 카드 — 답변 대기 건이 위로 온다 |
+
+한계 두 가지를 알고 쓸 것:
+
+- **답변 알림을 보낼 수 없다.** 푸시가 범위 밖이라 사용자가 앱을 다시 열어야 답변을 본다.
+- **앱을 지우면 익명 세션이 사라져 문의 내역도 못 본다.** 그래서 문의 작성 시 이메일을 선택 입력받는다 —
+  값이 있으면 관리자가 메일로 답할 수 있다.
+
 ## 보안
 
 - 앱이 쓰는 `anon` 키는 공개돼도 되는 키다. RLS 정책상 **INSERT만** 가능하고 SELECT는 막혀 있어,
   키가 노출돼도 남의 기록을 읽을 수 없다.
-- 원본 이벤트와 집계 뷰는 `authenticated` 역할(= 로그인한 관리자)만 읽는다.
+- 원본 이벤트와 집계 뷰는 **`admins`에 등록된 계정만** 읽는다.
+  익명 로그인 사용자도 `authenticated`이므로 역할만으로 판단하면 전체 트래킹 데이터가 새어나간다.
+- 문의 메시지는 사용자가 `sender = 'user'`로만 쓸 수 있다 — 운영자 답변을 위조할 수 없다.
+  상태 변경(답변 완료/종료)도 관리자만 가능하다.
 
 ## 알아둘 점
 

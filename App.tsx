@@ -12,6 +12,7 @@ import { useColors, useIsDark } from './src/theme/useColors';
 import { allImages } from './src/assets/images';
 import { IntroLogo } from './src/widgets/IntroLogo';
 import { track } from './src/analytics/track';
+import { ErrorBoundary } from './src/widgets/ErrorBoundary';
 
 // 화면 이탈 지점을 보려면 진입 기록이 필요한데, 스크린마다 심는 대신 여기 한 곳에서 잡는다.
 const navRef = createNavigationContainerRef();
@@ -25,6 +26,20 @@ function logScreen() {
   }
 }
 
+// ErrorBoundary는 렌더 중 오류만 잡는다. 타이머·비동기에서 터진 건 여기서 받는다.
+// 기존 핸들러(개발 중 빨간 화면)는 그대로 이어서 호출한다.
+const prevGlobalHandler = ErrorUtils.getGlobalHandler();
+ErrorUtils.setGlobalHandler((e, isFatal) => {
+  track('error', {
+    props: {
+      message: String(e?.message ?? e).slice(0, 200),
+      screen: lastScreen,
+      fatal: isFatal ? 'fatal' : 'async',
+    },
+  });
+  prevGlobalHandler(e, isFatal);
+});
+
 function Root() {
   const c = useColors();
   const isDark = useIsDark();
@@ -33,9 +48,11 @@ function Root() {
   return (
     <View style={{ flex: 1, backgroundColor: c.bg }}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      <NavigationContainer ref={navRef} onReady={logScreen} onStateChange={logScreen}>
-        <RootNavigator />
-      </NavigationContainer>
+      <ErrorBoundary screen={() => lastScreen}>
+        <NavigationContainer ref={navRef} onReady={logScreen} onStateChange={logScreen}>
+          <RootNavigator />
+        </NavigationContainer>
+      </ErrorBoundary>
       {!introDone && <IntroLogo onFinished={() => setIntroDone(true)} />}
     </View>
   );

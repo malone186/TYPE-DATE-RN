@@ -2,15 +2,23 @@ import React, { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import type { RootStackParamList } from '../navigation/types';
 
 import { withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
 import { GlassPanel } from './common';
+import { track } from '../analytics/track';
 
 // 메인(타이틀) 화면 우측 상단 설정 버튼 — 글자 크기와 광고 제거를 다룬다.
 // 사운드 버튼과 같은 방식으로, 아이콘을 누르면 헤더 아래에 패널이 열리고 바깥을 누르면 닫힌다.
+
+/// 광고 제거 가격(원) — 버튼 문구와 수익 집계가 같은 값을 보게 한 곳에 둔다.
+const AD_REMOVE_PRICE = 2200;
 
 const FONT_SCALES: { label: string; value: number }[] = [
   { label: '작게', value: 0.85 },
@@ -23,6 +31,7 @@ export function SettingsButton() {
   const c = useColors();
   const t = useTextStyles();
   const insets = useSafeAreaInsets();
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [open, setOpen] = useState(false);
 
   const fontScale = useStore((s) => s.fontScale);
@@ -95,7 +104,12 @@ export function SettingsButton() {
               </View>
             ) : (
               <Pressable
-                onPress={removeAds}
+                onPress={() => {
+                  // 결제 SDK를 붙이면 '결제 성공' 콜백으로 옮겨야 한다.
+                  // 지금은 결제 없이 켜지므로 이 값은 매출이 아니라 '전환 의사'다.
+                  track('remove_ads', { props: { price: AD_REMOVE_PRICE } });
+                  removeAds();
+                }}
                 style={({ pressed }) => ({
                   height: 44,
                   borderRadius: 12,
@@ -106,10 +120,32 @@ export function SettingsButton() {
                 })}
               >
                 <Text style={{ fontSize: t.fs(14), fontFamily: 'Pretendard-SemiBold', color: '#FFFFFF' }}>
-                  광고 제거 · 2,200원
+                  광고 제거 · {AD_REMOVE_PRICE.toLocaleString('ko-KR')}원
                 </Text>
               </Pressable>
             )}
+
+            <View style={{ height: 16 }} />
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: withAlpha(c.border, 0.9) }} />
+            <View style={{ height: 8 }} />
+
+            <Pressable
+              onPress={() => {
+                setOpen(false);
+                nav.navigate('Inquiry');
+              }}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                height: 44,
+                opacity: pressed ? 0.7 : 1,
+              })}
+            >
+              <MaterialIcons name="chat-bubble-outline" size={18} color={c.textPrimary} />
+              <View style={{ width: 8 }} />
+              <Text style={[t.caption(c.textPrimary), { flex: 1 }]}>1:1 문의</Text>
+              <MaterialIcons name="chevron-right" size={20} color={c.textSecondary} />
+            </Pressable>
           </GlassPanel>
         </View>
       </Modal>
