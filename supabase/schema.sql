@@ -402,7 +402,11 @@ select
   count(*) filter (where name = 'remove_ads')                  as removals,
   count(distinct device_id) filter (where name = 'remove_ads') as removal_devices,
   count(distinct device_id)                                    as all_devices
-from public.events;
+from public.events
+-- GROUP BY가 없는 집계는 보이는 행이 0개여도 '전부 0'인 행을 1개 돌려준다.
+-- 그대로 두면 권한 없는 계정에 "수익 0원"이라고 단언하게 되므로(=데이터 없음과 구분 불가)
+-- HAVING으로 행 자체를 없애 다른 뷰들과 같이 빈 결과가 되게 한다.
+having public.is_admin();
 
 create or replace view public.v_monetization_daily
 with (security_invoker = on) as
