@@ -165,6 +165,7 @@ from public.events
 where name = 'choice'
   and props ? 'turn'
   and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2
 order by 1, 2;
 
@@ -179,6 +180,7 @@ from public.events
 where name = 'episode_quit'
   and props ? 'turn'
   and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2
 order by 1, 2;
 
@@ -242,6 +244,7 @@ select * from (
   where name = 'choice'
     and props ? 'label'
     and props ->> 'turn' ~ '^[0-9]+$'
+    and public.safe_int(props ->> 'turn') is not null
   group by 1, 2, 3
 ) t
 where turn_total >= 20
@@ -263,6 +266,7 @@ from public.events
 where name = 'choice'
   and props ? 'label'
   and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2, 3
 order by 1, 2, 3;
 
