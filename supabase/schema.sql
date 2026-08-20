@@ -68,6 +68,27 @@ create policy "admins can read events"
   to authenticated
   using (public.is_admin());
 
+drop policy if exists "admins can delete events" on public.events;
+create policy "admins can delete events"
+  on public.events for delete
+  to authenticated
+  using (public.is_admin());
+
+-- 잘못된 분석 이벤트가 집계 뷰 전체를 깨뜨리지 않도록 정수 캐스팅을 방어한다.
+create or replace function public.safe_int(value text)
+returns integer
+language plpgsql
+immutable
+strict
+as $$
+begin
+  return value::integer;
+exception
+  when invalid_text_representation or numeric_value_out_of_range then
+    return null;
+end;
+$$;
+
 
 -- ── 집계 뷰 ──────────────────────────────────────────────────────────
 -- security_invoker=on: 뷰도 위 RLS를 그대로 따른다(로그인 필요).
@@ -138,11 +159,13 @@ create or replace view public.v_turn_reach
 with (security_invoker = on) as
 select
   episode_id,
-  (props ->> 'turn')::int   as turn,
+  public.safe_int(props ->> 'turn') as turn,
   count(distinct device_id) as devices
 from public.events
 where name = 'choice'
   and props ? 'turn'
+  and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2
 order by 1, 2;
 
@@ -151,11 +174,13 @@ create or replace view public.v_quit_turn
 with (security_invoker = on) as
 select
   episode_id,
-  (props ->> 'turn')::int as turn,
+  public.safe_int(props ->> 'turn') as turn,
   count(*)                as quits
 from public.events
 where name = 'episode_quit'
   and props ? 'turn'
+  and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2
 order by 1, 2;
 
@@ -206,18 +231,20 @@ with (security_invoker = on) as
 select * from (
   select
     episode_id,
-    (props ->> 'turn')::int as turn,
+    public.safe_int(props ->> 'turn') as turn,
     props ->> 'label'       as label,
     count(*)                as n,
     sum(count(*)) over (
-      partition by episode_id, (props ->> 'turn')::int
+      partition by episode_id, public.safe_int(props ->> 'turn')
     )                       as turn_total,
     round(100.0 * count(*) / sum(count(*)) over (
-      partition by episode_id, (props ->> 'turn')::int
+      partition by episode_id, public.safe_int(props ->> 'turn')
     ), 1)                   as pct
   from public.events
   where name = 'choice'
     and props ? 'label'
+    and props ->> 'turn' ~ '^[0-9]+$'
+    and public.safe_int(props ->> 'turn') is not null
   group by 1, 2, 3
 ) t
 where turn_total >= 20
@@ -229,15 +256,17 @@ create or replace view public.v_choice_rate
 with (security_invoker = on) as
 select
   episode_id,
-  (props ->> 'turn')::int as turn,
+  public.safe_int(props ->> 'turn') as turn,
   props ->> 'label'       as label,
   count(*)                as n,
   round(100.0 * count(*) / sum(count(*)) over (
-    partition by episode_id, (props ->> 'turn')::int
+    partition by episode_id, public.safe_int(props ->> 'turn')
   ), 1)                   as pct
 from public.events
 where name = 'choice'
   and props ? 'label'
+  and props ->> 'turn' ~ '^[0-9]+$'
+  and public.safe_int(props ->> 'turn') is not null
 group by 1, 2, 3
 order by 1, 2, 3;
 
