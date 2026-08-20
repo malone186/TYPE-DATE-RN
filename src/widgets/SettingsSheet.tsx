@@ -11,7 +11,7 @@ import { withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
-import { GlassPanel } from './common';
+import { GlassPanel, FrameAnchoredRight } from './common';
 import { track } from '../analytics/track';
 
 // 메인(타이틀) 화면 우측 상단 설정 버튼 — 글자 크기와 광고 제거를 다룬다.
@@ -59,7 +59,7 @@ export function SettingsButton() {
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-        <View style={{ position: 'absolute', top: insets.top + 52, right: 12, width: 288 }}>
+        <FrameAnchoredRight top={insets.top + 52} width={288}>
           <GlassPanel padding={16}>
             <Text style={t.screenTitle(c.textPrimary)}>설정</Text>
 
@@ -147,7 +147,7 @@ export function SettingsButton() {
               <MaterialIcons name="chevron-right" size={20} color={c.textSecondary} />
             </Pressable>
           </GlassPanel>
-        </View>
+        </FrameAnchoredRight>
       </Modal>
     </>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, Text, useWindowDimensions, View } from 'react-native';
+import { FlatList, Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { CoralButton, GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
 import { useStore } from '../state/store';
+import { useContentWidth } from '../theme/layout';
 import { lineData } from '../data';
 import { imageSource } from '../assets/images';
 import { TDCharacter } from '../types';
@@ -27,7 +28,8 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
   const { episodes, slots } = lineData(line);
   const completedCount = episodes.filter((e) => isCompleted(e.id)).length;
 
-  const { width } = useWindowDimensions();
+  // 창 너비가 아니라 콘텐츠 폭 기준 — 태블릿에서 칸이 프레임 밖으로 삐져나가지 않게.
+  const width = useContentWidth();
   const itemWidth = (width - 16 * 2 - 16) / 2;
   const itemHeight = itemWidth / 0.8;
 

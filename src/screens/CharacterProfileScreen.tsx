@@ -13,6 +13,7 @@ import { useStore } from '../state/store';
 import { characterById, episodeForCharacter } from '../data';
 import { imageSource } from '../assets/images';
 import { track } from '../analytics/track';
+import { useDeviceScale } from '../theme/layout';
 
 // Flutter screens/character_profile_screen.dart 이식.
 export function CharacterProfileScreen({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'CharacterProfile'>) {
@@ -20,6 +21,9 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
   const t = useTextStyles();
   const setSelectedEpisode = useStore((s) => s.setSelectedEpisode);
   const startSession = useStore((s) => s.startSession);
+
+  // 얼굴 사진은 화면 크기를 따라간다 — 좁은 폰에서 화면을 다 잡아먹지 않게.
+  const avatar = Math.round(160 * useDeviceScale());
 
   const character = characterById(route.params.characterId);
   if (!character) return null;
@@ -55,9 +59,9 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
-                  width: 160,
-                  height: 160,
-                  borderRadius: 80,
+                  width: avatar,
+                  height: avatar,
+                  borderRadius: avatar / 2,
                   padding: 3,
                   shadowColor: c.accentCoral,
                   shadowOpacity: 0.35,
@@ -65,7 +69,7 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
                   shadowOffset: { width: 0, height: 0 },
                 }}
               >
-                <View style={{ flex: 1, borderRadius: 80, overflow: 'hidden' }}>
+                <View style={{ flex: 1, borderRadius: avatar / 2, overflow: 'hidden' }}>
                   <Image source={face} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
                 </View>
               </LinearGradient>

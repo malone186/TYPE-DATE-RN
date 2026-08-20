@@ -20,6 +20,7 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { TypeDateColors, withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors, useIsDark } from '../theme/useColors';
+import { CONTENT_MAX_WIDTH, useFittedWidth } from '../theme/layout';
 import { useStore } from '../state/store';
 import { TDCharacter } from '../types';
 import { imageSource, logoMarkImage } from '../assets/images';
@@ -126,11 +127,34 @@ export function GlowBackground({
           />
         </View>
       )}
-      {children}
+      {/* 배경은 화면 전체를 채우고, 콘텐츠만 읽기 좋은 폭으로 묶어 가운데 정렬한다. */}
+      <View style={styles.contentFrame}>{children}</View>
     </>
   );
 
   return <View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg }]}>{content}</View>;
+}
+
+/// 화면 우측이 아니라 '콘텐츠 프레임의 우측'에 붙는 팝오버 자리.
+/// 태블릿에서는 버튼이 가운데 프레임 안에 있으므로, 패널만 화면 끝으로 날아가면 어긋나 보인다.
+export function FrameAnchoredRight({
+  top,
+  width,
+  children,
+}: {
+  top: number;
+  width: number;
+  children: React.ReactNode;
+}) {
+  // 좁은 기기(폴드 접힘 280dp 등)에서는 요청한 폭을 그대로 쓰면 화면을 넘친다.
+  const fitted = useFittedWidth(width);
+  return (
+    <View style={{ position: 'absolute', top, left: 0, right: 0, alignItems: 'center' }}>
+      <View style={[styles.contentFrameRow, { paddingRight: 12 }]}>
+        <View style={{ width: fitted }}>{children}</View>
+      </View>
+    </View>
+  );
 }
 
 /// 유리질 블러 패널 — 글로우 배경 위에 떠 있는 반투명 카드/말풍선 공용.
@@ -226,7 +250,7 @@ export function SoundControlButton() {
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-        <View style={{ position: 'absolute', top: insets.top + 52, right: 12, width: 248 }}>
+        <FrameAnchoredRight top={insets.top + 52} width={248}>
           <GlassPanel padding={16}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={t.caption(c.textSecondary)}>사운드</Text>
@@ -256,7 +280,7 @@ export function SoundControlButton() {
             <View style={{ height: 12 }} />
             <VolumeRow label="효과음" value={sfxVolume} disabled={muted} onChange={setSfxVolume} />
           </GlassPanel>
-        </View>
+        </FrameAnchoredRight>
       </Modal>
     </>
   );
@@ -491,6 +515,18 @@ export function CoralButton({
 
 const styles = StyleSheet.create({
   blob: { position: 'absolute' },
+  // 폰에서는 화면이 CONTENT_MAX_WIDTH보다 좁아 width:'100%'가 이겨 그대로 꽉 찬다.
+  contentFrame: {
+    flex: 1,
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+  },
+  contentFrameRow: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignItems: 'flex-end',
+  },
   watermarkWrap: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
