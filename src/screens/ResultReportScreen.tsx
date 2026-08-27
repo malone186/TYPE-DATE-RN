@@ -9,7 +9,8 @@ import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useStore } from '../state/store';
-import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, CoralButton } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 
 // Flutter screens/result_report_screen.dart 이식.
 
@@ -98,10 +99,9 @@ export function ResultReportScreen({
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 24 }}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 24 }}>
           <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
 
           <DocumentCard

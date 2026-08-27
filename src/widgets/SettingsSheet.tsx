@@ -11,10 +11,11 @@ import { withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
-import { GlassPanel, FrameAnchoredRight, CoralButton } from './common';
+import type { ThemeMode } from '../state/store';
+import { GlassPanel, FrameAnchoredRight, CoralButton, VolumeSlider } from './common';
 import { track } from '../analytics/track';
 
-// 메인(타이틀) 화면 우측 상단 설정 버튼 — 글자 크기와 광고 제거를 다룬다.
+// 공용 우측 상단 설정 버튼 — 글자 크기, 테마, 사운드, 광고 제거를 다룬다.
 // 사운드 버튼과 같은 방식으로, 아이콘을 누르면 헤더 아래에 패널이 열리고 바깥을 누르면 닫힌다.
 
 /// 광고 제거 가격(원) — 버튼 문구와 수익 집계가 같은 값을 보게 한 곳에 둔다.
@@ -27,6 +28,12 @@ const FONT_SCALES: { label: string; value: number }[] = [
   { label: '아주 크게', value: 1.3 },
 ];
 
+const THEME_MODES: { label: string; value: ThemeMode }[] = [
+  { label: '라이트', value: 'light' },
+  { label: '다크', value: 'dark' },
+  { label: '시스템', value: 'system' },
+];
+
 export function SettingsButton() {
   const c = useColors();
   const t = useTextStyles();
@@ -37,6 +44,12 @@ export function SettingsButton() {
   const fontScale = useStore((s) => s.fontScale);
   const setFontScale = useStore((s) => s.setFontScale);
   const adRemoved = useStore((s) => s.adRemoved);
+  const themeMode = useStore((s) => s.themeMode);
+  const setThemeMode = useStore((s) => s.setThemeMode);
+  const soundMuted = useStore((s) => s.soundMuted);
+  const sfxVolume = useStore((s) => s.sfxVolume);
+  const toggleSoundMuted = useStore((s) => s.toggleSoundMuted);
+  const setSfxVolume = useStore((s) => s.setSfxVolume);
 
   return (
     <>
@@ -47,6 +60,8 @@ export function SettingsButton() {
         style={({ pressed }) => ({
           padding: 8,
           marginLeft: 6,
+          marginTop: 4,
+          marginRight: 1,
           borderRadius: 999,
           backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
           borderWidth: StyleSheet.hairlineWidth,
@@ -86,8 +101,62 @@ export function SettingsButton() {
                 backgroundColor: withAlpha(c.border, 0.35),
               }}
             >
-              <Text style={t.chatMessage(c.textPrimary)}>미리보기 — 오늘 처음 뵙네요!</Text>
+              <Text style={t.chatMessage(c.textPrimary)}>오늘 처음 뵙네요!</Text>
             </View>
+
+            <View style={{ height: 16 }} />
+            <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: withAlpha(c.border, 0.9) }} />
+            <View style={{ height: 16 }} />
+
+            <Text style={t.caption(c.textSecondary)}>테마</Text>
+            <View style={{ height: 8 }} />
+            <View style={{ flexDirection: 'row' }}>
+              {THEME_MODES.map((mode, i) => (
+                <React.Fragment key={mode.value}>
+                  {i > 0 && <View style={{ width: 6 }} />}
+                  <ScaleChip
+                    label={mode.label}
+                    selected={themeMode === mode.value}
+                    onPress={() => setThemeMode(mode.value)}
+                  />
+                </React.Fragment>
+              ))}
+            </View>
+
+            <View style={{ height: 16 }} />
+            <Text style={t.caption(c.textSecondary)}>사운드</Text>
+            <View style={{ height: 8 }} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialIcons
+                name={soundMuted ? 'volume-off' : 'volume-up'}
+                size={20}
+                color={soundMuted ? c.textMuted : c.textPrimary}
+              />
+              <View style={{ width: 8 }} />
+              <Text style={[t.caption(c.textPrimary), { flex: 1 }]}>효과음</Text>
+              <Pressable
+                onPress={toggleSoundMuted}
+                hitSlop={6}
+                style={{
+                  paddingVertical: 5,
+                  paddingHorizontal: 12,
+                  borderRadius: 999,
+                  backgroundColor: soundMuted ? withAlpha(c.textMuted, 0.2) : c.accentCoral,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: t.fs(12),
+                    fontFamily: 'Pretendard-SemiBold',
+                    color: soundMuted ? c.textSecondary : '#FFFFFF',
+                  }}
+                >
+                  {soundMuted ? '음소거' : '켜짐'}
+                </Text>
+              </Pressable>
+            </View>
+            <View style={{ height: 4 }} />
+            <VolumeRow label="효과음 볼륨" value={sfxVolume} disabled={soundMuted} onChange={setSfxVolume} />
 
             <View style={{ height: 16 }} />
             <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: withAlpha(c.border, 0.9) }} />
@@ -135,6 +204,31 @@ export function SettingsButton() {
 
 /// 광고 제거 구매 버튼 — 설정 패널과 타이틀 화면이 같은 가격·같은 집계 이벤트를 쓰도록 한 곳에 둔다.
 /// 이미 제거된 상태인지는 부르는 쪽이 판단한다(설정 패널은 대신 안내 문구를 띄운다).
+function VolumeRow({
+  label,
+  value,
+  disabled,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  disabled: boolean;
+  onChange: (v: number) => void;
+}) {
+  const c = useColors();
+  const t = useTextStyles();
+  return (
+    <View style={{ opacity: disabled ? 0.4 : 1 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={t.caption(c.textSecondary)}>{label}</Text>
+        <View style={{ flex: 1 }} />
+        <Text style={t.caption(c.textMuted)}>{`${Math.round(value * 100)}%`}</Text>
+      </View>
+      <VolumeSlider value={value} onChange={onChange} />
+    </View>
+  );
+}
+
 export function RemoveAdsButton({ outlined = false }: { outlined?: boolean }) {
   const c = useColors();
   const t = useTextStyles();

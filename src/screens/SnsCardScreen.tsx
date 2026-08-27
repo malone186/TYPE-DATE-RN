@@ -7,7 +7,8 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
+import { GlowBackground } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
 import { episodeById } from '../data';
 import { DateResult, Ending, axisLetters } from '../types';
@@ -21,15 +22,14 @@ export function SnsCardScreen({ navigation, route }: NativeStackScreenProps<Root
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, height: 48 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, height: 48 }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ padding: 8 }}>
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
           <View style={{ width: 4 }} />
           <Text style={t.screenTitle(c.textPrimary)}>공유 카드</Text>
           <View style={{ flex: 1 }} />
-          <SoundControlButton />
-          <ThemeToggleButton />
+          <SettingsButton />
         </View>
         <View style={{ flex: 1, padding: 24 }}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

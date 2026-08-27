@@ -8,7 +8,8 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, CoralButton } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
 import { characterById, episodeForCharacter } from '../data';
 import { imageSource } from '../assets/images';
@@ -42,13 +43,12 @@ export function CharacterProfileScreen({ navigation, route }: NativeStackScreenP
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
         {/* 상단 바 */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, height: 48 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, height: 48 }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ padding: 8 }}>
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
           <View style={{ flex: 1 }} />
-          <SoundControlButton />
-          <ThemeToggleButton />
+          <SettingsButton />
         </View>
         <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32, alignItems: 'center' }}>
           <View style={{ height: 12 }} />

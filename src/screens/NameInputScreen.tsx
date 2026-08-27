@@ -7,7 +7,8 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, CoralButton } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
 
 // Flutter screens/name_input_screen.dart 이식.
@@ -28,7 +29,7 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingHorizontal: 32 }}>
+        <View style={{ flex: 1, paddingHorizontal: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Pressable
               onPress={() =>
@@ -40,10 +41,9 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
               <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
             </Pressable>
             <View style={{ flex: 1 }} />
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
-          <View style={{ flex: 3 }} />
+          <View style={{ flex: 2 }} />
           <Text style={t.screenTitle(c.textPrimary)}>만나기 전에,</Text>
           <View style={{ height: 8 }} />
           <Text style={[t.resultTitle(c.textPrimary), { fontSize: t.fs(20) }]}>
@@ -72,7 +72,7 @@ export function NameInputScreen({ navigation }: NativeStackScreenProps<RootStack
               },
             ]}
           />
-          <View style={{ flex: 4 }} />
+          <View style={{ flex: 3 }} />
           <CoralButton label="다음" onPress={submit} disabled={text.trim().length === 0} />
           <View style={{ height: 32 }} />
         </View>

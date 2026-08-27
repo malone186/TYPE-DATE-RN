@@ -61,7 +61,7 @@ export function InquiryThreadScreen({
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, height: 48 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, height: 48 }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ padding: 8 }}>
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
@@ -76,7 +76,7 @@ export function InquiryThreadScreen({
         >
           <ScrollView
             ref={scrollRef}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 16 }}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 16 }}
             onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
           >
             {loading ? (

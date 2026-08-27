@@ -7,7 +7,8 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
+import { GlowBackground } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
 import { LINE_DATA, LineKey } from '../data';
 
@@ -28,17 +29,14 @@ export function LineSelectScreen({ navigation, route }: NativeStackScreenProps<R
         <View style={{ flex: 1, paddingHorizontal: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Pressable
-              onPress={() =>
-                navigation.canGoBack() ? navigation.goBack() : navigation.navigate('Splash')
-              }
+              onPress={() => navigation.replace('Splash')}
               hitSlop={8}
               style={{ padding: 8 }}
             >
               <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
             </Pressable>
             <View style={{ flex: 1 }} />
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
           <View style={{ flex: 2 }} />
           <Text style={[t.screenTitle(c.textPrimary), { textAlign: 'center' }]}>

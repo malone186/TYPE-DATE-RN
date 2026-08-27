@@ -26,7 +26,7 @@ interface DateSession {
 interface AppState {
   // 테마 (Flutter themeModeProvider)
   themeMode: ThemeMode;
-  cycleThemeMode: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
 
   // 사운드 설정 — 화면 우측 상단 사운드 버튼에서 조절, AsyncStorage 영속화
   soundMuted: boolean;
@@ -116,11 +116,9 @@ function isLastTurn(s: DateSession) {
 
 export const useStore = create<AppState>((set, get) => ({
   themeMode: 'light',
-  cycleThemeMode: () => {
-    const next: ThemeMode =
-      get().themeMode === 'light' ? 'dark' : get().themeMode === 'dark' ? 'system' : 'light';
-    set({ themeMode: next });
-    void AsyncStorage.setItem('td_theme_mode', next);
+  setThemeMode: (mode) => {
+    set({ themeMode: mode });
+    void AsyncStorage.setItem('td_theme_mode', mode);
   },
 
   soundMuted: false,

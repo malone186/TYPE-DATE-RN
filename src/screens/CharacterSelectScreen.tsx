@@ -7,7 +7,8 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { CoralButton, GlowBackground, SoundControlButton, ThemeToggleButton } from '../widgets/common';
+import { CoralButton, GlowBackground } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
 import { useContentWidth } from '../theme/layout';
 import { lineData } from '../data';
@@ -30,20 +31,16 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
 
   // 창 너비가 아니라 콘텐츠 폭 기준 — 태블릿에서 칸이 프레임 밖으로 삐져나가지 않게.
   const width = useContentWidth();
-  const itemWidth = (width - 16 * 2 - 16) / 2;
+  const itemWidth = (width - 24 * 2 - 16) / 2;
   const itemHeight = itemWidth / 0.8;
 
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingHorizontal: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 4 }}>
             <Pressable
-              onPress={() =>
-                navigation.canGoBack()
-                  ? navigation.goBack()
-                  : navigation.navigate('LineSelect', { next: 'CharacterSelect' })
-              }
+              onPress={() => navigation.replace('LineSelect', { next: 'CharacterSelect' })}
               hitSlop={8}
               style={{ paddingRight: 12 }}
             >
@@ -51,8 +48,7 @@ export function CharacterSelectScreen({ navigation }: NativeStackScreenProps<Roo
             </Pressable>
             <Text style={t.screenTitle(c.textPrimary)}>소개팅 상대</Text>
             <View style={{ flex: 1 }} />
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
           <View style={{ height: 4 }} />
           <Text style={t.caption(c.textSecondary)}>{completedCount} / 16 완료</Text>

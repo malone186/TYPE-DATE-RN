@@ -19,12 +19,11 @@ import {
   MonologuePill,
   TurnProgressBar,
   TypingIndicator,
-  SoundControlButton,
-  ThemeToggleButton,
   CoralButton,
 } from '../widgets/common';
 import { ChoiceList } from '../widgets/ChoiceList';
 import { LikeEffectOverlay } from '../widgets/LikeEffectOverlay';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { imageSource } from '../assets/images';
 import { playMessageSound, useTypingSound } from '../audio/sounds';
 import { track } from '../analytics/track';
@@ -366,7 +365,7 @@ export function BlindDateChatScreen({
         {/* 헤더 — 사진 배경 위에서도 이름·진행도·테마 버튼이 읽히도록 반불투명 바를 깐다 */}
         <View
           style={{
-            paddingHorizontal: 16,
+            paddingHorizontal: 24,
             paddingVertical: 12,
             backgroundColor: withAlpha(c.surface, isDark ? 0.82 : 0.88),
             borderBottomWidth: StyleSheet.hairlineWidth,
@@ -393,8 +392,7 @@ export function BlindDateChatScreen({
                 {`${turn.turnNumber} / ${session.date.turns.length}`}
               </Text>
             )}
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
           {openingDone && (
             <>
@@ -506,12 +504,12 @@ export function BlindDateChatScreen({
 
         {/* 선택지 — 화면 하단에 고정, 배경은 투명 */}
         {showChoices && (
-          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}>
+          <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
             <ChoiceList choices={shuffledChoices} selected={null} onSelect={onChoiceSelected} />
           </View>
         )}
         {closingFinished && (
-          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}>
+          <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
             <CoralButton label="결과 확인하기" onPress={goToResult} />
           </View>
         )}

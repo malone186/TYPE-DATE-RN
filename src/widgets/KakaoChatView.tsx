@@ -13,7 +13,8 @@ import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
 import { useColors, useIsDark } from '../theme/useColors';
 import { ChatLine, TDCharacter } from '../types';
-import { GlowBackground, MonologuePill, SoundControlButton, ThemeToggleButton, TypingIndicator, CoralButton, CharacterAvatar } from './common';
+import { GlowBackground, MonologuePill, TypingIndicator, CoralButton, CharacterAvatar } from './common';
+import { SettingsButton } from './SettingsSheet';
 import { playMessageSound, useTypingSound } from '../audio/sounds';
 
 // Flutter widgets/kakao_chat_view.dart 이식.
@@ -156,7 +157,7 @@ export function KakaoChatView({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            paddingHorizontal: 16,
+            paddingHorizontal: 24,
             paddingVertical: 14,
             backgroundColor: withAlpha(c.surface, isDark ? 0.82 : 0.88),
             borderBottomWidth: StyleSheet.hairlineWidth,
@@ -193,8 +194,7 @@ export function KakaoChatView({
               <Text style={t.caption(c.textMuted)}>탭해서 계속</Text>
             </View>
           )}
-          <SoundControlButton />
-          <ThemeToggleButton />
+          <SettingsButton />
         </View>
 
         <Pressable style={{ flex: 1 }} onPress={skipMode ? advanceOnTap : undefined}>
@@ -215,7 +215,7 @@ export function KakaoChatView({
         </Pressable>
 
         {completeButtonLabel != null && finished && (
-          <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16 }}>
+          <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
             <CoralButton label={completeButtonLabel} onPress={onComplete} />
           </View>
         )}

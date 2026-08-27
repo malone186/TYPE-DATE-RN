@@ -1,27 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Animated,
   Image,
   ImageBackground,
   ImageSourcePropType,
-  Modal,
   PanResponder,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { MaterialIcons } from '@expo/vector-icons';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 import { TypeDateColors, withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors, useIsDark } from '../theme/useColors';
 import { CONTENT_MAX_WIDTH, useFittedWidth } from '../theme/layout';
-import { useStore } from '../state/store';
 import { TDCharacter } from '../types';
 import { imageSource, logoMarkImage } from '../assets/images';
 
@@ -189,131 +185,9 @@ export function GlassPanel({
   );
 }
 
-/// 라이트/다크/시스템 테마를 순환 전환하는 버튼
-export function ThemeToggleButton() {
-  const c = useColors();
-  const mode = useStore((s) => s.themeMode);
-  const cycle = useStore((s) => s.cycleThemeMode);
-  const icon =
-    mode === 'light' ? 'light-mode' : mode === 'dark' ? 'dark-mode' : 'brightness-auto';
-  // 사진·그라디언트 배경 위에서도 아이콘이 묻히지 않도록 불투명한 원형 칩을 깐다.
-  return (
-    <Pressable
-      onPress={cycle}
-      hitSlop={8}
-      style={({ pressed }) => ({
-        padding: 8,
-        borderRadius: 999,
-        backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: withAlpha(c.border, 0.8),
-      })}
-    >
-      <MaterialIcons name={icon as any} size={22} color={c.textPrimary} />
-    </Pressable>
-  );
-}
-
-/// 사운드 설정 버튼 — 우측 상단에서 음소거 토글 + 효과음 볼륨을 조절한다.
-/// 아이콘을 누르면 헤더 아래쪽에 볼륨 박스가 열리고, 바깥을 누르면 닫힌다.
-export function SoundControlButton() {
-  const c = useColors();
-  const t = useTextStyles();
-  const insets = useSafeAreaInsets();
-  const [open, setOpen] = useState(false);
-  const muted = useStore((s) => s.soundMuted);
-  const sfxVolume = useStore((s) => s.sfxVolume);
-  const toggleMuted = useStore((s) => s.toggleSoundMuted);
-  const setSfxVolume = useStore((s) => s.setSfxVolume);
-
-  return (
-    <>
-      {/* 사진·그라디언트 배경 위에서도 아이콘이 묻히지 않도록 불투명한 원형 칩을 깐다. */}
-      <Pressable
-        onPress={() => setOpen(true)}
-        hitSlop={8}
-        style={({ pressed }) => ({
-          padding: 8,
-          marginRight: 6,
-          borderRadius: 999,
-          backgroundColor: withAlpha(c.surface, pressed ? 0.98 : 0.88),
-          borderWidth: StyleSheet.hairlineWidth,
-          borderColor: withAlpha(c.border, 0.8),
-        })}
-      >
-        <MaterialIcons
-          name={muted ? 'volume-off' : 'volume-up'}
-          size={22}
-          color={muted ? c.textMuted : c.textPrimary}
-        />
-      </Pressable>
-
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-        <FrameAnchoredRight top={insets.top + 52} width={248}>
-          <GlassPanel padding={16}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={t.caption(c.textSecondary)}>사운드</Text>
-              <View style={{ flex: 1 }} />
-              <Pressable
-                onPress={toggleMuted}
-                hitSlop={6}
-                style={{
-                  paddingVertical: 5,
-                  paddingHorizontal: 12,
-                  borderRadius: 999,
-                  backgroundColor: muted ? withAlpha(c.textMuted, 0.2) : c.accentCoral,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: t.fs(12),
-                    fontFamily: 'Pretendard-SemiBold',
-                    color: muted ? c.textSecondary : '#FFFFFF',
-                  }}
-                >
-                  {muted ? '음소거 중' : '소리 켜짐'}
-                </Text>
-              </Pressable>
-            </View>
-
-            <View style={{ height: 12 }} />
-            <VolumeRow label="효과음" value={sfxVolume} disabled={muted} onChange={setSfxVolume} />
-          </GlassPanel>
-        </FrameAnchoredRight>
-      </Modal>
-    </>
-  );
-}
-
-function VolumeRow({
-  label,
-  value,
-  disabled,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  disabled: boolean;
-  onChange: (v: number) => void;
-}) {
-  const c = useColors();
-  const t = useTextStyles();
-  return (
-    <View style={{ opacity: disabled ? 0.4 : 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={t.caption(c.textSecondary)}>{label}</Text>
-        <View style={{ flex: 1 }} />
-        <Text style={t.caption(c.textMuted)}>{`${Math.round(value * 100)}%`}</Text>
-      </View>
-      <VolumeSlider value={value} onChange={onChange} />
-    </View>
-  );
-}
-
 /// 슬라이더 — 새 의존성 없이 PanResponder로 탭/드래그를 모두 받는다.
 /// 트랙의 화면상 좌표는 터치 시작 시 pageX-locationX로 구해두고, 드래그 중에는 그 기준으로 환산한다.
-function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+export function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const c = useColors();
   const trackWidth = useRef(1);
   const trackOriginX = useRef(0);

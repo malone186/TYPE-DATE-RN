@@ -72,7 +72,7 @@ export function InquiryScreen({ navigation }: NativeStackScreenProps<RootStackPa
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, height: 48 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, height: 48 }}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ padding: 8 }}>
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>

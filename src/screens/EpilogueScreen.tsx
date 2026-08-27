@@ -5,7 +5,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
-import { GlowBackground, GlassPanel, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
+import { GlowBackground, GlassPanel, CoralButton } from '../widgets/common';
+import { SettingsButton } from '../widgets/SettingsSheet';
 import { KakaoChatView } from '../widgets/KakaoChatView';
 import { useStore } from '../state/store';
 import { lineData, lineForDateId, epilogueLinesByDateId, episode1 } from '../data';
@@ -67,8 +68,7 @@ function NotificationScene({ completedCount, onNext }: { completedCount: number;
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
           <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>
             <View style={{ alignItems: 'center' }}>
@@ -107,8 +107,7 @@ function TeaserScene({
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 24, justifyContent: 'center' }}>
           <View style={{ alignSelf: 'flex-end', flexDirection: 'row', alignItems: 'center' }}>
-            <SoundControlButton />
-            <ThemeToggleButton />
+            <SettingsButton />
           </View>
           <GlassPanel style={{ width: '100%' }}>
             <View>
