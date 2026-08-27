@@ -11,7 +11,7 @@ import { withAlpha } from '../theme/colors';
 import { useTextStyles } from '../theme/textStyles';
 import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
-import { GlassPanel, FrameAnchoredRight } from './common';
+import { GlassPanel, FrameAnchoredRight, CoralButton } from './common';
 import { track } from '../analytics/track';
 
 // 메인(타이틀) 화면 우측 상단 설정 버튼 — 글자 크기와 광고 제거를 다룬다.
@@ -37,7 +37,6 @@ export function SettingsButton() {
   const fontScale = useStore((s) => s.fontScale);
   const setFontScale = useStore((s) => s.setFontScale);
   const adRemoved = useStore((s) => s.adRemoved);
-  const removeAds = useStore((s) => s.removeAds);
 
   return (
     <>
@@ -103,26 +102,7 @@ export function SettingsButton() {
                 <Text style={t.caption(c.textPrimary)}>광고가 제거되었습니다</Text>
               </View>
             ) : (
-              <Pressable
-                onPress={() => {
-                  // 결제 SDK를 붙이면 '결제 성공' 콜백으로 옮겨야 한다.
-                  // 지금은 결제 없이 켜지므로 이 값은 매출이 아니라 '전환 의사'다.
-                  track('remove_ads', { props: { price: AD_REMOVE_PRICE } });
-                  removeAds();
-                }}
-                style={({ pressed }) => ({
-                  height: 44,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: pressed ? 0.85 : 1,
-                  backgroundColor: c.accentCoral,
-                })}
-              >
-                <Text style={{ fontSize: t.fs(14), fontFamily: 'Pretendard-SemiBold', color: '#FFFFFF' }}>
-                  광고 제거 · {AD_REMOVE_PRICE.toLocaleString('ko-KR')}원
-                </Text>
-              </Pressable>
+              <RemoveAdsButton />
             )}
 
             <View style={{ height: 16 }} />
@@ -150,6 +130,43 @@ export function SettingsButton() {
         </FrameAnchoredRight>
       </Modal>
     </>
+  );
+}
+
+/// 광고 제거 구매 버튼 — 설정 패널과 타이틀 화면이 같은 가격·같은 집계 이벤트를 쓰도록 한 곳에 둔다.
+/// 이미 제거된 상태인지는 부르는 쪽이 판단한다(설정 패널은 대신 안내 문구를 띄운다).
+export function RemoveAdsButton({ outlined = false }: { outlined?: boolean }) {
+  const c = useColors();
+  const t = useTextStyles();
+  const removeAds = useStore((s) => s.removeAds);
+
+  const label = `광고 제거 · ${AD_REMOVE_PRICE.toLocaleString('ko-KR')}원`;
+  const buy = () => {
+    // 결제 SDK를 붙이면 '결제 성공' 콜백으로 옮겨야 한다.
+    // 지금은 결제 없이 켜지므로 이 값은 매출이 아니라 '전환 의사'다.
+    track('remove_ads', { props: { price: AD_REMOVE_PRICE } });
+    removeAds();
+  };
+
+  // 타이틀 화면에서는 시작하기/이어하기와 같은 CTA 규격을 써야 줄이 어긋나 보이지 않는다.
+  if (outlined) return <CoralButton label={label} outlined onPress={buy} />;
+
+  return (
+    <Pressable
+      onPress={buy}
+      style={({ pressed }) => ({
+        height: 44,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: pressed ? 0.85 : 1,
+        backgroundColor: c.accentCoral,
+      })}
+    >
+      <Text style={{ fontSize: t.fs(14), fontFamily: 'Pretendard-SemiBold', color: '#FFFFFF' }}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 

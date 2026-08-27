@@ -83,6 +83,7 @@ export function ResultReportScreen({
   const character = episode.character;
   const now = new Date(result.completedAt);
   const completedCount = useStore((s) => s.totalCompleted);
+  const userName = useStore((s) => s.userName);
 
   // Flutter 900ms AnimationController..forward()
   const ctrl = useRef(new Animated.Value(0)).current;
@@ -110,6 +111,7 @@ export function ResultReportScreen({
             now={now}
             ctrl={ctrl}
             completedCount={completedCount}
+            userName={userName}
           />
 
           <View style={{ height: 24 }} />
@@ -143,6 +145,7 @@ function DocumentCard({
   now,
   ctrl,
   completedCount,
+  userName,
 }: {
   result: DateResult;
   character: TDCharacter;
@@ -150,6 +153,7 @@ function DocumentCard({
   now: Date;
   ctrl: Animated.Value;
   completedCount: number;
+  userName: string;
 }) {
   return (
     <View
@@ -163,7 +167,7 @@ function DocumentCard({
         elevation: 6,
       }}
     >
-      <CoverSection result={result} character={character} style={style} now={now} />
+      <CoverSection result={result} character={character} style={style} now={now} userName={userName} />
       {/* 구분선 */}
       <View style={{ height: 1.5, backgroundColor: paperBorder }} />
       <BodySection
@@ -183,14 +187,18 @@ function CoverSection({
   character,
   style,
   now,
+  userName,
 }: {
   result: DateResult;
   character: TDCharacter;
   style: StyleInfo;
   now: Date;
+  userName: string;
 }) {
   const t = useTextStyles();
   const stamp = stampMeta(result.ending);
+  // 이름을 건너뛴 경우까지 '귀하'만 남으면 수신인이 비어 보이므로 기존 문구를 유지한다.
+  const recipient = userName.trim().length === 0 ? '나' : userName.trim();
   return (
     <View
       style={{
@@ -282,7 +290,7 @@ function CoverSection({
           textAlign: 'center',
         }}
       >
-        나 귀하
+        {`${recipient} 귀하`}
       </Text>
     </View>
   );

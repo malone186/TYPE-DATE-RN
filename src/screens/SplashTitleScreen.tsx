@@ -6,13 +6,15 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { GlowBackground, SoundControlButton, ThemeToggleButton, CoralButton } from '../widgets/common';
-import { SettingsButton } from '../widgets/SettingsSheet';
+import { SettingsButton, RemoveAdsButton } from '../widgets/SettingsSheet';
 import { logoMarkImage } from '../assets/images';
+import { useStore } from '../state/store';
 
 // Flutter screens/splash_title_screen.dart 이식.
 export function SplashTitleScreen({ navigation }: NativeStackScreenProps<RootStackParamList, 'Splash'>) {
   const c = useColors();
   const t = useTextStyles();
+  const adRemoved = useStore((s) => s.adRemoved);
   return (
     <GlowBackground>
       <SafeAreaView style={{ flex: 1 }}>
@@ -32,6 +34,12 @@ export function SplashTitleScreen({ navigation }: NativeStackScreenProps<RootSta
           <CoralButton label="시작하기" onPress={() => navigation.navigate('LineSelect', { next: 'NameInput' })} />
           <View style={{ height: 12 }} />
           <CoralButton label="이어하기" outlined onPress={() => navigation.navigate('LineSelect', { next: 'CharacterSelect' })} />
+          {!adRemoved && (
+            <>
+              <View style={{ height: 12 }} />
+              <RemoveAdsButton outlined />
+            </>
+          )}
           <View style={{ height: 32 }} />
         </View>
       </SafeAreaView>
