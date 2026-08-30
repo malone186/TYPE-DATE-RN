@@ -13,13 +13,10 @@ import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
 import type { ThemeMode } from '../state/store';
 import { GlassPanel, FrameAnchoredRight, CoralButton, VolumeSlider } from './common';
-import { track } from '../analytics/track';
+import { AD_REMOVE_PRICE, buyRemoveAds } from '../lib/billing';
 
 // 공용 우측 상단 설정 버튼 — 글자 크기, 테마, 사운드, 광고 제거를 다룬다.
 // 사운드 버튼과 같은 방식으로, 아이콘을 누르면 헤더 아래에 패널이 열리고 바깥을 누르면 닫힌다.
-
-/// 광고 제거 가격(원) — 버튼 문구와 수익 집계가 같은 값을 보게 한 곳에 둔다.
-const AD_REMOVE_PRICE = 2200;
 
 const FONT_SCALES: { label: string; value: number }[] = [
   { label: '작게', value: 0.85 },
@@ -232,18 +229,19 @@ function VolumeRow({
 export function RemoveAdsButton({ outlined = false }: { outlined?: boolean }) {
   const c = useColors();
   const t = useTextStyles();
-  const removeAds = useStore((s) => s.removeAds);
+  const [pending, setPending] = useState(false);
 
   const label = `광고 제거 · ${AD_REMOVE_PRICE.toLocaleString('ko-KR')}원`;
+  // 광고 제거는 결제가 확인된 뒤 billing.ts에서 켠다 — 여기서는 결제창만 띄운다.
+  // 취소·실패는 스토어가 자체 화면으로 안내하므로 앱에서 따로 알리지 않는다.
   const buy = () => {
-    // 결제 SDK를 붙이면 '결제 성공' 콜백으로 옮겨야 한다.
-    // 지금은 결제 없이 켜지므로 이 값은 매출이 아니라 '전환 의사'다.
-    track('remove_ads', { props: { price: AD_REMOVE_PRICE } });
-    removeAds();
+    if (pending) return;
+    setPending(true);
+    void buyRemoveAds().finally(() => setPending(false));
   };
 
   // 타이틀 화면에서는 시작하기/이어하기와 같은 CTA 규격을 써야 줄이 어긋나 보이지 않는다.
-  if (outlined) return <CoralButton label={label} outlined onPress={buy} />;
+  if (outlined) return <CoralButton label={label} outlined disabled={pending} onPress={buy} />;
 
   return (
     <Pressable

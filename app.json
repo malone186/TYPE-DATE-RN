@@ -32,7 +32,8 @@
       "favicon": "./assets/images/logo_mark.png"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "expo-iap"
     ]
   }
 }

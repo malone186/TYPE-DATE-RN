@@ -78,6 +78,9 @@
 
   /* ── 셸 ── */
   #shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+  /* id 선택자가 브라우저 기본 [hidden]을 이기기 때문에, 이 줄이 없으면
+     로그인 전에도 대시보드가 로그인 폼 뒤로 그대로 비쳐 보인다. */
+  #shell[hidden] { display: none; }
 
   .side {
     background: var(--side); color: var(--side-text);

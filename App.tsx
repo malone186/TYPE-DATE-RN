@@ -13,6 +13,7 @@ import { allImages } from './src/assets/images';
 import { IntroLogo } from './src/widgets/IntroLogo';
 import { track } from './src/analytics/track';
 import { ErrorBoundary } from './src/widgets/ErrorBoundary';
+import { initBilling } from './src/lib/billing';
 
 // 화면 이탈 지점을 보려면 진입 기록이 필요한데, 스크린마다 심는 대신 여기 한 곳에서 잡는다.
 const navRef = createNavigationContainerRef();
@@ -74,7 +75,11 @@ export default function App() {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   useEffect(() => {
     // 라인(남/여)이 복원된 뒤에 보내야 방문 기록에 올바른 라인이 남는다.
-    void loadPersisted().then(() => track('app_open'));
+    // 저장된 플래그를 먼저 복원한 뒤 스토어에 물어본다 — 이미 켜져 있으면 집계를 중복해 남기지 않는다.
+    void loadPersisted().then(() => {
+      track('app_open');
+      initBilling();
+    });
     Asset.loadAsync(allImages)
       .catch(() => {})
       .finally(() => setImagesLoaded(true));
