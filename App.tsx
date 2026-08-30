@@ -13,7 +13,8 @@ import { allImages } from './src/assets/images';
 import { IntroLogo } from './src/widgets/IntroLogo';
 import { track } from './src/analytics/track';
 import { ErrorBoundary } from './src/widgets/ErrorBoundary';
-import { initBilling } from './src/lib/billing';
+import { disposeBilling, initBilling } from './src/lib/billing';
+import { initAdConsent } from './src/lib/ads';
 
 // 화면 이탈 지점을 보려면 진입 기록이 필요한데, 스크린마다 심는 대신 여기 한 곳에서 잡는다.
 const navRef = createNavigationContainerRef();
@@ -79,10 +80,14 @@ export default function App() {
     void loadPersisted().then(() => {
       track('app_open');
       initBilling();
+      initAdConsent();
     });
     Asset.loadAsync(allImages)
       .catch(() => {})
       .finally(() => setImagesLoaded(true));
+    return () => {
+      void disposeBilling();
+    };
   }, []);
 
   const ready = fontsLoaded && imagesLoaded;

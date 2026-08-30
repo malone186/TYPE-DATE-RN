@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
+    "verify:config": "node scripts/verify-launch-config.mjs",
     "admin": "npx -y serve admin -l 5174"
   },
   "dependencies": {
@@ -18,10 +19,11 @@
     "@react-navigation/native-stack": "^6.11.0",
     "@supabase/supabase-js": "^2.112.3",
     "babel-preset-expo": "~54.0.10",
-    "expo": "^54.0.0",
+    "expo": "~54.0.37",
     "expo-asset": "~12.0.13",
     "expo-audio": "~1.1.1",
     "expo-blur": "~15.0.8",
+    "expo-constants": "18.0.14",
     "expo-dev-client": "~6.0.21",
     "expo-font": "~14.0.12",
     "expo-haptics": "~15.0.8",
@@ -32,6 +34,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-google-mobile-ads": "15.8.3",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
     "react-native-svg": "15.12.1",

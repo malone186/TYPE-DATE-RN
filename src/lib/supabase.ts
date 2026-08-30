@@ -45,3 +45,13 @@ export function ensureSignedIn(): Promise<string | null> {
   }
   return signInPromise;
 }
+
+// 구매 검증 함수 호출처럼 로그인 JWT가 필요한 작업에서만 사용한다.
+// 통계 전송은 이 세션과 분리된 anon apikey 경로를 유지한다.
+export async function getAccessToken(): Promise<string | null> {
+  if (supabase == null) return null;
+  const uid = await ensureSignedIn();
+  if (uid == null) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
+}

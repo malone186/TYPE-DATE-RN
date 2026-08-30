@@ -8,6 +8,8 @@ import { useStore } from '../state/store';
 const URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 const enabled = Boolean(URL && KEY);
+const APP_ENV = process.env.EXPO_PUBLIC_APP_ENV ?? 'development';
+const ANALYTICS_SCHEMA_VERSION = 2;
 
 // 앱 켠 동안 재사용 — 매 이벤트마다 AsyncStorage를 읽지 않도록 한 번만 해석한다.
 let deviceIdPromise: Promise<string> | null = null;
@@ -34,6 +36,13 @@ function deviceId(): Promise<string> {
 
 type Props = Record<string, string | number>;
 
+function diagnoseFailure(reason: string, status?: number) {
+  if (__DEV__) {
+    // 이벤트 값·키·응답 본문은 로그에 남기지 않는다.
+    console.debug('[analytics]', reason, status == null ? '' : `status=${status}`);
+  }
+}
+
 /// 이벤트 한 건 전송. 실패는 삼킨다 — 통계 때문에 게임이 멈추면 안 된다.
 export function track(
   name: string,
@@ -43,12 +52,11 @@ export function track(
   void (async () => {
     try {
       const id = await deviceId();
-      await fetch(`${URL}/rest/v1/events`, {
+      const response = await fetch(`${URL}/rest/v1/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           apikey: KEY as string,
-          Authorization: `Bearer ${KEY}`,
           Prefer: 'return=minimal',
         },
         body: JSON.stringify({
@@ -56,11 +64,17 @@ export function track(
           name,
           line: useStore.getState().line,
           episode_id: opts.episodeId ?? null,
-          props: opts.props ?? {},
+          props: {
+            ...(opts.props ?? {}),
+            app_environment: APP_ENV,
+            schema_version: ANALYTICS_SCHEMA_VERSION,
+          },
         }),
       });
+      if (!response.ok) diagnoseFailure('http_failure', response.status);
     } catch {
       // 네트워크 없음 등 — 통계는 유실돼도 무방
+      diagnoseFailure('network_failure');
     }
   })();
 }

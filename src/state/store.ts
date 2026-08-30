@@ -9,6 +9,16 @@ import { allMaleEpisodes } from '../data/male';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+export type BillingStatus =
+  | 'uninitialized'
+  | 'checking'
+  | 'ready'
+  | 'purchasing'
+  | 'pending'
+  | 'verifying'
+  | 'owned'
+  | 'error';
+
 const emptyAxis = (): Record<string, number> => ({
   E: 0, I: 0, N: 0, S: 0, T: 0, F: 0, J: 0, P: 0,
 });
@@ -38,9 +48,17 @@ interface AppState {
   fontScale: number;
   setFontScale: (v: number) => void;
 
-  // 광고 제거 여부 — 설정창에서 구매, AsyncStorage 영속화
+  // 광고 제거 여부 — 서버 검증된 스토어 entitlement만 true가 된다.
   adRemoved: boolean;
-  removeAds: () => void;
+  setAdEntitlement: (owned: boolean) => void;
+  billingStatus: BillingStatus;
+  billingMessage: string;
+  adProductDisplayPrice: string | null;
+  setBillingState: (state: {
+    status?: BillingStatus;
+    message?: string;
+    displayPrice?: string | null;
+  }) => void;
 
   // 라인(남/여) — 스플래시 다음 선택 화면에서 결정, AsyncStorage 영속화
   line: LineKey;
@@ -141,9 +159,22 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   adRemoved: false,
-  removeAds: () => {
-    set({ adRemoved: true });
-    void AsyncStorage.setItem('td_ad_removed', 'true');
+  setAdEntitlement: (owned) => {
+    set({ adRemoved: owned });
+    const write = owned
+      ? AsyncStorage.setItem('td_ad_entitlement', 'owned')
+      : AsyncStorage.removeItem('td_ad_entitlement');
+    void write.catch(() => {});
+  },
+  billingStatus: 'uninitialized',
+  billingMessage: '',
+  adProductDisplayPrice: null,
+  setBillingState: ({ status, message, displayPrice }) => {
+    set({
+      ...(status == null ? {} : { billingStatus: status }),
+      ...(message == null ? {} : { billingMessage: message }),
+      ...(displayPrice === undefined ? {} : { adProductDisplayPrice: displayPrice }),
+    });
   },
 
   line: 'female',
@@ -242,7 +273,7 @@ export const useStore = create<AppState>((set, get) => ({
     const savedMuted = await AsyncStorage.getItem('td_sound_muted');
     const savedSfx = await AsyncStorage.getItem('td_sfx_volume');
     const savedScale = await AsyncStorage.getItem('td_font_scale');
-    const savedAdRemoved = await AsyncStorage.getItem('td_ad_removed');
+    const savedAdEntitlement = await AsyncStorage.getItem('td_ad_entitlement');
     const completed = new Set<string>();
     const savedResults: Record<string, DateResult> = {};
     for (const e of [...allEpisodes, ...allMaleEpisodes]) {
@@ -267,7 +298,9 @@ export const useStore = create<AppState>((set, get) => ({
       soundMuted: savedMuted === 'true',
       sfxVolume: savedVolume(savedSfx, 0.8),
       fontScale: savedFontScale(savedScale),
-      adRemoved: savedAdRemoved === 'true',
+      // Legacy td_ad_removed was a client-only flag and is intentionally ignored.
+      adRemoved: savedAdEntitlement === 'owned',
+      billingStatus: savedAdEntitlement === 'owned' ? 'owned' : 'uninitialized',
       completedIds: completed,
       totalCompleted: completed.size,
       results: savedResults,

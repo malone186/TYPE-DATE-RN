@@ -1,207 +1,119 @@
-# TYPE DATE 출시 체크리스트
+# TYPE DATE 출시 체크리스트 — 검토 반영본
 
-> 작성일: 2026-08-30 · 기준 브랜치 `master`
-> 범위: 출시까지 남은 작업. **SNS 공유 기능은 이번 범위에서 제외.**
-> 표기: `[사장님]` = 계정·콘솔 권한이 필요해 개발자가 대신할 수 없는 일 / `[개발]` = 코드 작업
+> 검토일: 2026-08-31 · 코드 기준 HEAD: `f16249b`
+> 범위: Android 우선 출시 준비. SNS 공유 신규 개발·iOS 동시 출시는 이번 계획에서 제외한다.
+> 이번 작업은 로컬 코드·설정·migration·문서와 자동 검사까지 수행했다. 운영 DB 적용·실기기/스토어 검증·스토어 제출을 완료했다는 뜻이 아니다.
+> 상세 실행 명세: [LUNA_LAUNCH_IMPLEMENTATION_PLAN.md](LUNA_LAUNCH_IMPLEMENTATION_PLAN.md)
 
----
+## 0. 현재 상태와 기존 문서 정정
 
-## 0. 지금까지 끝난 것
-
-| | 내용 |
+| 항목 | 확인 결과 |
 |---|---|
-| 1:1 문의 연동 | Supabase 프로젝트 복구 + `.env.local` 생성. 문의 → DB 저장 실제 확인 완료 |
-| 대시보드 로그인 게이트 | 로그인 전에 대시보드가 그대로 노출되던 CSS 버그 수정 |
-| 대시보드 실행 | `npm run admin` → http://localhost:5174 |
-| **인앱결제 코드** | `src/lib/billing.ts` 신규. 결제 확인 후에만 광고 제거가 열림 + 구매 복원 + 실매출 집계 |
-| EAS 빌드 환경 | `eas.json` 3개 프로파일 + `expo-dev-client` 설치 |
-| 개인정보 처리방침 | `PRIVACY_POLICY.md` 초안 (채워야 할 항목은 `[ ]` 표시) |
+| 커밋 상태 | 기존 사용자 변경(`LAUNCH_CHECKLIST.md`, 미추적 개인 설정)은 보존. 이번 작업 변경은 아직 커밋하지 않음 |
+| 결제 | 상품 조회·스토어 표시 가격·중복 방지·복원·foreground 재조회·서버 검증 후 entitlement/finish 순서를 구현. 실기기 성공 증거는 없음 |
+| 타입 검사 | `npm.cmd ci` 후 `npm.cmd run typecheck` 통과 |
+| 대시보드 수익 | 구매/복원/테스트/레거시를 분리하고, 검증 거래 수와 광고 eCPM 추정치를 구분. 정산액 집계 완료 아님 |
+| 광고 | `react-native-google-mobile-ads@15.8.3`과 UMP 동의 경계, `OPENED` 기준 이벤트, 3초 fallback 구현. 실기기/콘솔 검증은 없음 |
+| EAS | 3개 프로파일에 environment 추가. projectId·원격 변수·AdMob 실제 ID는 미확인 |
+| 문의·통계 | publishable `apikey` 전송·HTTP 실패 진단 구현. 운영 DB/RLS 적용과 실제 전송 성공은 별도 검증 필요 |
+| 개인정보 | 실제 익명 계정·device_id·선택 이메일·SDK/결제 흐름을 반영. 사업자/연락처/보유 기간/리전은 운영자 확정 필요 |
 
-**아직 커밋되지 않았습니다.** 위 변경은 전부 작업 트리에만 있습니다.
+### 반드시 고친 판단
 
----
+- 개발 APK도 **라이선스 테스터·패키지 일치 등 조건을 충족하면** Play Billing 테스트가 가능하다. 최종 출시 검증은 Play 내부 테스트 설치 경로를 사용한다. 내부 테스트 참여만으로 무료 결제가 보장되지 않는다. [Google 결제 테스트](https://developer.android.com/google/play/billing/test)
+- 전면 광고는 일반 React View 안에 삽입하는 방식이 아니라 SDK 전체 화면 표시 흐름이다. `LOADED`는 노출이 아니다. 현재 문서화된 라이브러리에서는 `OPENED`가 표시 확인 이벤트이며, 설치 버전의 API를 확인해야 한다. [광고 표시](https://docs.page/invertase/react-native-google-mobile-ads/displaying-ads), [이벤트 정의](https://github.com/invertase/react-native-google-mobile-ads/blob/main/src/AdEventType.ts)
+- `source: purchase` 이벤트만으로 실제 결제 검증·중복 제거·환불 반영·정산이 되는 것은 아니다.
+- 관리자 콘솔 작업도 권한이 위임되면 개발자가 수행할 수 있다. 다만 계정 소유자만 결정할 사업자 정보·약관·결제 수단·공개 제출은 구분한다.
+- 데이터 전체 삭제를 출시 필수 단계로 삼지 않는다. 기존 정보는 보존하고 테스트 범위를 식별해 제외하는 방식을 우선한다.
 
-## 1. 크리티컬 패스 — 제일 먼저 시작할 것
+## 1. 소유자 확인 — 일정에 먼저 반영
 
-> **결제 프로필 심사에 며칠 걸립니다.** 다른 걸 먼저 하면 여기서 전체 일정이 막힙니다.
+- [ ] Play 개발자 계정 유형·생성일·프로덕션 접근 상태 확인.
+- [ ] 2023-11-13 이후 생성한 개인 계정이라면 적용 여부 확인: 최소 12명이 연속 14일 참여하는 비공개 테스트 후 프로덕션 접근 신청. 내부 테스트와 별개다. [공식 요구사항](https://support.google.com/googleplay/android-developer/answer/14151465)
+- [ ] 결제 프로필·신원/기기 확인 등 콘솔의 실제 미완료 항목 확인. 심사 기간은 보장하지 않음.
+- [ ] 패키지 `com.typedate.app` 유지.
+- [ ] 비소모성 일회성 상품 `remove_ads` 등록·판매 가능 상태 확인. 한국 기준 목표 가격 2,200원. 앱은 스토어 상품 가격을 조회해 표시.
+- [ ] 내부 테스트 참여 계정과 라이선스 테스트 계정을 각각 등록하고 실제 구매 계정 일치 확인.
+- [ ] AdMob 앱 ID·전면 광고 단위 ID 발급. 광고 송출 준비/검토 상태, 콘솔이 요구하는 앱 소유권 확인·app-ads.txt 작업 확인.
+- [ ] 운영자/책임자·문의 이메일·보유 기간·실제 Supabase 리전·공개 방침 URL·출시 국가/연령층 확정.
+- [ ] Expo 프로젝트 소유 계정과 연결 대상 확인. 이미 연결된 프로젝트를 중복 생성하지 않음.
 
-### 1-1. `[사장님]` Google Play Console 결제 준비
+## 2. 개발 준비와 빌드 환경
 
-- [ ] Play Console에 앱 등록 — 패키지명 **`com.typedate.app`** (`app.json`에 이미 설정됨, 바꾸지 말 것)
-- [ ] **결제 프로필 등록** ← 심사 리드타임 있음. 오늘 시작할 것
-- [ ] 인앱 상품 생성
-  - 상품 ID: **`remove_ads`** ← `src/lib/billing.ts`의 `REMOVE_ADS_SKU`와 **글자 하나까지 같아야 함**
-  - 유형: 관리되는 상품(비소모성) — 한 번 사면 영구
-  - 가격: 2,200원 (앱 표시 문구와 맞출 것)
-- [ ] 라이선스 테스터에 본인 구글 계정 추가 → 실제 청구 없이 결제 테스트 가능
-- [ ] 내부 테스트 트랙 생성
+- [x] 기존 변경을 보존하고 잠금 파일 기준 `npm.cmd ci` 후 `npm.cmd run typecheck` 통과.
+- [ ] 필요 시 `npx.cmd eas-cli whoami` → 로그인 → 기존 프로젝트 확인 → `init` 순으로 진행.
+- [x] `eas.json`의 development / preview / production에 대응 `environment` 명시.
+- [ ] EAS 각 환경에 Supabase URL·공개 키와 해당 환경 설정 등록. `.env.local` 전달을 전제로 하지 않음.
+- [ ] 공개 키/프로젝트 URL을 문서에 실제 값으로 복제하지 않음. `EXPO_PUBLIC_*`는 앱에서 읽을 수 있으므로 비밀 저장소가 아님.
+- [x] production 설정 누락·테스트 광고 ID·미완성 방침 URL을 config/계약 검사에서 차단. 로컬 데모는 서비스 없는 상태로 실행 가능.
+- [ ] 현재 CLI 도움말로 환경변수 명령 확인. 공식 예시는 `env:set`; 기존 `env:create` 사용 가능 여부는 설치 CLI에서 확인.
 
-### 1-2. `[사장님]` Expo 계정 연결
+PowerShell 명령 예시 — 소유자 확인 후 실제 값으로 입력한다.
 
-현재 로그인 상태가 아닙니다(`Not logged in`). 계정 자격이 필요해 개발자가 대신할 수 없습니다.
-
-```bash
-npx eas-cli login          # Expo 계정 (무료 가입)
-npx eas-cli init           # app.json에 projectId 기록 — 없으면 빌드 불가
+```powershell
+npx.cmd eas-cli --version
+npx.cmd eas-cli env:set --help
+npx.cmd eas-cli env:set --name EXPO_PUBLIC_SUPABASE_URL --value "<SUPABASE_URL>" --environment production --visibility plaintext
+npx.cmd eas-cli env:set --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "<PUBLISHABLE_OR_ANON_KEY>" --environment production --visibility plaintext
+npx.cmd eas-cli env:list --environment production
 ```
 
-### 1-3. `[사장님]` EAS 환경변수 등록 — **빠뜨리면 조용히 고장납니다**
+development/preview도 각각 확인한다. 값이 공개형이어도 전체 키를 로그/보고서에 출력할 필요는 없다. [Expo 환경변수](https://docs.expo.dev/eas/environment-variables/)
 
-`.env.local`은 `.gitignore` 대상이라 EAS 빌드 서버로 올라가지 않습니다. 등록하지 않으면 빌드된 앱에서 **문의와 통계가 아무 오류 없이 꺼진 채로 출시**됩니다.
+## 3. 출시를 막는 코드 작업
 
-```bash
-npx eas-cli env:create --name EXPO_PUBLIC_SUPABASE_URL \
-  --value "https://odugzjsopjhekjmbrrnd.supabase.co" --visibility plaintext
+- [x] 통계 REST 인증 수정: publishable 키를 JWT처럼 Bearer에 넣지 않음. 공개 `apikey`와 사용자 JWT 역할 구분.
+- [x] 통계 HTTP 비정상 상태 감지·민감정보 없는 개발 진단 추가. 게임 진행은 계속 허용.
+- [x] 상품 조회·스토어 가격 표시·결제 전역 중복 방지·취소/실패/대기 안내(실기기 미검증).
+- [x] 수동 구매 복원, 구매·복원 동일한 구매상태 검증, 재시도/리스너 수명 관리(실기기 미검증).
+- [x] 서버 구매 검증 함수·거래별 중복 방지·승인 재시도·환불/취소 권한 갱신 준비. 배포·실 API 검증은 미완료.
+- [x] 광고 SDK·동의 흐름·테스트 광고·웹/Expo Go 대체 동작 구현(실기기 미검증).
+- [x] 광고 닫힘/오류/광고 없음/시간 초과 시 결과 화면으로 정확히 한 번 진행.
+- [x] 광고 제거 사용자와 소유권 확인 중 광고 요청 차단.
+- [x] 구매/복원/테스트/과거 더미 이벤트 분리. 검증 안 된 이벤트를 실매출로 표시하지 않음.
+- [x] 설정에 개인정보처리방침 링크와 광고 개인정보 선택 진입점 추가.
+- [x] `admin/README.md`·SQL 주석·화면 문구의 “결제 없이 광고 제거” 설명 정리.
+- [ ] RLS를 UI 로그인 게이트와 별개로 검증.
 
-npx eas-cli env:create --name EXPO_PUBLIC_SUPABASE_ANON_KEY \
-  --value "sb_publishable_hlc2DNv220ysZYkrFOvI8A_uqeZQa23" --visibility plaintext
-```
+공개 키와 JWT는 다르다. [Supabase API 키](https://supabase.com/docs/guides/getting-started/api-keys)
+검증·권한 부여·구매 승인은 구분해서 처리한다. [Google 구매 보안](https://developer.android.com/google/play/billing/security)
 
-등록 후 확인:
+## 4. 개인정보와 운영
 
-```bash
-npx eas-cli env:list
-```
+- [x] “이름을 입력받지 않음” → 게임 호칭은 로컬 입력, 문의 이메일은 선택 수집으로 구분.
+- [x] UUID·익명 계정이 있다는 이유만으로 “식별 불가능/연결 안 됨”이라고 단정하지 않음. 문의에 device_id·email·user_id가 함께 저장되는 현재 구조 반영.
+- [x] 회차 결과 일부가 분석 이벤트로 전송된다는 사실 반영.
+- [x] 이메일 자동 발송·자동 파기·즉시 삭제 등 구현/운영 증거 없는 약속 삭제 또는 실제 절차 마련.
+- [x] AdMob/Google Play의 수집·처리 내용을 문서에 반영. iOS ATT는 실제 추적 용도에 따라 검토하도록 정리.
+- [ ] 삭제 요청을 식별·처리하는 절차와 연락처 마련. 문의 기능 장애 시 외부 연락 경로 확보.
+- [ ] 공개 방침은 로그인 없이 열리는 활성 URL, 지역 제한 없는 일반 웹 페이지로 준비. Google Play 요구사항에 맞춰 PDF 등 부적절한 게시 형식 제외.
+- [ ] Data Safety·광고 포함 여부·콘텐츠 등급·대상 연령·국가 설정을 실제 동작과 대조.
 
----
+[Google 사용자 데이터 정책](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en), [Google 광고 동의](https://developers.google.com/admob/android/privacy), [Apple 추적 기준](https://developer.apple.com/app-store/user-privacy-and-data-use/)
 
-## 2. 빌드와 결제 검증
+## 5. 검증과 출시 판정
 
-### 2-1. `[사장님]` 빌드 실행
+- [x] 의존성 설치 후 타입 검사, Expo 호환성 진단, 웹 export. 로컬 명령 결과는 `LAUNCH_VERIFICATION.md`에 기록했고, 중복 `expo-constants` 수정 후 Expo Doctor 18/18 통과.
+- [ ] Android development 빌드에서 핵심 플레이·문의·통계·광고 예외 처리 검증.
+- [ ] Play 내부 테스트 AAB에서 구매/취소/실패/대기/복원/재설치/환불 검증.
+- [ ] 광고 노출 1회=분석 표시 이벤트 1회, 로드만 성공=0회.
+- [ ] 구매 복원 및 테스트 구매는 신규 유료 매출에 포함되지 않음.
+- [ ] 데이터 격리: 익명 사용자 A가 B의 문의를 읽거나 답변을 위조하지 못함.
+- [ ] 테스트 대상 이벤트는 태그·거래 검증 결과·명시적 범위로 제외. 과거 분류 불가 데이터는 보존하고 수익 산식에서 제외.
+- [ ] 삭제가 정말 필요하면 대상 ID 목록·백업·예상 cascade 영향·복구 절차를 검토한 뒤 별도 승인. 전체 `auth.users` 익명 계정 삭제 금지.
+- [ ] 실제 설치한 빌드의 package/version/versionCode·SDK target API·권한을 제출 시점 Play 요구사항과 확인.
+- [ ] 스크린샷·설명·아이콘·피처 그래픽을 현재 빌드와 대조. 기존 바탕화면 이미지 존재/사용 가능 여부는 재확인.
+- [ ] 소유자 입력과 스토어 테스트 증거가 비어 있으면 “코드 준비 완료”와 “출시 가능”을 구분해 보고.
+- [ ] 변경 파일만 검토 후 커밋. `git add .`로 무관한 개인 설정을 포함하지 않음.
 
-```bash
-npx eas-cli build --platform android --profile development   # 개발용 APK
-npx eas-cli build --platform android --profile production    # Play 업로드용 AAB
-```
+## 6. 진행 순서
 
-### 2-2. 결제 테스트 경로 — **개발 빌드로는 안 됩니다**
+1. 계정 요건·비공개 테스트 필요 여부·상품·AdMob·운영 정보 확인.
+2. 로컬 의존성/환경 및 Supabase 통계 인증 문제 해결.
+3. 결제 안정화와 서버 검증 → 수익 집계 계약 확정.
+4. 광고 및 동의 → 개인정보/설정/운영 문서 정합성.
+5. 로컬 자동 검사 → 개발 실기기 → Play 내부 테스트.
+6. 필요 시 비공개 테스트와 프로덕션 접근 승인.
+7. 제출 자료·운영 상태·증거 점검 → 소유자의 출시 승인.
 
-Google Play Billing은 **Play를 통해 배포된 빌드에서만** 동작합니다. APK를 기기에 직접 설치하면 서명 키가 달라 결제가 실패합니다.
-
-```
-production 프로파일로 AAB 빌드
-  → Play Console 내부 테스트 트랙에 업로드
-  → 테스터를 라이선스 테스터로 등록
-  → 테스터가 Play 스토어 링크로 설치
-  → 이때부터 실제 결제 흐름 동작 (테스터는 청구 없음)
-```
-
-개발 빌드(`development`)는 결제 이외의 모든 것 — 화면·연출·문의·통계 — 을 실기기에서 확인하는 용도입니다.
-
-### 2-3. `[개발]` 결제 실동작 검증 — **아직 한 번도 못 돌려봤음**
-
-현재 검증된 범위는 "타입이 맞고, 웹에서 앱이 안 깨지고, 결제 없이 광고가 열리지 않는다"까지입니다. 실제 결제 흐름은 위 트랙이 준비돼야 확인 가능합니다.
-
-- [ ] 구매 → 광고 제거가 실제로 켜지는가
-- [ ] **앱 삭제 후 재설치 → 광고 제거가 복원되는가** (비소모성 상품은 복원 제공이 스토어 정책상 의무)
-- [ ] 구매 취소·실패 시 앱이 멀쩡한가
-- [ ] 대시보드 수익 현황에 `remove_ads` 이벤트가 `source: purchase`로 잡히는가
-- [ ] 복원으로 열린 건은 `source: restore`로 구분되는가
-
----
-
-## 3. `[개발]` 광고 SDK (AdMob) — 미착수
-
-현재 `src/screens/AdInterstitialScreen.tsx`는 **5초 카운트다운만 도는 빈 박스**입니다. 광고 노출이 0이라 광고 수익도 0입니다.
-
-- [ ] `react-native-google-mobile-ads` 설치 + config plugin 설정
-- [ ] AdMob 계정에서 앱 등록 → 앱 ID를 `app.json`에 기록
-- [ ] 전면 광고 단위 생성
-- [ ] `AdInterstitialScreen`의 자리표시자 박스를 실제 광고 뷰로 교체
-- [ ] **`track('ad_shown')`을 '광고 로드 성공' 콜백으로 이동** ← 지금은 화면 진입 시점이라 노출 수가 부풀려짐. 해당 위치에 주석 있음
-- [ ] `adRemoved`가 켜진 사용자에게 광고가 안 뜨는지 확인
-
-> 결제와 광고 둘 다 없으면 수익이 0입니다. 결제만 막아둔 현재 상태로 출시하면 매출이 나올 구멍이 없습니다.
-
----
-
-## 4. `[사장님]` 개인정보 처리방침
-
-`PRIVACY_POLICY.md`의 `[ ]` 항목을 채우고 웹에 게시해야 합니다.
-
-- [ ] 사업자명 / 개인정보 보호책임자 이름
-- [ ] **연락받을 이메일** (스토어 필수)
-- [ ] 보유 기간 (초안에 1년으로 예시 기입)
-- [ ] Supabase 프로젝트 리전
-- [ ] 시행일
-- [ ] **공개 URL로 게시** — GitHub Pages·Vercel·노션 공개 페이지 무엇이든 가능. 파일만으로는 제출 불가
-- [ ] Play Console → 앱 콘텐츠 → 개인정보처리방침에 URL 등록
-- [ ] 앱 설정 화면에 방침 링크 노출 `[개발]`
-
-### 데이터 수집 신고 — 방침 내용과 반드시 일치시킬 것
-
-- [ ] Google Play 데이터 보안(Data Safety) 양식
-- [ ] App Store 앱 개인정보 보호(App Privacy) — iOS 병행 시
-
-**AdMob 연동 후에는 방침을 반드시 갱신해야 합니다.** 지금 초안은 "광고 식별자 수집 안 함 / 추적 안 함"으로 적혀 있는데, AdMob을 붙이는 순간 사실과 달라집니다. 갱신하지 않으면 심사 반려 또는 앱 내림 사유입니다. 상세 항목은 `PRIVACY_POLICY.md` 부록 참조.
-
----
-
-## 5. 출시 직전에 할 것
-
-### 5-1. `[사장님]` 더미 데이터 삭제
-
-**지금 지우면 그동안 테스트하면서 또 쌓입니다. 스토어 제출 직전에** Supabase SQL Editor에서 실행하세요.
-
-먼저 건수 확인:
-
-```sql
-select 'events' as t, count(*) from public.events
-union all select 'inquiries', count(*) from public.inquiries
-union all select 'inquiry_messages', count(*) from public.inquiry_messages
-union all select '익명계정', count(*) from auth.users where is_anonymous;
-```
-
-확인 후 삭제 (**되돌릴 수 없음**):
-
-```sql
-delete from public.events;      -- 테스트 기간 분석 이벤트
-delete from public.inquiries;   -- 문의 (메시지는 FK cascade로 함께 삭제)
-delete from auth.users where is_anonymous;   -- 테스트로 생긴 익명 계정 (선택)
-```
-
-남길 문의가 있으면 `where id <> N`으로 제외하세요.
-
-### 5-2. `[사장님]` 스토어 등록 정보
-
-- [ ] 앱 스크린샷 (바탕화면 `TYPE_DATE_스크린샷` 폴더에 7장 있음)
-- [ ] 앱 설명 / 짧은 설명
-- [ ] 아이콘·피처 그래픽
-- [ ] 콘텐츠 등급 설문
-- [ ] 타겟 연령층 (방침상 만 14세 미만 비대상으로 작성됨 — 일치시킬 것)
-
-### 5-3. `[개발]` 최종 점검
-
-- [ ] `npm run typecheck` 통과
-- [ ] `app.json`의 `version` 확인 (현재 `1.0.0`)
-- [ ] 작업 트리 변경분 커밋
-
----
-
-## 6. 알아둘 함정
-
-| | |
-|---|---|
-| **Supabase 무료 플랜 정지** | 일정 기간 미사용 시 자동 정지됨. 이번에 겪은 원인이 이것. 데이터는 안 지워지고 복구에 2~5분. **발표·시연 직전 살아있는지 확인** |
-| **상품 ID 불일치** | Play Console 상품 ID ≠ `REMOVE_ADS_SKU`면 결제가 조용히 실패 |
-| **EAS 환경변수 누락** | 빌드는 성공하는데 앱에서 문의·통계만 안 됨. 오류 메시지가 안 뜨는 설계라 원인 찾기 어려움 |
-| **결제 테스트 착각** | 개발 빌드 APK로는 Play Billing 테스트 불가 |
-| **광고 제거 복원** | 구현은 했으나 실기기 미검증. 이게 안 되면 돈 낸 사용자에게 광고가 다시 나옴 |
-| **`.env.local`** | 로컬 개발용. 커밋되지 않으며 EAS에도 안 올라감 |
-
----
-
-## 7. 권장 순서
-
-```
-1. Play Console 결제 프로필 등록          ← 오늘 시작 (심사 리드타임)
-2. Expo 로그인 + eas init + 환경변수
-3. AdMob 연동                            [개발]
-4. development 빌드 → 실기기 전반 확인
-5. production 빌드 → 내부 테스트 트랙 → 결제·복원 검증
-6. 개인정보 처리방침 게시 + 데이터 신고
-7. 스토어 등록 정보 준비
-8. 더미 데이터 삭제 → 제출
-```
-
-1·2는 사장님, 3은 개발이라 **병렬로 진행 가능**합니다.
+계정 준비와 로컬 개발은 동시에 진행할 수 있다. 이 문서는 외부 배포·실결제·운영 DB 삭제의 실행 승인이 아니다.

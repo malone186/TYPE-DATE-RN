@@ -6,6 +6,7 @@
 --  · 앱(anon)은 INSERT만 가능, SELECT 불가 — 익명 키가 노출돼도 남의 기록을 읽을 수 없다.
 --  · 대시보드는 Supabase Auth로 로그인한 계정만 집계 뷰를 읽는다.
 --  · 개인정보(사용자 이름)는 절대 보내지 않는다. device_id는 앱이 만든 임의 UUID다.
+--  · 구매 원장은 서버 검증 함수만 쓰며, purchase token 원문 대신 해시만 저장한다.
 
 -- ── 관리자 ──────────────────────────────────────────────────────────
 -- 익명 로그인을 쓰면 앱 사용자도 authenticated 역할이 된다.
@@ -399,6 +400,41 @@ group by d.episode_id
 order by continue_rate nulls last;
 
 
+-- ── 서버 검증 구매 원장 ─────────────────────────────────────────────
+-- 클라이언트의 purchase 콜백/분석 이벤트는 실매출 근거가 아니다.
+-- raw purchase token은 저장하지 않고 SHA-256 base64url 해시로 중복을 막는다.
+
+create table if not exists public.purchase_transactions (
+  id                     bigserial primary key,
+  user_id                uuid references auth.users(id) on delete set null,
+  platform               text not null check (platform in ('android')),
+  package_name           text not null,
+  product_id             text not null,
+  transaction_id         text,
+  purchase_time          timestamptz,
+  status                 text not null check (status in ('purchased', 'pending', 'cancelled', 'unknown')),
+  is_test                boolean not null default false,
+  acknowledgement_status text not null check (acknowledgement_status in ('acknowledged', 'pending', 'not_required')),
+  purchase_token_hash    text not null check (length(purchase_token_hash) = 43),
+  last_verified_at       timestamptz not null default now(),
+  created_at             timestamptz not null default now(),
+  unique (purchase_token_hash)
+);
+
+create index if not exists purchase_transactions_status_idx
+  on public.purchase_transactions (status, is_test, last_verified_at desc);
+
+alter table public.purchase_transactions enable row level security;
+drop policy if exists "admins can read purchase transactions" on public.purchase_transactions;
+create policy "admins can read purchase transactions"
+  on public.purchase_transactions for select
+  to authenticated
+  using (public.is_admin());
+
+revoke all on public.purchase_transactions from anon, authenticated;
+grant select on public.purchase_transactions to authenticated;
+
+
 -- ── 앱 오류 ─────────────────────────────────────────────────────────
 -- 크래시가 나도 문의가 들어와야 아는 상태를 없애기 위한 수집.
 create or replace view public.v_errors
@@ -418,19 +454,43 @@ order by n desc, last_seen desc;
 
 
 -- ── 수익 (광고 / 광고 제거) ──────────────────────────────────────────
--- 주의: 여기 담기는 건 '노출 수'와 '광고 제거 전환 수'일 뿐 금액이 아니다.
---   · 실제 광고 수익은 AdMob 등 광고 네트워크 콘솔에만 있다. 여기 노출 수 × eCPM은 추정치다.
---   · 광고 제거는 현재 결제 SDK 미연동이라 무료로 켜진다. 즉 아직 '매출'이 아니라 '전환 의사'다.
--- 결제·광고 SDK를 붙일 때 앱에서 이벤트를 성공 콜백으로 옮기면 그대로 실수익 집계가 된다.
+-- 주의: 클라이언트 이벤트는 참고 전환/노출 지표일 뿐 실정산 근거가 아니다.
+--   · 실제 광고 수익은 AdMob 보고서에만 있다. 여기 노출 수 × eCPM은 추정치다.
+--   · purchase source만 신규 구매 관측으로 보고 restore/test/레거시는 제외한다.
 
 create or replace view public.v_monetization
 with (security_invoker = on) as
 select
-  count(*) filter (where name = 'ad_shown')                    as ad_impressions,
-  count(distinct device_id) filter (where name = 'ad_shown')   as ad_viewers,
-  count(*) filter (where name = 'remove_ads')                  as removals,
-  count(distinct device_id) filter (where name = 'remove_ads') as removal_devices,
-  count(distinct device_id)                                    as all_devices
+  count(*) filter (where name = 'ad_shown'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production') as ad_impressions,
+  count(distinct device_id) filter (where name = 'ad_shown'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production') as ad_viewers,
+  count(*) filter (where name = 'remove_ads'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production'
+    and props ->> 'source' = 'purchase') as removals,
+  count(distinct device_id) filter (where name = 'remove_ads'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production'
+    and props ->> 'source' = 'purchase') as removal_devices,
+  count(distinct device_id) filter (where props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production') as all_devices,
+  count(*) filter (where name = 'remove_ads'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production'
+    and props ->> 'source' = 'restore') as restore_events,
+  count(*) filter (where name = 'remove_ads'
+    and props ->> 'schema_version' = '2'
+    and props ->> 'app_environment' = 'production'
+    and props ->> 'source' = 'test') as test_events,
+  (select count(*) from public.purchase_transactions
+    where status = 'purchased' and is_test = false) as verified_purchases,
+  (select count(*) from public.purchase_transactions
+    where status = 'purchased' and is_test = true) as verified_test_purchases,
+  (select count(*) from public.purchase_transactions
+    where acknowledgement_status = 'pending') as acknowledgement_pending
 from public.events
 -- GROUP BY가 없는 집계는 보이는 행이 0개여도 '전부 0'인 행을 1개 돌려준다.
 -- 그대로 두면 권한 없는 계정에 "수익 0원"이라고 단언하게 되므로(=데이터 없음과 구분 불가)
@@ -442,8 +502,12 @@ with (security_invoker = on) as
 select
   created_at::date                            as day,
   count(*) filter (where name = 'ad_shown')   as ad_impressions,
-  count(*) filter (where name = 'remove_ads') as removals
+  count(*) filter (where name = 'remove_ads' and props ->> 'source' = 'purchase') as removals,
+  count(*) filter (where name = 'remove_ads' and props ->> 'source' = 'restore') as restore_events,
+  count(*) filter (where name = 'remove_ads' and props ->> 'source' = 'test') as test_events
 from public.events
-where name in ('ad_shown', 'remove_ads')
+where props ->> 'schema_version' = '2'
+  and props ->> 'app_environment' = 'production'
+  and name in ('ad_shown', 'remove_ads')
 group by 1
 order by 1;

@@ -10,7 +10,7 @@
 ## 1. Supabase 프로젝트 만들기
 
 1. [supabase.com](https://supabase.com)에서 프로젝트 생성
-2. **SQL Editor**에 [`../supabase/schema.sql`](../supabase/schema.sql) 전체를 붙여넣고 실행
+2. 신규 프로젝트라면 **SQL Editor**에 [`../supabase/schema.sql`](../supabase/schema.sql) 전체를 실행하고, 기존 프로젝트라면 먼저 백업·의존성을 확인한 뒤 [`../supabase/migrations/`](../supabase/migrations/)의 SQL을 파일명 순서대로 실행
 3. **Settings → API**에서 두 값을 복사
    - `Project URL`
    - `anon public` 키
@@ -22,6 +22,7 @@
 ```
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+EXPO_PUBLIC_APP_ENV=development
 ```
 
 `expo start`를 다시 실행하면 이때부터 이벤트가 쌓인다.
@@ -79,13 +80,13 @@ const SUPABASE_ANON_KEY = 'your-anon-key';
 | `episode_quit` | 나가기 확인 후 이탈 | 회차 id, 포기한 턴 |
 | `episode_complete` | 결과 화면 진입 | 회차 id, 엔딩, 유형, 최종 호감도 |
 | `error` | 앱에서 오류 발생 | 화면, 메시지(200자), 종류(render/fatal/async) |
-| `ad_shown` | 전면 광고 화면 진입 | 회차 id, 지면 |
-| `remove_ads` | 광고 제거 버튼 누름 | 가격 |
+| `ad_shown` | SDK 전면 광고 `OPENED` 확인 | 회차 id, 지면 |
+| `remove_ads` | 서버 검증 후 권한 처리 | 상품 id, source(purchase/restore/test) |
 
 `screen_view`는 화면마다 코드를 심지 않고 [App.tsx](../App.tsx)의 `NavigationContainer` 리스너 한 곳에서 잡는다.
 화면이 늘어나도 자동으로 따라온다.
 
-**보내지 않는 것:** 사용자 이름, 기기 정보, 위치, 광고 식별자.
+**보내지 않는 것:** 사용자 이름, 기기 정보, 위치, 광고 식별자, purchase token 원문.
 기기 구분은 앱이 처음 실행될 때 만든 임의 UUID(`td_device_id`) 하나뿐이며 사람과 연결되지 않는다.
 
 ## 1:1 문의
@@ -116,18 +117,17 @@ const SUPABASE_ANON_KEY = 'your-anon-key';
 | 수익 현황 | 광고 노출·광고 제거 전환과 **추정** 수익 |
 | 앱 오류 | 화면·메시지별 오류 집계 |
 
-### 수익 현황은 아직 추정치다
+### 수익 현황은 검증 수준을 구분한다
 
-앱에 **광고 SDK도 결제 SDK도 붙어 있지 않다.**
+- `ad_shown`은 SDK의 `OPENED` 확인 이벤트다. 광고가 로드된 것만으로 기록하지 않으며 AdMob 정산 수와 다를 수 있다.
+- `remove_ads`는 클라이언트 처리 관측치다. `purchase`만 신규 구매 관측으로 보고, `restore`·`test`는 신규 매출에서 제외한다.
+- `purchase_transactions`의 `verified_purchases`는 Google Play API로 검증된 고유 토큰 해시 기준 거래 수다. 가격·세금·수수료·환불 반영 정산액은 아니다.
+- 대시보드의 광고 금액은 `index.html` 상단 `MONEY.ecpm`을 이용한 추정치이며, 실제 정산액은 AdMob·스토어 콘솔이 기준이다.
+- 구매 검증 함수는 `../supabase/functions/verify-purchase/index.ts`, 거래 원장과 뷰 변경은 `../supabase/migrations/`의 순서대로 적용한다. 서비스 계정 자격이 설정되지 않으면 앱은 entitlement를 열지 않는다.
 
-- [AdInterstitialScreen](../src/screens/AdInterstitialScreen.tsx)은 카운트다운만 도는 자리표시자다. 실제 노출·수익이 없다.
-- `removeAds()`는 결제 없이 플래그만 켠다. 즉 `remove_ads` 수치는 매출이 아니라 **전환 의사**다.
-
-따라서 실제 입금액은 0원이며, 화면의 금액은 `index.html` 상단 `MONEY` 상수(eCPM·가격·스토어 수수료)로 계산한 추정치다.
-실제 정산액은 AdMob 콘솔과 스토어 콘솔이 기준이다.
-
-SDK를 붙일 때 앱에서 이벤트 발생 지점만 옮기면(광고는 **로드 성공** 콜백, 결제는 **결제 성공** 콜백)
-같은 화면이 그대로 실수익 집계가 된다. 해당 위치에 주석을 남겨뒀다.
+구매 검증 함수를 배포하기 전 Supabase Edge Function secrets에 Google Play 서비스 계정 JSON을
+`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`으로 등록한다. 서비스 계정 JSON과 `SUPABASE_SERVICE_ROLE_KEY`는 앱이나
+대시보드 파일에 넣지 않는다. 함수가 배포되지 않았거나 Google API 권한이 없으면 구매는 검증 실패로 처리된다.
 
 ## 보안
 

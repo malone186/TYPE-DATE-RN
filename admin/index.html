@@ -533,11 +533,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SUPABASE_URL = 'https://odugzjsopjhekjmbrrnd.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_hlc2DNv220ysZYkrFOvI8A_uqeZQa23';
 
-// 수익 추정에 쓰는 가정 — 실제 정산액이 아니다. 실측이 생기면 이 값을 갱신한다.
+// 광고 수익 추정에 쓰는 가정 — 실제 정산액이 아니다. 실측이 생기면 이 값을 갱신한다.
 const MONEY = {
   ecpm: 1800,        // 노출 1000회당 광고 수익(원). AdMob 콘솔의 실제 eCPM으로 바꿀 것
-  price: 2200,       // 광고 제거 가격(원) — 앱 SettingsSheet의 AD_REMOVE_PRICE와 맞출 것
-  storeCut: 0.30,    // 스토어 수수료(구글/애플 30%, 소규모 개발자 프로그램은 15%)
 };
 // ─────────────────────────────────────────────────────────────────────
 
@@ -923,27 +921,33 @@ async function load() {
       tip: `완주 ${nf.format(r.finishers)} → 이어감 ${nf.format(r.continued)}`,
     })));
 
-    // 수익 — 금액은 전부 추정이다. 실제 정산은 광고 네트워크·스토어 콘솔이 기준.
-    const mz = money[0] ?? { ad_impressions: 0, ad_viewers: 0, removals: 0, removal_devices: 0, all_devices: 0 };
+    // 수익 — 광고 금액은 eCPM 추정치, 결제는 서버 검증 거래 수다. 실제 정산은 각 콘솔이 기준.
+    const mz = money[0] ?? {
+      ad_impressions: 0,
+      ad_viewers: 0,
+      removals: 0,
+      removal_devices: 0,
+      all_devices: 0,
+      restore_events: 0,
+      test_events: 0,
+      verified_purchases: 0,
+      verified_test_purchases: 0,
+      acknowledgement_pending: 0,
+    };
     const imps = Number(mz.ad_impressions);
-    const removals = Number(mz.removals);
     const adRev = (imps / 1000) * MONEY.ecpm;
-    const iapGross = removals * MONEY.price;
-    const iapNet = iapGross * (1 - MONEY.storeCut);
-    const convRate = Number(mz.all_devices) ? (Number(mz.removal_devices) / Number(mz.all_devices)) * 100 : 0;
     const won = (v) => nf.format(Math.round(v));
 
     $('revenueWarn').innerHTML = `
-      아래 금액은 <b>전부 추정치입니다.</b> 지금 앱에는 광고 SDK와 결제 SDK가 붙어 있지 않습니다 —
-      광고는 자리표시자 화면이고, 광고 제거는 결제 없이 켜집니다.
-      따라서 <b>실제 입금액은 0원</b>이고, ‘광고 제거’ 수치는 매출이 아니라 <b>얼마나 사려 했는지(전환 의사)</b>로 읽어야 합니다.
-      SDK를 붙인 뒤 앱에서 이벤트를 성공 콜백으로 옮기면 같은 화면이 그대로 실수익 집계가 됩니다.`;
+      광고 금액은 SDK 표시 확인 수와 입력된 eCPM으로 계산한 <b>추정치</b>이며 실제 정산액이 아닙니다.
+      광고 제거 이벤트는 참고용이고, 복원·테스트 이벤트는 신규 매출에서 제외합니다.
+      실제 결제 집계는 서버 검증 원장의 고유 거래 수를 따로 표시하며, 금액·환불·수수료는 스토어 콘솔을 기준으로 확인하세요.
+      원장이 아직 연결되지 않았으면 검증 거래 수가 0으로 보일 수 있습니다.`;
 
     $('revKpis').innerHTML =
-      kpi('추정 총수익', won(adRev + iapNet), '원', '광고 + 광고제거(수수료 차감)', ICONS.coin, 'var(--accent)') +
-      kpi('추정 광고 수익', won(adRev), '원', `노출 ${nf.format(imps)}회 × eCPM ${nf.format(MONEY.ecpm)}원`, ICONS.play, 'var(--series-1)') +
-      kpi('광고 제거 결제', nf.format(removals), '건', `정가 ${won(iapGross)}원 · 정산 ${won(iapNet)}원`, ICONS.coin, 'var(--series-2)') +
-      kpi('광고 제거 전환율', convRate.toFixed(1), '%', `전체 ${nf.format(mz.all_devices)}대 중 ${nf.format(mz.removal_devices)}대`, ICONS.next, 'var(--series-3)');
+      kpi('추정 광고 수익', won(adRev), '원', `표시 ${nf.format(imps)}회 × eCPM ${nf.format(MONEY.ecpm)}원`, ICONS.coin, 'var(--accent)') +
+      kpi('검증된 운영 거래', nf.format(mz.verified_purchases), '건', `테스트 거래 ${nf.format(mz.verified_test_purchases)}건 제외`, ICONS.coin, 'var(--series-2)') +
+      kpi('구매 처리 관측', nf.format(mz.removals), '건', `복원 ${nf.format(mz.restore_events)} · 테스트 ${nf.format(mz.test_events)}`, ICONS.next, 'var(--series-3)');
 
     lineChart($('revDaily'), moneyDaily.map((d) => d.day), [
       { name: '광고 노출', color: 'var(--series-1)', values: moneyDaily.map((d) => Number(d.ad_impressions)) },
@@ -952,22 +956,21 @@ async function load() {
 
     $('assumptions').innerHTML = `
       <table>
-        <thead><tr><th>항목</th><th class="num">값</th><th>계산</th><th>실제 값은 어디에</th></tr></thead>
+        <thead><tr><th>항목</th><th class="num">값</th><th>의미</th><th>실제 값은 어디에</th></tr></thead>
         <tbody>
           <tr><td>eCPM</td><td class="num">${nf.format(MONEY.ecpm)}원</td>
             <td>노출 ${nf.format(imps)} ÷ 1000 × eCPM = <b>${won(adRev)}원</b></td>
             <td>AdMob 콘솔</td></tr>
-          <tr><td>광고 제거 가격</td><td class="num">${nf.format(MONEY.price)}원</td>
-            <td>${nf.format(removals)}건 × 가격 = ${won(iapGross)}원</td>
-            <td>앱 SettingsSheet</td></tr>
-          <tr><td>스토어 수수료</td><td class="num">${(MONEY.storeCut * 100).toFixed(0)}%</td>
-            <td>${won(iapGross)} × ${(1 - MONEY.storeCut).toFixed(2)} = <b>${won(iapNet)}원</b></td>
-            <td>구글/애플 정산</td></tr>
+          <tr><td>검증된 운영 거래</td><td class="num">${nf.format(mz.verified_purchases)}건</td>
+            <td>고유 purchase token 기준. 복원 반복은 중복하지 않음</td>
+            <td>서버 구매 원장</td></tr>
+          <tr><td>승인 재시도 대기</td><td class="num">${nf.format(mz.acknowledgement_pending)}건</td>
+            <td>구매 권한과 스토어 승인 상태를 별도로 확인</td>
+            <td>서버 구매 원장</td></tr>
         </tbody>
       </table>
       <p class="note" style="margin-top:12px">
-        값을 바꾸려면 <b>admin/index.html</b> 상단의 <code>MONEY</code> 상수를 고치세요.
-        소규모 개발자 프로그램 대상이면 수수료는 15%입니다.
+        값을 바꾸려면 <b>admin/index.html</b> 상단의 <code>MONEY.ecpm</code>을 고치세요. 가격·세금·수수료·환불은 클라이언트 값으로 계산하지 않습니다.
       </p>`;
 
     // 앱 오류

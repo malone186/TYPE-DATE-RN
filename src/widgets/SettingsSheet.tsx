@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +13,10 @@ import { useColors } from '../theme/useColors';
 import { useStore } from '../state/store';
 import type { ThemeMode } from '../state/store';
 import { GlassPanel, FrameAnchoredRight, CoralButton, VolumeSlider } from './common';
-import { AD_REMOVE_PRICE, buyRemoveAds } from '../lib/billing';
+import { billingSupported, buyRemoveAds, restoreRemoveAds } from '../lib/billing';
+import { showAdPrivacyOptions } from '../lib/ads';
+
+const PRIVACY_POLICY_URL = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL;
 
 // 공용 우측 상단 설정 버튼 — 글자 크기, 테마, 사운드, 광고 제거를 다룬다.
 // 사운드 버튼과 같은 방식으로, 아이콘을 누르면 헤더 아래에 패널이 열리고 바깥을 누르면 닫힌다.
@@ -37,10 +40,12 @@ export function SettingsButton() {
   const insets = useSafeAreaInsets();
   const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [open, setOpen] = useState(false);
+  const [privacyMessage, setPrivacyMessage] = useState('');
 
   const fontScale = useStore((s) => s.fontScale);
   const setFontScale = useStore((s) => s.setFontScale);
   const adRemoved = useStore((s) => s.adRemoved);
+  const billingMessage = useStore((s) => s.billingMessage);
   const themeMode = useStore((s) => s.themeMode);
   const setThemeMode = useStore((s) => s.setThemeMode);
   const soundMuted = useStore((s) => s.soundMuted);
@@ -72,7 +77,8 @@ export function SettingsButton() {
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
         <FrameAnchoredRight top={insets.top + 52} width={288}>
           <GlassPanel padding={16}>
-            <Text style={t.screenTitle(c.textPrimary)}>설정</Text>
+            <ScrollView style={{ maxHeight: 560 }} contentContainerStyle={{ paddingBottom: 4 }}>
+              <Text style={t.screenTitle(c.textPrimary)}>설정</Text>
 
             <View style={{ height: 16 }} />
             <Text style={t.caption(c.textSecondary)}>글자 크기</Text>
@@ -168,7 +174,17 @@ export function SettingsButton() {
                 <Text style={t.caption(c.textPrimary)}>광고가 제거되었습니다</Text>
               </View>
             ) : (
-              <RemoveAdsButton />
+              <>
+                <RemoveAdsButton />
+                <View style={{ height: 8 }} />
+                <RestoreAdsButton />
+              </>
+            )}
+            {billingMessage !== '' && !adRemoved && (
+              <Text style={[t.caption(c.textSecondary), { marginTop: 8 }]}>{billingMessage}</Text>
+            )}
+            {!billingSupported && (
+              <Text style={[t.caption(c.textMuted), { marginTop: 8 }]}>Android 앱에서만 구매할 수 있어요.</Text>
             )}
 
             <View style={{ height: 16 }} />
@@ -192,6 +208,55 @@ export function SettingsButton() {
               <Text style={[t.caption(c.textPrimary), { flex: 1 }]}>1:1 문의</Text>
               <MaterialIcons name="chevron-right" size={20} color={c.textSecondary} />
             </Pressable>
+            <View style={{ height: 8 }} />
+            <Pressable
+              disabled={PRIVACY_POLICY_URL == null}
+              onPress={() => {
+                if (PRIVACY_POLICY_URL == null) return;
+                void Linking.openURL(PRIVACY_POLICY_URL)
+                  .then(() => setPrivacyMessage(''))
+                  .catch(() => setPrivacyMessage('개인정보처리방침을 열 수 없습니다.'));
+              }}
+              style={({ pressed }) => ({
+                flexDirection: 'row',
+                alignItems: 'center',
+                height: 44,
+                opacity: PRIVACY_POLICY_URL == null ? 0.45 : pressed ? 0.7 : 1,
+              })}
+            >
+              <MaterialIcons name="policy" size={18} color={c.textPrimary} />
+              <View style={{ width: 8 }} />
+              <Text style={[t.caption(c.textPrimary), { flex: 1 }]}>개인정보처리방침</Text>
+              <MaterialIcons name="open-in-new" size={18} color={c.textSecondary} />
+            </Pressable>
+            {PRIVACY_POLICY_URL == null && (
+              <Text style={t.caption(c.textMuted)}>공개 정책 URL이 설정되지 않았습니다.</Text>
+            )}
+            {billingSupported && (
+              <>
+                <View style={{ height: 8 }} />
+                <Pressable
+                  onPress={() => {
+                    void showAdPrivacyOptions().then((opened) => {
+                      setPrivacyMessage(opened ? '광고 개인정보 설정을 열었습니다.' : '현재 설정 화면을 열 수 없습니다.');
+                    });
+                  }}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    height: 44,
+                    opacity: pressed ? 0.7 : 1,
+                  })}
+                >
+                  <MaterialIcons name="tune" size={18} color={c.textPrimary} />
+                  <View style={{ width: 8 }} />
+                  <Text style={[t.caption(c.textPrimary), { flex: 1 }]}>광고 개인정보 설정</Text>
+                  <MaterialIcons name="chevron-right" size={20} color={c.textSecondary} />
+                </Pressable>
+                {privacyMessage !== '' && <Text style={t.caption(c.textMuted)}>{privacyMessage}</Text>}
+              </>
+            )}
+            </ScrollView>
           </GlassPanel>
         </FrameAnchoredRight>
       </Modal>
@@ -199,7 +264,7 @@ export function SettingsButton() {
   );
 }
 
-/// 광고 제거 구매 버튼 — 설정 패널과 타이틀 화면이 같은 가격·같은 집계 이벤트를 쓰도록 한 곳에 둔다.
+/// 광고 제거 구매 버튼 — 설정 패널과 타이틀 화면이 같은 스토어 가격·같은 집계 이벤트를 쓰도록 한 곳에 둔다.
 /// 이미 제거된 상태인지는 부르는 쪽이 판단한다(설정 패널은 대신 안내 문구를 띄운다).
 function VolumeRow({
   label,
@@ -230,12 +295,14 @@ export function RemoveAdsButton({ outlined = false }: { outlined?: boolean }) {
   const c = useColors();
   const t = useTextStyles();
   const [pending, setPending] = useState(false);
+  const displayPrice = useStore((s) => s.adProductDisplayPrice);
+  const billingStatus = useStore((s) => s.billingStatus);
 
-  const label = `광고 제거 · ${AD_REMOVE_PRICE.toLocaleString('ko-KR')}원`;
+  const label = displayPrice == null ? '광고 제거' : `광고 제거 · ${displayPrice}`;
   // 광고 제거는 결제가 확인된 뒤 billing.ts에서 켠다 — 여기서는 결제창만 띄운다.
   // 취소·실패는 스토어가 자체 화면으로 안내하므로 앱에서 따로 알리지 않는다.
   const buy = () => {
-    if (pending) return;
+    if (pending || billingStatus === 'purchasing' || billingStatus === 'verifying') return;
     setPending(true);
     void buyRemoveAds().finally(() => setPending(false));
   };
@@ -258,6 +325,36 @@ export function RemoveAdsButton({ outlined = false }: { outlined?: boolean }) {
       <Text style={{ fontSize: t.fs(14), fontFamily: 'Pretendard-SemiBold', color: '#FFFFFF' }}>
         {label}
       </Text>
+    </Pressable>
+  );
+}
+
+function RestoreAdsButton() {
+  const c = useColors();
+  const t = useTextStyles();
+  const billingStatus = useStore((s) => s.billingStatus);
+  const [pending, setPending] = useState(false);
+  const busy = pending || billingStatus === 'checking' || billingStatus === 'verifying';
+
+  return (
+    <Pressable
+      disabled={busy || !billingSupported}
+      onPress={() => {
+        if (busy) return;
+        setPending(true);
+        void restoreRemoveAds().finally(() => setPending(false));
+      }}
+      style={({ pressed }) => ({
+        minHeight: 40,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: withAlpha(c.border, 0.9),
+        opacity: busy || !billingSupported ? 0.5 : pressed ? 0.7 : 1,
+      })}
+    >
+      <Text style={t.caption(c.textSecondary)}>{busy ? '구매 복원 중…' : '구매 복원'}</Text>
     </Pressable>
   );
 }
