@@ -34,6 +34,12 @@
     "plugins": [
       "expo-asset",
       "expo-iap"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "be8fe141-6b9b-4e77-9ab0-03159b10e618"
+      }
+    },
+    "owner": "malone1861"
   }
 }
