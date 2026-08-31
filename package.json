@@ -8,6 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "verify:config": "node scripts/verify-launch-config.mjs",
     "admin": "npx -y serve admin -l 5174"
   },
@@ -43,7 +44,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.7"
   },
   "private": true
 }

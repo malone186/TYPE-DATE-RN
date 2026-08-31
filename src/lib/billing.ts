@@ -26,6 +26,8 @@ interface VerifyResponse {
   entitled: boolean;
   isTest: boolean;
   status: 'purchased' | 'pending' | 'cancelled' | 'refunded' | 'not_owned' | 'unknown';
+  // 서버가 Google 승인에 실패해 장부가 pending으로 남았을 때만 true.
+  retryRequired: boolean;
 }
 
 let iapModule: IapModule | null | undefined;
@@ -129,6 +131,7 @@ async function verifyOnServer(purchase: Purchase): Promise<VerifyResponse | null
       entitled: body.entitled,
       isTest: body.isTest,
       status: body.status as VerifyResponse['status'],
+      retryRequired: body.retryRequired === true,
     };
   } catch {
     return null;
@@ -183,6 +186,13 @@ async function processPurchase(purchase: Purchase, source: PurchaseSource): Prom
     } catch {
       setBillingState('error', '구매는 확인됐지만 마무리되지 않았습니다. 다음 실행에서 다시 시도합니다.');
       return 'error';
+    }
+
+    // 서버 승인이 실패하면 장부는 pending으로 남는다. 서버에는 토큰 해시만 있어 스스로 재시도할 수 없으므로,
+    // 원본 토큰을 가진 클라이언트가 승인 직후 한 번만 재검증한다. 실패해도 권한에는 영향이 없고
+    // 다음 foreground 조회가 다시 시도한다.
+    if (verification.retryRequired) {
+      await verifyOnServer(purchase);
     }
 
     if (!wasOwned) {

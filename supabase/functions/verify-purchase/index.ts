@@ -85,7 +85,8 @@ function stringField(value: unknown, maxLength: number): string | null {
   return typeof value === 'string' && value.length > 0 && value.length <= maxLength ? value : null;
 }
 
-async function main(req: Request): Promise<Response> {
+// Exported so the test suite can drive the handler directly without binding a port.
+export async function main(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
