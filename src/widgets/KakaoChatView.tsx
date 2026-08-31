@@ -18,7 +18,8 @@ import { SettingsButton } from './SettingsSheet';
 import { playMessageSound, useTypingSound } from '../audio/sounds';
 
 // Flutter widgets/kakao_chat_view.dart 이식.
-// 프롤로그/에필로그용 카카오톡 모방 채팅 뷰. 기본 자동 진행, "건너뛰기" 누르면 탭 진행 모드.
+// 프롤로그/에필로그용 카카오톡 모방 채팅 뷰. 기본은 자동 진행이고,
+// "건너뛰기"를 누르면 남은 대사를 한 번에 모두 펼친다.
 
 /// 실제 주고받는 말풍선인지 — 시스템 안내/독백에는 도착음을 울리지 않는다.
 const isDialogue = (line: ChatLine) => !line.isSystemNote && !line.isMonologue;
@@ -43,11 +44,10 @@ export function KakaoChatView({
   const isDark = useIsDark();
   const [visibleCount, setVisibleCount] = useState(1);
   const [typing, setTyping] = useState(false);
-  const [skipMode, setSkipMode] = useState(false);
+  const [skipped, setSkipped] = useState(false);
   const [finished, setFinished] = useState(false);
 
   const visibleRef = useRef(1);
-  const skipRef = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -125,26 +125,20 @@ export function KakaoChatView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const enableSkipMode = () => {
+  /// 남은 대사를 한 번에 펼친다. 연타로 넘기는 것보다 읽을지 말지를 사용자가 정하게 둔다.
+  const skipToEnd = () => {
     if (timer.current) clearTimeout(timer.current);
-    skipRef.current = true;
-    setSkipMode(true);
+    setSkipped(true);
     setTyping(false);
-  };
-
-  const advanceOnTap = () => {
-    if (!skipRef.current) return;
-    if (visibleRef.current >= lines.length) {
-      if (completeButtonLabel != null) {
-        setFinished(true);
-      } else {
-        onComplete();
-      }
-      return;
-    }
-    // 건너뛰기 모드에서는 대사가 연타로 넘어가므로 도착음을 울리지 않는다.
-    setVisible(visibleRef.current + 1);
+    // 한꺼번에 여러 줄이 나타나므로 도착음은 울리지 않는다.
+    setVisible(lines.length);
     scrollToBottom();
+    if (completeButtonLabel != null) {
+      setFinished(true);
+    } else {
+      // 완료 버튼이 없는 화면은 자동 진행이 원래 동작이다.
+      timer.current = setTimeout(onComplete, 900);
+    }
   };
 
   const visibleLines = lines.slice(0, visibleCount);
@@ -174,9 +168,9 @@ export function KakaoChatView({
           )}
           <Text style={t.screenTitle(c.textPrimary)}>{contactName}</Text>
           <View style={{ flex: 1 }} />
-          {!skipMode ? (
+          {!skipped && (
             <Pressable
-              onPress={enableSkipMode}
+              onPress={skipToEnd}
               hitSlop={4}
               style={({ pressed }) => ({
                 paddingVertical: 6,
@@ -189,15 +183,11 @@ export function KakaoChatView({
             >
               <Text style={t.caption(c.accentCoral)}>건너뛰기 ⏭</Text>
             </Pressable>
-          ) : (
-            <View style={{ paddingHorizontal: 8 }}>
-              <Text style={t.caption(c.textMuted)}>탭해서 계속</Text>
-            </View>
           )}
           <SettingsButton />
         </View>
 
-        <Pressable style={{ flex: 1 }} onPress={skipMode ? advanceOnTap : undefined}>
+        <View style={{ flex: 1 }}>
           <ScrollView
             ref={scrollRef}
             contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 16 }}
@@ -212,7 +202,7 @@ export function KakaoChatView({
               </View>
             )}
           </ScrollView>
-        </Pressable>
+        </View>
 
         {completeButtonLabel != null && finished && (
           <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 16 }}>
