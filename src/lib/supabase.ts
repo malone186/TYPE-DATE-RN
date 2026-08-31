@@ -30,20 +30,25 @@ let signInPromise: Promise<string | null> | null = null;
 /// 익명 세션을 보장하고 user id를 돌려준다. 실패하면 null.
 export function ensureSignedIn(): Promise<string | null> {
   if (supabase == null) return Promise.resolve(null);
-  if (signInPromise == null) {
-    signInPromise = (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session != null) return data.session.user.id;
-      const { data: created, error } = await supabase.auth.signInAnonymously();
-      if (error != null) {
-        // 다음 시도에서 다시 붙어볼 수 있게 캐시를 비운다.
-        signInPromise = null;
-        return null;
-      }
-      return created.user?.id ?? null;
-    })();
-  }
+  signInPromise ??= attemptSignIn();
   return signInPromise;
+}
+
+async function attemptSignIn(): Promise<string | null> {
+  const db = supabase;
+  if (db == null) return null;
+  try {
+    const { data } = await db.auth.getSession();
+    if (data.session != null) return data.session.user.id;
+    const { data: created, error } = await db.auth.signInAnonymously();
+    if (error != null) throw error;
+    return created.user?.id ?? null;
+  } catch {
+    // 반환된 error든 던져진 예외든 실패한 시도는 캐시하지 않는다.
+    // 캐시에 남기면 rejected promise가 앱 수명 내내 붙들려 문의·결제 검증이 복구되지 않는다.
+    signInPromise = null;
+    return null;
+  }
 }
 
 // 구매 검증 함수 호출처럼 로그인 JWT가 필요한 작업에서만 사용한다.

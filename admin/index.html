@@ -922,32 +922,27 @@ async function load() {
     })));
 
     // 수익 — 광고 금액은 eCPM 추정치, 결제는 서버 검증 거래 수다. 실제 정산은 각 콘솔이 기준.
-    const mz = money[0] ?? {
-      ad_impressions: 0,
-      ad_viewers: 0,
-      removals: 0,
-      removal_devices: 0,
-      all_devices: 0,
-      restore_events: 0,
-      test_events: 0,
-      verified_purchases: 0,
-      verified_test_purchases: 0,
-      acknowledgement_pending: 0,
-    };
-    const imps = Number(mz.ad_impressions);
-    const adRev = (imps / 1000) * MONEY.ecpm;
+    // v_monetization은 관리자가 아니거나 조회에 실패하면 행 자체를 돌려주지 않는다(스키마의 HAVING).
+    // 그걸 0으로 채우면 "수익 0원"을 사실처럼 단언하게 되므로, 읽지 못한 상태는 읽지 못했다고 표시한다.
+    const mz = money[0] ?? null;
+    const imps = mz == null ? null : Number(mz.ad_impressions);
+    const adRev = imps == null ? null : (imps / 1000) * MONEY.ecpm;
     const won = (v) => nf.format(Math.round(v));
 
-    $('revenueWarn').innerHTML = `
-      광고 금액은 SDK 표시 확인 수와 입력된 eCPM으로 계산한 <b>추정치</b>이며 실제 정산액이 아닙니다.
-      광고 제거 이벤트는 참고용이고, 복원·테스트 이벤트는 신규 매출에서 제외합니다.
-      실제 결제 집계는 서버 검증 원장의 고유 거래 수를 따로 표시하며, 금액·환불·수수료는 스토어 콘솔을 기준으로 확인하세요.
-      원장이 아직 연결되지 않았으면 검증 거래 수가 0으로 보일 수 있습니다.`;
+    $('revenueWarn').innerHTML = mz == null
+      ? `수익 집계를 <b>읽지 못했습니다.</b> 이 계정이 <code>admins</code>에 등록되지 않았거나 집계 조회가 실패한 상태입니다.
+         아래 값은 0이 아니라 <b>알 수 없음</b>이며, 매출이 없다는 뜻이 아닙니다.`
+      : `광고 금액은 SDK 표시 확인 수와 입력된 eCPM으로 계산한 <b>추정치</b>이며 실제 정산액이 아닙니다.
+         광고 제거 이벤트는 참고용이고, 복원·테스트 이벤트는 신규 매출에서 제외합니다.
+         실제 결제 집계는 서버 검증 원장의 고유 거래 수를 따로 표시하며, 금액·환불·수수료는 스토어 콘솔을 기준으로 확인하세요.`;
 
-    $('revKpis').innerHTML =
-      kpi('추정 광고 수익', won(adRev), '원', `표시 ${nf.format(imps)}회 × eCPM ${nf.format(MONEY.ecpm)}원`, ICONS.coin, 'var(--accent)') +
-      kpi('검증된 운영 거래', nf.format(mz.verified_purchases), '건', `테스트 거래 ${nf.format(mz.verified_test_purchases)}건 제외`, ICONS.coin, 'var(--series-2)') +
-      kpi('구매 처리 관측', nf.format(mz.removals), '건', `복원 ${nf.format(mz.restore_events)} · 테스트 ${nf.format(mz.test_events)}`, ICONS.next, 'var(--series-3)');
+    $('revKpis').innerHTML = mz == null
+      ? kpi('추정 광고 수익', '—', '', '집계를 읽지 못함', ICONS.coin, 'var(--accent)') +
+        kpi('검증된 운영 거래', '—', '', '집계를 읽지 못함', ICONS.coin, 'var(--series-2)') +
+        kpi('구매 처리 관측', '—', '', '집계를 읽지 못함', ICONS.next, 'var(--series-3)')
+      : kpi('추정 광고 수익', won(adRev), '원', `표시 ${nf.format(imps)}회 × eCPM ${nf.format(MONEY.ecpm)}원`, ICONS.coin, 'var(--accent)') +
+        kpi('검증된 운영 거래', nf.format(mz.verified_purchases), '건', `테스트 거래 ${nf.format(mz.verified_test_purchases)}건 제외`, ICONS.coin, 'var(--series-2)') +
+        kpi('구매 처리 관측', nf.format(mz.removals), '건', `복원 ${nf.format(mz.restore_events)} · 테스트 ${nf.format(mz.test_events)}`, ICONS.next, 'var(--series-3)');
 
     lineChart($('revDaily'), moneyDaily.map((d) => d.day), [
       { name: '광고 노출', color: 'var(--series-1)', values: moneyDaily.map((d) => Number(d.ad_impressions)) },
@@ -959,12 +954,12 @@ async function load() {
         <thead><tr><th>항목</th><th class="num">값</th><th>의미</th><th>실제 값은 어디에</th></tr></thead>
         <tbody>
           <tr><td>eCPM</td><td class="num">${nf.format(MONEY.ecpm)}원</td>
-            <td>노출 ${nf.format(imps)} ÷ 1000 × eCPM = <b>${won(adRev)}원</b></td>
+            <td>${mz == null ? '집계를 읽지 못해 계산할 수 없음' : `노출 ${nf.format(imps)} ÷ 1000 × eCPM = <b>${won(adRev)}원</b>`}</td>
             <td>AdMob 콘솔</td></tr>
-          <tr><td>검증된 운영 거래</td><td class="num">${nf.format(mz.verified_purchases)}건</td>
+          <tr><td>검증된 운영 거래</td><td class="num">${mz == null ? '—' : nf.format(mz.verified_purchases) + '건'}</td>
             <td>고유 purchase token 기준. 복원 반복은 중복하지 않음</td>
             <td>서버 구매 원장</td></tr>
-          <tr><td>승인 재시도 대기</td><td class="num">${nf.format(mz.acknowledgement_pending)}건</td>
+          <tr><td>승인 재시도 대기</td><td class="num">${mz == null ? '—' : nf.format(mz.acknowledgement_pending) + '건'}</td>
             <td>구매 권한과 스토어 승인 상태를 별도로 확인</td>
             <td>서버 구매 원장</td></tr>
         </tbody>

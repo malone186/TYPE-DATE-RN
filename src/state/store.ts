@@ -253,9 +253,12 @@ export const useStore = create<AppState>((set, get) => ({
       completedIds: newCompleted,
       totalCompleted: newCompleted.size,
     });
-    await AsyncStorage.setItem(`td_${result.dateId}_completed`, 'true');
-    // 최종 에필로그(최고 매칭 상대 선정)에 호감도가 필요하므로 결과 전체를 영속화.
-    await AsyncStorage.setItem(`td_${result.dateId}_result`, JSON.stringify(result));
+    // 완료 플래그와 결과를 한 번에 쓴다. 따로 쓰면 사이에서 실패했을 때
+    // "완료됐는데 결과가 없는" 회차가 생겨 최종 에필로그의 매칭 후보에서 빠진다.
+    await AsyncStorage.multiSet([
+      [`td_${result.dateId}_completed`, 'true'],
+      [`td_${result.dateId}_result`, JSON.stringify(result)],
+    ]);
   },
 
   isCompleted: (dateId) => get().completedIds.has(dateId),
@@ -267,19 +270,40 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   loadPersisted: async () => {
-    const name = (await AsyncStorage.getItem('td_user_name')) ?? '';
-    const savedLine = (await AsyncStorage.getItem('td_line')) as LineKey | null;
-    const savedTheme = (await AsyncStorage.getItem('td_theme_mode')) as ThemeMode | null;
-    const savedMuted = await AsyncStorage.getItem('td_sound_muted');
-    const savedSfx = await AsyncStorage.getItem('td_sfx_volume');
-    const savedScale = await AsyncStorage.getItem('td_font_scale');
-    const savedAdEntitlement = await AsyncStorage.getItem('td_ad_entitlement');
+    const episodes = [...allEpisodes, ...allMaleEpisodes];
+    const keys = [
+      'td_user_name',
+      'td_line',
+      'td_theme_mode',
+      'td_sound_muted',
+      'td_sfx_volume',
+      'td_font_scale',
+      'td_ad_entitlement',
+      ...episodes.flatMap((e) => [`td_${e.id}_completed`, `td_${e.id}_result`]),
+    ];
+
+    // 회차마다 따로 읽으면 시작할 때 저장소를 수십 번 왕복한다. 한 번에 가져온다.
+    // 실패해도 던지지 않는다 — 여기서 멈추면 결제·광고 초기화까지 막힌다.
+    let stored: Map<string, string | null>;
+    try {
+      stored = new Map<string, string | null>(await AsyncStorage.multiGet(keys));
+    } catch {
+      stored = new Map<string, string | null>();
+    }
+    const read = (key: string) => stored.get(key) ?? null;
+
+    const name = read('td_user_name') ?? '';
+    const savedLine = read('td_line') as LineKey | null;
+    const savedTheme = read('td_theme_mode') as ThemeMode | null;
+    const savedMuted = read('td_sound_muted');
+    const savedSfx = read('td_sfx_volume');
+    const savedScale = read('td_font_scale');
+    const savedAdEntitlement = read('td_ad_entitlement');
     const completed = new Set<string>();
     const savedResults: Record<string, DateResult> = {};
-    for (const e of [...allEpisodes, ...allMaleEpisodes]) {
-      const v = await AsyncStorage.getItem(`td_${e.id}_completed`);
-      if (v === 'true') completed.add(e.id);
-      const raw = await AsyncStorage.getItem(`td_${e.id}_result`);
+    for (const e of episodes) {
+      if (read(`td_${e.id}_completed`) === 'true') completed.add(e.id);
+      const raw = read(`td_${e.id}_result`);
       if (raw != null) {
         try {
           savedResults[e.id] = JSON.parse(raw) as DateResult;

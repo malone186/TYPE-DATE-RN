@@ -192,6 +192,18 @@ describe('server verification gates the entitlement', () => {
     expect(doubles.state.setAdEntitlement).not.toHaveBeenCalledWith(true);
   });
 
+  it('does not escape as a rejection when the session lookup throws', async () => {
+    // 세션 확보가 던지면 예외가 processPurchase를 지나 구매 리스너까지 올라가
+    // 구매가 조용히 처리되지 않는 상태가 된다. 여기서 흡수해야 한다.
+    iap.getAvailablePurchases.mockResolvedValue([ownedPurchase()]);
+    doubles.getAccessToken.mockRejectedValue(new Error('storage unavailable'));
+    const billing = await loadBilling();
+
+    await expect(billing.restoreRemoveAds()).resolves.toBe('error');
+    expect(verifyCalls()).toBe(0);
+    expect(iap.finishTransaction).not.toHaveBeenCalled();
+  });
+
   it('does not call the server without a signed-in access token', async () => {
     iap.getAvailablePurchases.mockResolvedValue([ownedPurchase()]);
     doubles.getAccessToken.mockResolvedValue(null);

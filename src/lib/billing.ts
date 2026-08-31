@@ -99,10 +99,12 @@ async function fetchProduct(m: IapModule): Promise<Product | null> {
 
 async function verifyOnServer(purchase: Purchase): Promise<VerifyResponse | null> {
   if (VERIFY_URL == null || purchase.purchaseToken == null) return null;
-  const accessToken = await getAccessToken();
-  if (accessToken == null) return null;
 
   try {
+    // 세션 확보도 try 안에서 한다. 밖에 두면 던져진 예외가 processPurchase를 지나
+    // 구매 리스너까지 올라가 구매가 조용히 처리되지 않는다.
+    const accessToken = await getAccessToken();
+    if (accessToken == null) return null;
     const response = await fetch(VERIFY_URL, {
       method: 'POST',
       headers: {
@@ -243,7 +245,9 @@ function installListeners(m: IapModule) {
   if (purchaseUpdatedSubscription == null) {
     purchaseUpdatedSubscription = m.purchaseUpdatedListener((purchase) => {
       if (!isRemoveAds(purchase)) return;
-      void processPurchase(purchase, 'purchase');
+      void processPurchase(purchase, 'purchase').catch(() => {
+        setBillingState('error', '구매를 처리하지 못했습니다. 다시 시도해 주세요.');
+      });
     });
   }
   if (purchaseErrorSubscription == null) {

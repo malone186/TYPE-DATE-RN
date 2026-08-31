@@ -77,11 +77,17 @@ export default function App() {
   useEffect(() => {
     // 라인(남/여)이 복원된 뒤에 보내야 방문 기록에 올바른 라인이 남는다.
     // 저장된 플래그를 먼저 복원한 뒤 스토어에 물어본다 — 이미 켜져 있으면 집계를 중복해 남기지 않는다.
-    void loadPersisted().then(() => {
-      track('app_open');
-      initBilling();
-      initAdConsent();
-    });
+    void loadPersisted()
+      .catch(() => {
+        // 저장값을 못 읽어도 기본값으로 계속 간다.
+      })
+      .then(() => {
+        // 복원 실패와 무관하게 결제·광고는 반드시 초기화한다.
+        // 여기서 멈추면 광고 제거를 구매한 사용자가 광고를 다시 보게 된다.
+        track('app_open');
+        initBilling();
+        initAdConsent();
+      });
     Asset.loadAsync(allImages)
       .catch(() => {})
       .finally(() => setImagesLoaded(true));

@@ -293,7 +293,12 @@ export function BlindDateChatScreen({
     const result = pendingResultRef.current;
     if (result == null) return;
     // 진행 저장은 광고보다 먼저 — 광고 화면에서 이탈해도 이번 회차는 완료로 남는다.
-    void completeDate(result);
+    void completeDate(result).catch(() => {
+      // 저장 실패를 조용히 넘기면 진행이 사라진 이유를 알 수 없다.
+      track('error', {
+        props: { message: 'progress_save_failed', screen: 'BlindDateChat', fatal: 'async' },
+      });
+    });
     // 완주 기록도 광고보다 먼저 — 광고에서 이탈해도 완주 통계는 남아야 한다.
     track('episode_complete', {
       episodeId: result.dateId,
