@@ -8,7 +8,7 @@ const AUTH_HEADER = { Authorization: 'Bearer user-jwt', 'Content-Type': 'applica
 const VALID_BODY = {
   platform: 'android',
   productId: 'remove_ads',
-  packageName: 'com.typedate.app',
+  packageName: 'com.jinnstudio.typedate',
   purchaseToken: PURCHASE_TOKEN,
 };
 

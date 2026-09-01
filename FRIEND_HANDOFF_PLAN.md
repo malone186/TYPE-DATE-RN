@@ -20,7 +20,7 @@ EAS는 Expo의 클라우드 빌드 서비스다. 이 프로젝트에서는 Andro
 |---|---|
 | 앱 이름 / slug | TYPE DATE / `type-date` |
 | 앱 버전 | `1.0.0` |
-| Android package | `com.typedate.app` — 임의 변경 금지 |
+| Android package | `com.jinnstudio.typedate` — 임의 변경 금지 |
 | 광고 제거 상품 | `remove_ads` — 비소모성 일회성 구매 |
 | 가격 | 한국 목표 2,200원. 앱 표시 가격은 Google Play 상품 조회 결과 사용 |
 | Expo / React Native | `~54.0.37` / `0.81.5` |
@@ -145,7 +145,7 @@ npx.cmd eas-cli project:info
 
 `init`은 프로젝트 연결/생성을 수행하므로 화면의 계정과 대상을 읽고 진행한다. 기존 프로젝트 연결 옵션은 설치 CLI 도움말로 확인한다. 동적 `app.config.js`가 있으므로 자동 기록이 안 되면 실제 확인한 `extra.eas.projectId`를 config에 반영한 뒤 다시 확인한다. ID를 추정해서 넣지 않는다. [EAS CLI 참고](https://docs.expo.dev/eas/cli/)
 
-완료 조건: 올바른 계정/프로젝트가 확인되고 `com.typedate.app`이 유지된다. 기존 Play 앱이 있다면 서명 키를 새로 바꾸지 말고 기존 업로드 키/Play App Signing 관계부터 확인한다.
+완료 조건: 올바른 계정/프로젝트가 확인되고 `com.jinnstudio.typedate`가 유지된다. 기존 Play 앱이 있다면 서명 키를 새로 바꾸지 말고 기존 업로드 키/Play App Signing 관계부터 확인한다.
 
 ### 7-4. 환경 변수 등록
 
@@ -230,7 +230,7 @@ development 앱의 JavaScript는 개발 서버의 환경값도 영향을 받으�
 
 ### 8-2. Google Play / AdMob / 개인정보
 
-- Google Play에 `com.typedate.app`과 비소모성 상품 `remove_ads`를 준비한다. 실제 판매 상태와 가격을 확인한다.
+- Google Play에 `com.jinnstudio.typedate`과 비소모성 상품 `remove_ads`를 준비한다. 실제 판매 상태와 가격을 확인한다.
 - 내부 테스트 참여 계정과 라이선스 테스터를 각각 확인한다. 내부 테스트 참여만으로 무료 결제가 보장되지 않는다. [Google 결제 테스트](https://developer.android.com/google/play/billing/test)
 - AdMob의 실제 앱 ID·전면 광고 ID·동의 메시지·앱 확인 상태를 준비한다. 출시 국가/대상 연령에 맞춰 설정한다.
 - `PRIVACY_POLICY.md`의 운영자·연락처·보유 기간·리전·삭제 절차를 확정하고 로그인 없이 열리는 HTTPS 페이지로 게시한다.

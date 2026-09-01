@@ -226,7 +226,7 @@ describe('server verification gates the entitlement', () => {
     expect(JSON.parse(String(request.body))).toEqual({
       platform: 'android',
       productId: 'remove_ads',
-      packageName: 'com.typedate.app',
+      packageName: 'com.jinnstudio.typedate',
       purchaseToken: 'token-1',
     });
   });

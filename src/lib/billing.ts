@@ -11,7 +11,7 @@ import type { BillingStatus } from '../state/store';
 export const REMOVE_ADS_SKU = 'remove_ads';
 export const billingSupported = Platform.OS === 'android';
 
-const PACKAGE_NAME = 'com.typedate.app';
+const PACKAGE_NAME = 'com.jinnstudio.typedate';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const VERIFY_URL =
   process.env.EXPO_PUBLIC_VERIFY_PURCHASE_URL ??

@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const PRODUCT_ID = 'remove_ads';
-const PACKAGE_NAME = 'com.typedate.app';
+const PACKAGE_NAME = 'com.jinnstudio.typedate';
 const GOOGLE_SCOPE = 'https://www.googleapis.com/auth/androidpublisher';
 const encoder = new TextEncoder();
 
