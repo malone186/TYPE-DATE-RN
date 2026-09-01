@@ -277,50 +277,49 @@ order by 1, 2, 3;
 -- 가입 절차는 없지만 JWT 기반이라 "남의 문의 읽기"가 실제로 차단된다.
 
 create table if not exists public.inquiries (
-  id          bigserial primary key,
-  created_at  timestamptz not null default now(),
-  user_id     uuid        not null references auth.users(id) on delete cascade,
-  device_id   uuid,                       -- 트래킹 기록과 연결하고 싶을 때만 사용
-  email       text,                       -- 선택 — 앱을 지워도 답변을 받을 수 있게
-  subject     text        not null,
-  status      text        not null default 'open'
-              check (status in ('open', 'answered', 'closed'))
+  id                bigserial primary key,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now(),
+  user_id           uuid        not null references auth.users(id) on delete cascade,
+  device_id         uuid,                       -- 트래킹 기록과 연결하고 싶을 때만 사용
+  email             text
+                    check (email is null or char_length(regexp_replace(email, '^[[:space:]]+|[[:space:]]+$', '', 'g')) between 1 and 254),
+  subject           text        not null
+                    check (char_length(regexp_replace(subject, '^[[:space:]]+|[[:space:]]+$', '', 'g')) between 1 and 100),
+  status            text        not null default 'open'
+                    check (status in ('open', 'answered', 'closed')),
+  client_request_id uuid
 );
 
 create table if not exists public.inquiry_messages (
-  id          bigserial primary key,
-  created_at  timestamptz not null default now(),
-  inquiry_id  bigint      not null references public.inquiries(id) on delete cascade,
-  sender      text        not null check (sender in ('user', 'admin')),
-  body        text        not null
+  id                bigserial primary key,
+  created_at        timestamptz not null default now(),
+  inquiry_id        bigint      not null references public.inquiries(id) on delete cascade,
+  sender            text        not null check (sender in ('user', 'admin')),
+  body              text        not null
+                    check (char_length(regexp_replace(body, '^[[:space:]]+|[[:space:]]+$', '', 'g')) between 1 and 4000),
+  client_request_id uuid
 );
 
 create index if not exists inquiries_user_idx     on public.inquiries (user_id, created_at desc);
+create index if not exists inquiries_updated_idx  on public.inquiries (updated_at desc);
 create index if not exists inquiry_msg_thread_idx on public.inquiry_messages (inquiry_id, created_at);
+create unique index if not exists inquiries_user_request_uidx
+  on public.inquiries (user_id, client_request_id)
+  where client_request_id is not null;
+create unique index if not exists inquiry_messages_request_uidx
+  on public.inquiry_messages (inquiry_id, sender, client_request_id)
+  where client_request_id is not null;
 
 alter table public.inquiries        enable row level security;
 alter table public.inquiry_messages enable row level security;
 
--- 문의: 본인 것만 읽고 쓴다. 관리자는 전부.
+-- 문의/메시지는 본인 또는 관리자만 읽는다. 클라이언트 쓰기는 RPC로만 허용한다.
 drop policy if exists "own inquiries" on public.inquiries;
 create policy "own inquiries"
   on public.inquiries for select
   to authenticated
   using (user_id = auth.uid() or public.is_admin());
-
-drop policy if exists "create own inquiry" on public.inquiries;
-create policy "create own inquiry"
-  on public.inquiries for insert
-  to authenticated
-  with check (user_id = auth.uid());
-
--- 상태 변경(답변완료/종료)은 관리자만.
-drop policy if exists "admins update inquiries" on public.inquiries;
-create policy "admins update inquiries"
-  on public.inquiries for update
-  to authenticated
-  using (public.is_admin())
-  with check (public.is_admin());
 
 -- 메시지: 자기 스레드의 글만 읽는다.
 drop policy if exists "read own thread" on public.inquiry_messages;
@@ -335,22 +334,6 @@ create policy "read own thread"
     )
   );
 
--- 사용자는 자기 스레드에 'user'로만 쓸 수 있다 — 관리자 답변을 위조할 수 없게.
-drop policy if exists "write own thread" on public.inquiry_messages;
-create policy "write own thread"
-  on public.inquiry_messages for insert
-  to authenticated
-  with check (
-    (public.is_admin() and sender = 'admin')
-    or (
-      sender = 'user'
-      and exists (
-        select 1 from public.inquiries i
-        where i.id = inquiry_id and i.user_id = auth.uid()
-      )
-    )
-  );
-
 -- 관리자 목록용 — 마지막 메시지와 누가 마지막으로 말했는지까지 한 번에.
 create or replace view public.v_inquiry_list
 with (security_invoker = on) as
@@ -362,10 +345,221 @@ select
   i.email,
   i.user_id,
   (select count(*)  from public.inquiry_messages m where m.inquiry_id = i.id) as message_count,
-  (select max(m.created_at) from public.inquiry_messages m where m.inquiry_id = i.id) as last_message_at,
+  i.updated_at as last_message_at,
   (select m.sender from public.inquiry_messages m
-    where m.inquiry_id = i.id order by m.created_at desc limit 1) as last_sender
+    where m.inquiry_id = i.id order by m.created_at desc, m.id desc limit 1) as last_sender
 from public.inquiries i;
+
+-- 메시지가 추가될 때 최근 활동 시각과 상태를 함께 갱신하고, 종료된 문의는 막는다.
+create or replace function public.sync_inquiry_activity()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  current_status text;
+begin
+  select status into current_status
+  from public.inquiries
+  where id = new.inquiry_id
+  for update;
+  if current_status is null then
+    raise exception using errcode = 'P0001', message = 'inquiry_not_found';
+  end if;
+  if current_status = 'closed' then
+    raise exception using errcode = 'P0001', message = 'inquiry_closed';
+  end if;
+  update public.inquiries
+  set status = case when new.sender = 'user' then 'open' else 'answered' end,
+      updated_at = now()
+  where id = new.inquiry_id;
+  return new;
+end
+$$;
+
+drop trigger if exists inquiry_messages_activity on public.inquiry_messages;
+create trigger inquiry_messages_activity
+  after insert on public.inquiry_messages
+  for each row execute function public.sync_inquiry_activity();
+
+-- 문의와 첫 메시지를 한 번의 RPC 트랜잭션으로 저장한다.
+create or replace function public.create_inquiry(
+  p_subject text, p_body text, p_email text, p_device_id uuid, p_request_id uuid
+)
+returns bigint
+language plpgsql security definer set search_path = public
+as $$
+declare
+  current_user_id uuid := auth.uid();
+  inquiry_id bigint;
+  existing_id bigint;
+  clean_subject text := regexp_replace(coalesce(p_subject, ''), '^[[:space:]]+|[[:space:]]+$', '', 'g');
+  clean_body text := regexp_replace(coalesce(p_body, ''), '^[[:space:]]+|[[:space:]]+$', '', 'g');
+  clean_email text := nullif(regexp_replace(coalesce(p_email, ''), '^[[:space:]]+|[[:space:]]+$', '', 'g'), '');
+begin
+  if current_user_id is null then
+    raise exception using errcode = '42501', message = 'not_authenticated';
+  end if;
+  if p_request_id is null then
+    raise exception using errcode = '22023', message = 'invalid_request_id';
+  end if;
+  if char_length(clean_subject) not between 1 and 100 then
+    raise exception using errcode = '22023', message = 'invalid_subject';
+  end if;
+  if char_length(clean_body) not between 1 and 4000 then
+    raise exception using errcode = '22023', message = 'invalid_body';
+  end if;
+  if clean_email is not null and char_length(clean_email) > 254 then
+    raise exception using errcode = '22023', message = 'invalid_email';
+  end if;
+  select id into existing_id from public.inquiries
+  where user_id = current_user_id and client_request_id = p_request_id;
+  if existing_id is not null then return existing_id; end if;
+  begin
+    insert into public.inquiries (user_id, device_id, email, subject, client_request_id)
+    values (current_user_id, p_device_id, clean_email, clean_subject, p_request_id)
+    returning id into inquiry_id;
+    insert into public.inquiry_messages (inquiry_id, sender, body, client_request_id)
+    values (inquiry_id, 'user', clean_body, p_request_id);
+  exception when unique_violation then
+    select id into existing_id from public.inquiries
+    where user_id = current_user_id and client_request_id = p_request_id;
+    if existing_id is not null then return existing_id; end if;
+    raise;
+  end;
+  return inquiry_id;
+end
+$$;
+
+-- 사용자의 추가 답장과 open 전환을 한 트랜잭션으로 처리한다.
+create or replace function public.send_inquiry_message(
+  p_inquiry_id bigint, p_body text, p_request_id uuid
+)
+returns bigint
+language plpgsql security definer set search_path = public
+as $$
+declare
+  current_user_id uuid := auth.uid();
+  current_status text;
+  message_id bigint;
+  existing_id bigint;
+  clean_body text := regexp_replace(coalesce(p_body, ''), '^[[:space:]]+|[[:space:]]+$', '', 'g');
+begin
+  if current_user_id is null then
+    raise exception using errcode = '42501', message = 'not_authenticated';
+  end if;
+  if p_request_id is null then
+    raise exception using errcode = '22023', message = 'invalid_request_id';
+  end if;
+  if char_length(clean_body) not between 1 and 4000 then
+    raise exception using errcode = '22023', message = 'invalid_body';
+  end if;
+  select status into current_status from public.inquiries
+  where id = p_inquiry_id and user_id = current_user_id for update;
+  if current_status is null then
+    raise exception using errcode = 'P0001', message = 'inquiry_not_found';
+  end if;
+  if current_status = 'closed' then
+    raise exception using errcode = 'P0001', message = 'inquiry_closed';
+  end if;
+  select id into existing_id from public.inquiry_messages
+  where inquiry_id = p_inquiry_id and sender = 'user' and client_request_id = p_request_id;
+  if existing_id is not null then return existing_id; end if;
+  begin
+    insert into public.inquiry_messages (inquiry_id, sender, body, client_request_id)
+    values (p_inquiry_id, 'user', clean_body, p_request_id)
+    returning id into message_id;
+  exception when unique_violation then
+    select id into existing_id from public.inquiry_messages
+    where inquiry_id = p_inquiry_id and sender = 'user' and client_request_id = p_request_id;
+    if existing_id is not null then return existing_id; end if;
+    raise;
+  end;
+  return message_id;
+end
+$$;
+
+-- 관리자 답변과 answered 전환을 한 트랜잭션으로 처리한다.
+create or replace function public.admin_reply_inquiry(
+  p_inquiry_id bigint, p_body text, p_request_id uuid
+)
+returns bigint
+language plpgsql security definer set search_path = public
+as $$
+declare
+  current_status text;
+  message_id bigint;
+  existing_id bigint;
+  clean_body text := regexp_replace(coalesce(p_body, ''), '^[[:space:]]+|[[:space:]]+$', '', 'g');
+begin
+  if not public.is_admin() then
+    raise exception using errcode = '42501', message = 'not_admin';
+  end if;
+  if p_request_id is null then
+    raise exception using errcode = '22023', message = 'invalid_request_id';
+  end if;
+  if char_length(clean_body) not between 1 and 4000 then
+    raise exception using errcode = '22023', message = 'invalid_body';
+  end if;
+  select status into current_status from public.inquiries
+  where id = p_inquiry_id for update;
+  if current_status is null then
+    raise exception using errcode = 'P0001', message = 'inquiry_not_found';
+  end if;
+  if current_status = 'closed' then
+    raise exception using errcode = 'P0001', message = 'inquiry_closed';
+  end if;
+  select id into existing_id from public.inquiry_messages
+  where inquiry_id = p_inquiry_id and sender = 'admin' and client_request_id = p_request_id;
+  if existing_id is not null then return existing_id; end if;
+  begin
+    insert into public.inquiry_messages (inquiry_id, sender, body, client_request_id)
+    values (p_inquiry_id, 'admin', clean_body, p_request_id)
+    returning id into message_id;
+  exception when unique_violation then
+    select id into existing_id from public.inquiry_messages
+    where inquiry_id = p_inquiry_id and sender = 'admin' and client_request_id = p_request_id;
+    if existing_id is not null then return existing_id; end if;
+    raise;
+  end;
+  return message_id;
+end
+$$;
+
+create or replace function public.close_inquiry(p_inquiry_id bigint)
+returns boolean
+language plpgsql security definer set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception using errcode = '42501', message = 'not_admin';
+  end if;
+  update public.inquiries set status = 'closed', updated_at = now()
+  where id = p_inquiry_id;
+  if not found then
+    raise exception using errcode = 'P0001', message = 'inquiry_not_found';
+  end if;
+  return true;
+end
+$$;
+
+-- 쓰기는 RPC로만, 읽기는 authenticated의 RLS 범위에서만 허용한다.
+revoke all on public.inquiries from public, anon, authenticated;
+grant select on public.inquiries to authenticated;
+revoke all on public.inquiry_messages from public, anon, authenticated;
+grant select on public.inquiry_messages to authenticated;
+revoke all on public.v_inquiry_list from public, anon, authenticated;
+grant select on public.v_inquiry_list to authenticated;
+revoke all on function public.create_inquiry(text, text, text, uuid, uuid) from public, anon, authenticated;
+grant execute on function public.create_inquiry(text, text, text, uuid, uuid) to authenticated;
+revoke all on function public.send_inquiry_message(bigint, text, uuid) from public, anon, authenticated;
+grant execute on function public.send_inquiry_message(bigint, text, uuid) to authenticated;
+revoke all on function public.admin_reply_inquiry(bigint, text, uuid) from public, anon, authenticated;
+grant execute on function public.admin_reply_inquiry(bigint, text, uuid) to authenticated;
+revoke all on function public.close_inquiry(bigint) from public, anon, authenticated;
+grant execute on function public.close_inquiry(bigint) to authenticated;
+revoke all on function public.sync_inquiry_activity() from public, anon, authenticated;
 
 
 -- ── 회차 간 이어보기 ─────────────────────────────────────────────────

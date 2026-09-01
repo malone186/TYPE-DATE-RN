@@ -191,6 +191,8 @@ export function SettingsButton() {
             <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: withAlpha(c.border, 0.9) }} />
             <View style={{ height: 8 }} />
 
+            <Text style={t.caption(c.textSecondary)}>고객지원</Text>
+            <View style={{ height: 4 }} />
             <Pressable
               onPress={() => {
                 setOpen(false);

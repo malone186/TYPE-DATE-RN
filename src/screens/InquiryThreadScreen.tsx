@@ -11,8 +11,16 @@ import { RootStackParamList } from '../navigation/types';
 import { useColors } from '../theme/useColors';
 import { useTextStyles } from '../theme/textStyles';
 import { withAlpha } from '../theme/colors';
-import { GlowBackground } from '../widgets/common';
-import { InquiryMessage, listMessages, sendMessage } from '../lib/inquiries';
+import { CoralButton, GlowBackground } from '../widgets/common';
+import {
+  createInquiryRequestId,
+  getInquiry,
+  INQUIRY_LIMITS,
+  InquiryMessage,
+  InquiryStatus,
+  listMessages,
+  sendMessage,
+} from '../lib/inquiries';
 
 /// 문의 스레드 — 소개팅 화면과 같은 말풍선 어법으로 주고받는다.
 export function InquiryThreadScreen({
@@ -20,19 +28,29 @@ export function InquiryThreadScreen({
 }: NativeStackScreenProps<RootStackParamList, 'InquiryThread'>) {
   const c = useColors();
   const t = useTextStyles();
-  const { id, subject } = route.params;
+  const { id, subject: routeSubject, status: routeStatus = 'open' } = route.params;
 
   const [messages, setMessages] = useState<InquiryMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [inquiryStatus, setInquiryStatus] = useState<InquiryStatus>(routeStatus);
+  const [threadSubject, setThreadSubject] = useState(routeSubject);
+  const sendRequestId = useRef(createInquiryRequestId());
+  const sendDraftKey = useRef<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   const load = useCallback(() => {
     setError('');
-    listMessages(id)
-      .then(setMessages)
+    setLoading(true);
+    Promise.all([getInquiry(id), listMessages(id)])
+      .then(([inquiry, nextMessages]) => {
+        if (inquiry == null) throw new Error('문의를 찾을 수 없습니다. 목록에서 다시 선택해 주세요.');
+        setInquiryStatus(inquiry.status);
+        setThreadSubject(inquiry.subject);
+        setMessages(nextMessages);
+      })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
@@ -42,13 +60,23 @@ export function InquiryThreadScreen({
 
   const send = async () => {
     const body = draft.trim();
-    if (body === '' || sending) return;
+    if (body === '' || sending || inquiryStatus === 'closed') return;
     setSending(true);
     setError('');
     try {
-      await sendMessage(id, body);
+      if (sendDraftKey.current !== body) {
+        sendDraftKey.current = body;
+        sendRequestId.current = createInquiryRequestId();
+      }
+      await sendMessage(id, body, sendRequestId.current);
       setDraft('');
-      const next = await listMessages(id);
+      sendDraftKey.current = null;
+      sendRequestId.current = createInquiryRequestId();
+      const [inquiry, next] = await Promise.all([getInquiry(id), listMessages(id)]);
+      if (inquiry != null) {
+        setInquiryStatus(inquiry.status);
+        setThreadSubject(inquiry.subject);
+      }
       setMessages(next);
       requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
     } catch (e) {
@@ -66,7 +94,7 @@ export function InquiryThreadScreen({
             <MaterialIcons name="arrow-back-ios" size={20} color={c.textPrimary} />
           </Pressable>
           <Text style={[t.screenTitle(c.textPrimary), { fontSize: t.fs(17), flex: 1 }]} numberOfLines={1}>
-            {subject}
+            {threadSubject}
           </Text>
         </View>
 
@@ -128,51 +156,67 @@ export function InquiryThreadScreen({
               })
             )}
             {error !== '' && (
-              <Text style={[t.caption(c.accentCoral), { marginTop: 16, textAlign: 'center' }]}>
-                {error}
+              <View style={{ alignItems: 'center', marginTop: 16 }}>
+                <Text style={[t.caption(c.accentCoral), { textAlign: 'center' }]}>{error}</Text>
+                <Pressable onPress={load} style={{ padding: 12 }}>
+                  <Text style={t.caption(c.textPrimary)}>다시 시도</Text>
+                </Pressable>
+              </View>
+            )}
+            {!loading && inquiryStatus === 'closed' && (
+              <Text style={[t.caption(c.textSecondary), { marginTop: 18, textAlign: 'center' }]}>
+                종료된 문의입니다.
               </Text>
             )}
           </ScrollView>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderTopWidth: 1,
-              borderTopColor: c.border,
-            }}
-          >
-            <TextInput
-              value={draft}
-              onChangeText={setDraft}
-              placeholder="답장을 입력하세요"
-              placeholderTextColor={c.textMuted}
-              multiline
-              style={[
-                t.chatMessage(c.textPrimary),
-                {
-                  flex: 1,
-                  maxHeight: 120,
-                  backgroundColor: withAlpha(c.surface, 0.72),
-                  borderRadius: 18,
-                  borderWidth: 1,
-                  borderColor: c.border,
-                  paddingHorizontal: 14,
-                  paddingVertical: 10,
-                },
-              ]}
-            />
-            <Pressable
-              onPress={send}
-              disabled={draft.trim() === '' || sending}
-              hitSlop={8}
-              style={{ padding: 10, opacity: draft.trim() === '' || sending ? 0.4 : 1 }}
+          {!loading && error === '' && inquiryStatus === 'closed' ? (
+            <View style={{ paddingHorizontal: 16, paddingVertical: 10, borderTopWidth: 1, borderTopColor: c.border }}>
+              <CoralButton label="새 문의 작성" onPress={() => navigation.navigate('Inquiry')} />
+            </View>
+          ) : !loading && error === '' ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderTopWidth: 1,
+                borderTopColor: c.border,
+              }}
             >
-              <MaterialIcons name="send" size={22} color={c.accentCoral} />
-            </Pressable>
-          </View>
+              <TextInput
+                value={draft}
+                onChangeText={setDraft}
+                placeholder="답장을 입력하세요"
+                placeholderTextColor={c.textMuted}
+                multiline
+                editable={!sending}
+                maxLength={INQUIRY_LIMITS.body}
+                style={[
+                  t.chatMessage(c.textPrimary),
+                  {
+                    flex: 1,
+                    maxHeight: 120,
+                    backgroundColor: withAlpha(c.surface, 0.72),
+                    borderRadius: 18,
+                    borderWidth: 1,
+                    borderColor: c.border,
+                    paddingHorizontal: 14,
+                    paddingVertical: 10,
+                  },
+                ]}
+              />
+              <Pressable
+                onPress={send}
+                disabled={draft.trim() === '' || sending}
+                hitSlop={8}
+                style={{ padding: 10, opacity: draft.trim() === '' || sending ? 0.4 : 1 }}
+              >
+                <MaterialIcons name="send" size={22} color={c.accentCoral} />
+              </Pressable>
+            </View>
+          ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </GlowBackground>

@@ -1,4 +1,5 @@
 import { DateResult } from '../types';
+import { InquiryStatus } from '../lib/inquiries';
 
 // Flutter Navigator 라우트 → React Navigation 네이티브 스택 파라미터.
 export type RootStackParamList = {
@@ -15,5 +16,5 @@ export type RootStackParamList = {
   Epilogue: { result: DateResult };
   FinalEpilogue: undefined;
   Inquiry: undefined;
-  InquiryThread: { id: number; subject: string };
+  InquiryThread: { id: number; subject: string; status?: InquiryStatus };
 };

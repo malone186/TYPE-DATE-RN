@@ -206,7 +206,10 @@
   .inq:hover { border-color: var(--baseline); }
   .inq[aria-selected="true"] { border-color: var(--accent); background: var(--surface-1); }
   .inq .subj { flex: 1; font-weight: 650; color: var(--text-primary); }
+  .inq .email, .inq-head .email { color: var(--text-secondary); font-size: 12px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .inq .meta { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
+  .inq-head { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+  .inq-head b { flex: 1; font-size: 14px; }
   .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--series-2); flex: none; }
   .dot.none { background: var(--baseline); }
   .pill {
@@ -274,6 +277,10 @@
     .nav { flex-direction: row; overflow-x: auto; }
     .nav button { white-space: nowrap; }
     main { padding: 20px 16px 48px; }
+    .inq { flex-wrap: wrap; }
+    .inq .subj { min-width: 45%; }
+    .inq .email { margin-left: 21px; max-width: 45%; }
+    .inq .meta { margin-left: auto; }
   }
 </style>
 </head>
@@ -346,7 +353,7 @@
       <div class="card">
         <div class="ch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M6 16l4-6 4 4 4-8"/></svg>
-          <h2>일별 활성 기기</h2><span class="sp"></span><span class="live">LIVE</span>
+          <h2>일별 활성 기기</h2>
         </div>
         <p class="note">앱을 연 고유 기기 수. 신규는 그날 처음 접속한 기기.</p>
         <div class="legend">
@@ -426,7 +433,7 @@
       <div class="card">
         <div class="ch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <h2>문의 목록</h2><span class="sp"></span><span class="live">LIVE</span>
+          <h2>문의 목록</h2><span class="sp"></span><span class="live">AUTO 20S</span>
         </div>
         <p class="note">답변을 기다리는 문의가 위로 옵니다. 문의를 누르면 대화가 열립니다.</p>
         <div id="inquiryList"></div>
@@ -439,7 +446,7 @@
       <div class="card">
         <div class="ch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-          <h2>챕터별 진행과 하차</h2><span class="sp"></span><span class="live">LIVE</span>
+          <h2>챕터별 진행과 하차</h2>
         </div>
         <p class="note">
           막대는 턴별로 남아 있는 사람 수. 카드를 누르면 아래에 상세가 열립니다.
@@ -477,7 +484,7 @@
       <div class="card">
         <div class="ch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M6 16l4-6 4 4 4-8"/></svg>
-          <h2>일별 광고 노출과 광고 제거</h2><span class="sp"></span><span class="live">LIVE</span>
+          <h2>일별 광고 노출과 광고 제거</h2>
         </div>
         <p class="note">광고 노출은 왼쪽 축과 같은 기준으로 그립니다. 광고 제거는 건수가 훨씬 적어 선이 바닥에 붙습니다.</p>
         <div class="legend">
@@ -502,7 +509,7 @@
       <div class="card">
         <div class="ch">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg>
-          <h2>앱에서 터진 오류</h2><span class="sp"></span><span class="live">LIVE</span>
+          <h2>앱에서 터진 오류</h2>
         </div>
         <p class="note">
           같은 화면·메시지끼리 묶어 많이 터진 순으로 보여줍니다.
@@ -1167,40 +1174,84 @@ async function loadEpisode() {
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 
-const STATUS_KO = { open: '접수됨', answered: '답변 완료', closed: '종료' };
+const STATUS_KO = { open: '답변 대기', answered: '운영자 답변', closed: '종료' };
 let openInquiryId = null;
+let inquiryRefreshTimer = null;
+let currentPage = 'dash';
+const inquiryBusyIds = new Set();
 
-async function loadInquiries() {
-  const { data, error } = await sb
-    .from('v_inquiry_list')
-    .select('*')
-    .order('last_message_at', { ascending: false, nullsFirst: false });
-  if (error) { $('inquiryList').innerHTML = `<div class="err">문의 목록 실패 — ${esc(error.message)}</div>`; return; }
-
-  const rows = data ?? [];
-  // 마지막 발신자가 사용자면 아직 답을 안 한 것 — 이걸 위로 올린다.
-  rows.sort((a, b) => (a.last_sender === 'user' ? 0 : 1) - (b.last_sender === 'user' ? 0 : 1));
-
-  const waiting = rows.filter((r) => r.last_sender === 'user').length;
-  const badge = $('navCount');
-  badge.hidden = waiting === 0;
-  badge.textContent = String(waiting);
-
-  $('inquiryList').innerHTML = rows.length ? rows.map((r) => `
-    <button class="inq" data-id="${r.id}" aria-selected="${r.id === openInquiryId}">
-      <span class="dot ${r.last_sender === 'user' ? '' : 'none'}"></span>
-      <span class="subj">${esc(r.subject)}</span>
-      <span class="pill">${esc(STATUS_KO[r.status] ?? r.status)}</span>
-      <span class="meta">${esc((r.last_message_at ?? r.created_at).slice(0, 10))}</span>
-    </button>`).join('') : '<div class="empty">문의가 없습니다.</div>';
-
-  for (const el of $('inquiryList').querySelectorAll('.inq')) {
-    el.addEventListener('click', () => openThread(Number(el.dataset.id)));
-  }
-  if (openInquiryId != null) await openThread(openInquiryId, true);
+function inquiryWaiting(row) {
+  return row.status !== 'closed' && row.last_sender === 'user';
 }
 
-async function openThread(id, keep = false) {
+function inquiryDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? String(value ?? '').slice(0, 16).replace('T', ' ')
+    : date.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+function inquiryRequestId() {
+  return globalThis.crypto?.randomUUID?.() ?? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (ch) => {
+    const r = (Math.random() * 16) | 0;
+    return (ch === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+function inquiryErrorText(error) {
+  const source = `${error?.code ?? ''} ${error?.message ?? ''}`.toLowerCase();
+  if (source.includes('inquiry_closed')) return '종료된 문의에는 처리할 수 없습니다.';
+  if (source.includes('not_admin') || source.includes('42501')) return '운영자 권한이 필요합니다.';
+  if (source.includes('inquiry_not_found')) return '문의를 찾을 수 없습니다.';
+  return error?.message ?? '문의 처리에 실패했습니다.';
+}
+
+async function loadInquiries() {
+  try {
+    const { data, error } = await sb
+      .from('v_inquiry_list')
+      .select('*')
+      .order('last_message_at', { ascending: false, nullsFirst: false });
+    if (error) {
+      $('inquiryList').innerHTML = `<div class="err">문의 목록 실패 — ${esc(inquiryErrorText(error))}</div>`;
+      return;
+    }
+
+    const rows = data ?? [];
+    rows.sort((a, b) => {
+      const waitingOrder = Number(inquiryWaiting(a)) - Number(inquiryWaiting(b));
+      if (waitingOrder !== 0) return -waitingOrder;
+      return new Date(b.last_message_at ?? b.created_at).getTime() - new Date(a.last_message_at ?? a.created_at).getTime();
+    });
+
+    const waiting = rows.filter(inquiryWaiting).length;
+    const badge = $('navCount');
+    badge.hidden = waiting === 0;
+    badge.textContent = String(waiting);
+
+    const rowById = new Map(rows.map((row) => [Number(row.id), row]));
+    $('inquiryList').innerHTML = rows.length ? rows.map((r) => `
+      <button class="inq" data-id="${esc(r.id)}" aria-selected="${r.id === openInquiryId}">
+        <span class="dot ${inquiryWaiting(r) ? '' : 'none'}"></span>
+        <span class="subj">${esc(r.subject)}</span>
+        <span class="pill">${esc(STATUS_KO[r.status] ?? r.status)}</span>
+        <span class="email">${esc(r.email ?? '이메일 없음')}</span>
+        <span class="meta">${esc(inquiryDate(r.last_message_at ?? r.created_at))}</span>
+      </button>`).join('') : '<div class="empty">문의가 없습니다.</div>';
+
+    for (const el of $('inquiryList').querySelectorAll('.inq')) {
+      el.addEventListener('click', () => openThread(Number(el.dataset.id), false, rowById.get(Number(el.dataset.id))));
+    }
+    if (openInquiryId != null && rowById.has(openInquiryId)) {
+      const preservedDraft = $('replyBox')?.value ?? '';
+      await openThread(openInquiryId, true, rowById.get(openInquiryId), preservedDraft);
+    }
+  } catch (error) {
+    $('inquiryList').innerHTML = `<div class="err">문의 목록 실패 — ${esc(inquiryErrorText(error))}</div>`;
+  }
+}
+
+async function openThread(id, keep = false, summary = null, preservedDraft = '') {
   openInquiryId = id;
   if (!keep) for (const el of $('inquiryList').querySelectorAll('.inq')) {
     el.setAttribute('aria-selected', String(Number(el.dataset.id) === id));
@@ -1211,38 +1262,100 @@ async function openThread(id, keep = false) {
     .select('id, created_at, sender, body')
     .eq('inquiry_id', id)
     .order('created_at');
-  if (error) { $('thread').innerHTML = `<div class="err">대화 실패 — ${esc(error.message)}</div>`; return; }
+  if (error) { $('thread').innerHTML = `<div class="err">대화 실패 — ${esc(inquiryErrorText(error))}</div>`; return; }
 
   $('thread').innerHTML = `
     <div style="border-top:1px solid var(--grid); margin:18px 0 16px"></div>
+    <div class="inq-head">
+      <b>${esc(summary?.subject ?? '')}</b>
+      <span class="pill">${esc(STATUS_KO[summary?.status] ?? summary?.status ?? '')}</span>
+      <span class="email">${esc(summary?.email ?? '이메일 없음')}</span>
+    </div>
     ${(data ?? []).map((m) => `
-      <div class="msg ${m.sender}">
-        <span class="who2">${m.sender === 'admin' ? '운영자' : '사용자'} · ${esc(m.created_at.slice(0, 16).replace('T', ' '))}</span>
+      <div class="msg ${m.sender === 'admin' ? 'admin' : 'user'}">
+        <span class="who2">${m.sender === 'admin' ? '운영자' : '사용자'} · ${esc(inquiryDate(m.created_at))}</span>
         <div class="bubble">${esc(m.body)}</div>
       </div>`).join('')}
-    <div class="reply">
-      <textarea id="replyBox" placeholder="답변을 입력하세요"></textarea>
-      <div style="display:flex; flex-direction:column; gap:7px">
-        <button id="replySend" class="pri">답변 보내기</button>
-        <button id="closeInq">종료 처리</button>
-      </div>
-    </div>`;
+    ${summary?.status === 'closed' ? '<div class="empty">종료된 문의입니다.</div>' : `
+      <div class="reply">
+        <textarea id="replyBox" maxlength="4000" placeholder="답변을 입력하세요"></textarea>
+        <div style="display:flex; flex-direction:column; gap:7px">
+          <button id="replySend" class="pri">답변 보내기</button>
+          <button id="closeInq">종료 처리</button>
+        </div>
+      </div>`}`;
+
+  const replyBox = $('replyBox');
+  if (replyBox) replyBox.value = preservedDraft;
+  if (summary?.status === 'closed') return;
+
+  let actionBusy = inquiryBusyIds.has(id);
+  const setActionBusy = (busy) => {
+    actionBusy = busy;
+    if (busy) inquiryBusyIds.add(id);
+    else inquiryBusyIds.delete(id);
+    $('replySend').disabled = busy;
+    $('closeInq').disabled = busy;
+  };
+  setActionBusy(actionBusy);
 
   $('replySend').addEventListener('click', async () => {
     const body = $('replyBox').value.trim();
-    if (!body) return;
-    $('replySend').disabled = true;
-    const { error: e1 } = await sb.from('inquiry_messages')
-      .insert({ inquiry_id: id, sender: 'admin', body });
-    if (e1) { $('globalErr').textContent = '답변 실패 — ' + e1.message; $('replySend').disabled = false; return; }
-    await sb.from('inquiries').update({ status: 'answered' }).eq('id', id);
-    await loadInquiries();
+    if (!body || actionBusy) return;
+    setActionBusy(true);
+    $('globalErr').textContent = '';
+    try {
+      const { error: replyError } = await sb.rpc('admin_reply_inquiry', {
+        p_inquiry_id: id,
+        p_body: body,
+        p_request_id: inquiryRequestId(),
+      });
+      if (replyError) {
+        $('globalErr').textContent = '답변 실패 — ' + inquiryErrorText(replyError);
+        setActionBusy(false);
+        return;
+      }
+      $('replyBox').value = '';
+      setActionBusy(false);
+      await loadInquiries();
+    } catch (error) {
+      $('globalErr').textContent = '답변 실패 — ' + inquiryErrorText(error);
+      setActionBusy(false);
+    }
   });
 
   $('closeInq').addEventListener('click', async () => {
-    await sb.from('inquiries').update({ status: 'closed' }).eq('id', id);
-    await loadInquiries();
+    if (actionBusy) return;
+    setActionBusy(true);
+    $('globalErr').textContent = '';
+    try {
+      const { error: closeError } = await sb.rpc('close_inquiry', { p_inquiry_id: id });
+      if (closeError) {
+        $('globalErr').textContent = '종료 실패 — ' + inquiryErrorText(closeError);
+        setActionBusy(false);
+        return;
+      }
+      setActionBusy(false);
+      await loadInquiries();
+    } catch (error) {
+      $('globalErr').textContent = '종료 실패 — ' + inquiryErrorText(error);
+      setActionBusy(false);
+    }
   });
+}
+
+function stopInquiryRefresh() {
+  if (inquiryRefreshTimer == null) return;
+  clearInterval(inquiryRefreshTimer);
+  inquiryRefreshTimer = null;
+}
+
+function startInquiryRefresh() {
+  stopInquiryRefresh();
+  inquiryRefreshTimer = setInterval(() => {
+    if (currentPage !== 'inquiry') return stopInquiryRefresh();
+    void loadInquiries();
+  }, 20000);
 }
 
 /* ── 페이지 전환 ── */
@@ -1251,6 +1364,13 @@ const TITLES = {
   quality: '콘텐츠 품질', errors: '앱 오류', revenue: '수익 현황',
 };
 function showPage(name) {
+  currentPage = name;
+  if (name === 'inquiry') {
+    startInquiryRefresh();
+    void loadInquiries();
+  } else {
+    stopInquiryRefresh();
+  }
   for (const b of $('nav').querySelectorAll('button')) {
     b.setAttribute('aria-current', String(b.dataset.page === name));
   }
@@ -1264,6 +1384,7 @@ function showPage(name) {
 /* ── 인증 ── */
 async function render(session) {
   const inApp = Boolean(session);
+  if (!inApp) stopInquiryRefresh();
   $('shell').hidden = !inApp;
   $('login').hidden = inApp;
   if (inApp) {
@@ -1294,6 +1415,7 @@ $('theme').addEventListener('click', () => {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
 });
+window.addEventListener('pagehide', stopInquiryRefresh);
 
 const { data: { session } } = await sb.auth.getSession();
 await render(session);
