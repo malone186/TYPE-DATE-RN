@@ -10,16 +10,26 @@ import { withAlpha } from '../theme/colors';
 import { GlowBackground } from '../widgets/common';
 import { SettingsButton } from '../widgets/SettingsSheet';
 import { useStore } from '../state/store';
-import { LINE_DATA, LineKey } from '../data';
+import { LINE_DATA, LineKey, lineData } from '../data';
 
 // 스플래시 다음 라인 선택 화면. 여자 ver(주인공 남) / 남자 ver(주인공 여)를 고른다.
 export function LineSelectScreen({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'LineSelect'>) {
   const c = useColors();
   const t = useTextStyles();
   const setLine = useStore((s) => s.setLine);
+  const isCompleted = useStore((s) => s.isCompleted);
+
+  /// 그 라인에서 완주한 회차가 하나라도 있어야 "이어할 진행"이 있다고 본다.
+  const hasPlayed = (line: LineKey) => lineData(line).episodes.some((ep) => isCompleted(ep.id));
 
   const pick = async (line: LineKey) => {
     await setLine(line);
+    // 이어하기로 들어왔더라도 그 라인을 처음 고르는 것이면 프롤로그부터 보여준다.
+    // 목적지만 보고 넘기면 라인을 바꿨을 때 튜토리얼이 통째로 빠진다.
+    if (route.params.next === 'CharacterSelect' && !hasPlayed(line)) {
+      navigation.navigate('Prologue');
+      return;
+    }
     navigation.navigate(route.params.next);
   };
 
