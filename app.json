@@ -24,7 +24,10 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo_mark.png",
         "backgroundColor": "#EAE3F6"
-      }
+      },
+      "blockedPermissions": [
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "bundler": "metro",
