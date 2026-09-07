@@ -65,7 +65,7 @@ void SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const loadPersisted = useStore((s) => s.loadPersisted);
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'Pretendard-Regular': require('./assets/fonts/Pretendard-Regular.ttf'),
     'Pretendard-Medium': require('./assets/fonts/Pretendard-Medium.ttf'),
     'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.ttf'),
@@ -96,7 +96,18 @@ export default function App() {
     };
   }, []);
 
-  const ready = fontsLoaded && imagesLoaded;
+  // 프리로드는 첫 화면을 매끄럽게 하려는 최적화지 실행 조건이 아니다.
+  // 웹 배포판에서 폰트·이미지 프리로드가 끝나지 않아 화면이 영영 비는 일이 있었으므로,
+  // 일정 시간이 지나면 프리로드 완료를 기다리지 않고 그냥 띄운다.
+  // 폰트는 시스템 폰트로, 이미지는 표시 시점에 각자 로드된다.
+  const [preloadTimedOut, setPreloadTimedOut] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setPreloadTimedOut(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 폰트 로딩이 실패하면 fontsLoaded는 영영 false다. 그 경우도 진행한다.
+  const ready = (fontsLoaded || fontError != null || preloadTimedOut) && (imagesLoaded || preloadTimedOut);
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();
   }, [ready]);
